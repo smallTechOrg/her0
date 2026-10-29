@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>#hero</title>
+  <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+  <main id="app" data-hero-page="gallery" class="page">
+    <header class="page-header">
+      <h1>#hero</h1>
+      <p class="tagline">Run a real street. See how walkable it is.</p>
+    </header>
+    <!-- Scaffold placeholder: S4-game-ui replaces this file with the real gallery. -->
+    <section class="placeholder">
+      <p>Gallery coming in Phase 1.</p>
+      <p class="muted" id="health">Checking server…</p>
+    </section>
+  </main>
+  <script type="module">
+    import { api } from '/js/api.js';
+    const el = document.getElementById('health');
+    try {
+      const data = await api.get('/api/health');
+      el.textContent = `Server ok (v${data.version}, db ${data.db})`;
+    } catch (err) {
+      el.textContent = `Server error: ${err.message}`;
+    }
+  </script>
+</body>
+</html>
