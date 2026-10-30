@@ -67,3 +67,17 @@ Run start: 2026-10-29 ~19:00 local. Platform: Claude Code (VS Code extension), b
 
 - `check_keys`: PASS. `check_structured` on the real `StreetExtraction` schema: `claude-sonnet-4-5` ok in forced_tool/auto_tool/json_text; `claude-sonnet-5-5` FAILS forced_tool (HTTP 400), ok in `auto_tool` ($0.010866) and `json_text` ($0.009936). Total spend $0.044103.
 - Decision: `DEFAULT_VISION_MODEL` and `DEFAULT_REVIEW_MODEL` = `claude-sonnet-5-5` (use `auto_tool`/`json_text`; `HERO_STRUCTURED_MODE=auto` falls back). `claude-sonnet-4-5` EOL is 2026-11-30.
+
+## Phase 2 gate (2026-10-30)
+
+- Placement: `docs/evidence/placement.png` viewed by the builder; the yellow line (OSM way 543470376 "100 Feet Road", snap 0.04 m, 100.0 m, bearing 177 deg = 3 deg off the N-S axis) runs down the tree-canopied road corridor between two building rows. Satellite shows mostly canopy, so the road surface itself is hidden; the corridor and the OSM way agree.
+- Live gate (`docs/evidence/phase2-gate.log`, `phase2-gate.json`): exactly 2 generations + 1 no-op. Run 1 (forward+back @10 m): $0.3215, fidelity 0 -> L1 over 100 m, 59 entities. Run 2 (+left,right): $0.2591, L1 -> L2 over 100 m, 94 entities, Google 20 new / 35 cached. Run 3: $0.00, 0 Anthropic calls, 0 new Google. TOTAL Anthropic $0.5806 (app llm_calls). Default model claude-sonnet-5-5 (auto_tool).
+- 17/18 live tests passed. The failing one (`test_admin_segment_page_shows_coverage_entities_and_diff`) asserted `data-level === '2'` but the UI emits `L2`; the selector is fixed but was NOT re-run against the real street (no third generation allowed); the fixture-based e2e covers the same page.
+- `tests/e2e/test_admin_model.py::test_real_fixture_run_page_shows_the_run_report` failed once under full-suite load and passes in isolation (timing flake; unresolved).
+
+### Friction lessons
+- An account limit stopped the previous builder mid-phase with ~27 modified and ~60 new files uncommitted: commit+push each verified slice immediately.
+- Stray test files landed at the repo root (test_priors.py, test_projection.py): nothing may live outside src/ tests/ docs/ etc.
+- A full-suite run once made unmeasured real Anthropic calls: real-API tests are now `live`-marked and skipped unless `-m live` or the path is tests/live.
+- QA found the Google API key leaking via httpx INFO URL logs and cached REQUEST_DENIED metadata: both fixed (redaction filter, only OK/ZERO_RESULTS/NOT_FOUND cached).
+- A live gate bearing check must be axial (a south-running road is north-aligned).

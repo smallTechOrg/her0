@@ -93,7 +93,9 @@ def mean_bearing_deg(points: list[dict[str, float]]) -> float:
 
 
 def angle_from_north(bearing: float) -> float:
-    return min(bearing, 360.0 - bearing)
+    # axial: a road running south is as north-aligned as one running north
+    b = bearing % 180.0
+    return min(b, 180.0 - b)
 
 
 def wait_run(admin: httpx.Client, run_id: str, timeout_s: float = RUN_TIMEOUT_S) -> dict[str, Any]:

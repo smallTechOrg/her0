@@ -68,7 +68,7 @@ def test_admin_segment_page_shows_coverage_entities_and_diff(live_server: str, a
     n_bins = len(gate["run2"]["version"]["fidelity"]["bins"])
     cells = page.locator("[data-testid=coverage] .cov-cell")
     expect(cells).to_have_count(n_bins)
-    assert cells.evaluate_all("els => els.filter(e => e.dataset.level === '2').length") >= 0.8 * n_bins
+    assert cells.evaluate_all("els => els.filter(e => e.dataset.level === 'L2').length") >= 0.8 * n_bins
     cells.nth(n_bins // 2).click()
     expect(page.locator("[data-testid=coverage-popover]")).to_be_visible()
 

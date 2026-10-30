@@ -1,0 +1,1906 @@
+{
+  "slug": "100-feet-road-indiranagar-canonical-demo-e",
+  "placement": {
+    "slug": "100-feet-road-indiranagar-canonical-demo-e",
+    "created": true,
+    "image": "/Users/sai/Workspace/her0/docs/evidence/placement.png",
+    "reference_line": {
+      "source": "osm_nominatim",
+      "osm_way_id": 543470376,
+      "name": "100 Feet Road",
+      "length_s": 100.0,
+      "extrapolated_m": {
+        "start": 0.0,
+        "end": 0.0
+      },
+      "snap_m": 0.04
+    },
+    "placement_verified": true,
+    "problems": [],
+    "mean_bearing_deg": 177.13,
+    "angle_from_north_deg": 2.87,
+    "head_reference_source": "osm_nominatim"
+  },
+  "run1": {
+    "run_id": "a097f27d-7d05-4970-a638-c4fa9d278da3",
+    "report": {
+      "run_id": "a097f27d-7d05-4970-a638-c4fa9d278da3",
+      "segment_slug": "100-feet-road-indiranagar-canonical-demo-e",
+      "mode": "generate",
+      "base_version": 0,
+      "result_version": 1,
+      "version_created": true,
+      "started_at": "2026-10-30T15:24:49.348161Z",
+      "finished_at": "2026-10-30T15:27:33.063355Z",
+      "duration_s": 163.7,
+      "images": {
+        "planned": 24,
+        "used_total": 24,
+        "new": 23,
+        "cached": 1,
+        "fused_this_run": 24,
+        "by_source": {
+          "google_static_maps": 4,
+          "google_streetview": 20
+        },
+        "by_kind": {
+          "satellite_crop": 3,
+          "satellite_overview": 1,
+          "streetview": 20
+        },
+        "by_view": {
+          "back": 10,
+          "forward": 10
+        },
+        "new_observation_ids": [
+          "05b29a5e-c54f-4573-b662-26d40eb833c1",
+          "06ad44c8-3b14-4aa4-a7ea-79a8d3bf1361",
+          "0ad1793f-4dcf-4cb8-bf9d-c15d8eb91744",
+          "10e0ae99-75dd-4977-a3b8-062087db6abf",
+          "1936853d-cb25-427d-855a-79099ea1a636",
+          "2b3459f8-b7e0-490d-8ed0-71e9b66607b7",
+          "35a5bcd8-86f6-4411-bf54-41841006165a",
+          "529ac55f-fa66-4b5e-845d-4d6449546f7c",
+          "61a4cacd-efc9-4d14-94ff-c1f0ec7013bc",
+          "6f155c53-250f-4b48-a3da-69bd14246a70",
+          "80530f03-5760-4d5e-9962-b8ca5b6fab45",
+          "80c4e2e6-3daa-439d-82a6-a4eafec12823",
+          "939bfd46-2e56-4f35-8b0e-93c4987197f7",
+          "982aac48-456e-4237-beca-89abd9d42d37",
+          "ab840917-659d-4fbd-932c-628a12696e09",
+          "b31da554-aee4-48f3-81b5-bcca74bb94e1",
+          "b93c8640-9609-44d4-a8da-0c4bd0b38603",
+          "bb961d0b-6683-47cb-8e12-c3ee870f8171",
+          "c3649eb7-7bfd-4fb3-87f6-16180d11016e",
+          "d93f409d-9261-477c-be5f-b23e5f0db088",
+          "db122177-ea70-49d7-8c3f-9e9d0b60a3b5",
+          "e98d7d59-ed2f-4c53-8e50-19dace95698a",
+          "f7d8fb3f-5c7c-494f-9955-3b65af4fe72c"
+        ],
+        "skipped": []
+      },
+      "detections": {
+        "new": [
+          {
+            "id": "ent-02833b40e3",
+            "type": "parked_vehicle",
+            "description": "Silver SUV parked at the left kerb beyond the tree.",
+            "confidence": 0.514
+          },
+          {
+            "id": "ent-10868556db",
+            "type": "tree",
+            "description": "Large tree branches overhang the right-side footpath. The canopy is high.",
+            "confidence": 0.488
+          },
+          {
+            "id": "ent-1675b908b9",
+            "type": "bollard",
+            "description": "A row of short black bollards lines the left footpath edge in the distance. They leave the walkway open behind them.",
+            "confidence": 0.444
+          },
+          {
+            "id": "ent-2b5265f98e",
+            "type": "parked_vehicle",
+            "description": "White scooter parked on the footpath near the tree, leaving most of the walkway free.",
+            "confidence": 0.351
+          },
+          {
+            "id": "ent-2de36b713c",
+            "type": "bollard",
+            "description": "Orange and white traffic cone standing on the road edge next to the footpath.",
+            "confidence": 0.613
+          },
+          {
+            "id": "ent-302ae8da09",
+            "type": "parked_vehicle",
+            "description": "Light-coloured vehicle seen from above among vegetation on the right side near 90 m.",
+            "confidence": 0.125
+          },
+          {
+            "id": "ent-36be6e1d03",
+            "type": "parked_vehicle",
+            "description": "Yellow and green auto-rickshaw parked at the left kerb. It sits on the carriageway edge next to the footpath.",
+            "confidence": 0.635
+          },
+          {
+            "id": "ent-420622c05c",
+            "type": "parked_vehicle",
+            "description": "Large dump truck parked on the right of the carriageway.",
+            "confidence": 0.308
+          },
+          {
+            "id": "ent-42f28861ea",
+            "type": "bollard",
+            "description": "Orange traffic cone beside the kerb line of the footpath.",
+            "confidence": 0.504
+          },
+          {
+            "id": "ent-442d777dba",
+            "type": "bollard",
+            "description": "Black bollards at the footpath edge.",
+            "confidence": 0.672
+          },
+          {
+            "id": "ent-4676aa9f21",
+            "type": "parked_vehicle",
+            "description": "Yellow and green open truck stopped in the carriageway ahead. It is not on the footpath.",
+            "confidence": 0.57
+          },
+          {
+            "id": "ent-490d180c5e",
+            "type": "tree",
+            "description": "Large tree trunk rising from a tree pit at the footpath edge, taking up part of the walkway.",
+            "confidence": 0.726
+          },
+          {
+            "id": "ent-4a0a78a8cb",
+            "type": "tree",
+            "description": "Large leaning tree trunk on the left footpath edge, with its base on the walkway.",
+            "confidence": 0.323
+          },
+          {
+            "id": "ent-4f38ae229a",
+            "type": "parked_vehicle",
+            "description": "Dump truck parked on the right side of the carriageway.",
+            "confidence": 0.352
+          },
+          {
+            "id": "ent-55005fb3d8",
+            "type": "tree",
+            "description": "Massive tree trunk with a tree pit at the footpath edge; a low limb overhangs the walkway.",
+            "confidence": 0.738
+          },
+          {
+            "id": "ent-55e799c027",
+            "type": "wall",
+            "description": "Compound wall with gate along the left footpath.",
+            "confidence": 0.21
+          },
+          {
+            "id": "ent-611fd2adb2",
+            "type": "parked_vehicle",
+            "description": "White SUV parked at the left kerb beside the footpath.",
+            "confidence": 0.803
+          },
+          {
+            "id": "ent-61a59318a0",
+            "type": "bollard",
+            "description": "Black bollards beside the right footpath.",
+            "confidence": 0.496
+          },
+          {
+            "id": "ent-666ca3f8db",
+            "type": "bollard",
+            "description": "Row of black bollards at the footpath edge on the right side of the back view.",
+            "confidence": 0.603
+          },
+          {
+            "id": "ent-73cd970b11",
+            "type": "signboard",
+            "description": "A-frame signboard on the footpath.",
+            "confidence": 0.366
+          },
+          {
+            "id": "ent-73f2efc87b",
+            "type": "parked_vehicle",
+            "description": "Yellow and green open truck ahead in the carriageway.",
+            "confidence": 0.679
+          },
+          {
+            "id": "ent-73f8882abc",
+            "type": "tree",
+            "description": "Large tree with a thick trunk at the left edge. Its trunk sits right at the footpath edge and its canopy overhangs the walkway.",
+            "confidence": 0.588
+          },
+          {
+            "id": "ent-81689c0a4e",
+            "type": "tree",
+            "description": "Large tree trunk on the footpath edge, with canopy over the walkway.",
+            "confidence": 0.606
+          },
+          {
+            "id": "ent-8a48109fd4",
+            "type": "tree",
+            "description": "Tree trunk beside the right footpath.",
+            "confidence": 0.53
+          },
+          {
+            "id": "ent-8d4ff2ee96",
+            "type": "bollard",
+            "description": "Light bare or built patch at the lower-left edge, possibly a roof or cleared ground.",
+            "confidence": 0.192
+          },
+          {
+            "id": "ent-8f2382a1cb",
+            "type": "tree",
+            "description": "Big tree trunk at the back of the left footpath, base on the walkway.",
+            "confidence": 0.32
+          },
+          {
+            "id": "ent-928c28bcbd",
+            "type": "parked_vehicle",
+            "description": "Yellow auto-rickshaw close to the camera at the right edge, standing at the kerb.",
+            "confidence": 0.473
+          },
+          {
+            "id": "ent-9336c13303",
+            "type": "parked_vehicle",
+            "description": "White car stopped near the left kerb in the carriageway.",
+            "confidence": 0.518
+          },
+          {
+            "id": "ent-9514f3838c",
+            "type": "parked_vehicle",
+            "description": "Dark grey car parked at the left kerb beside the footpath.",
+            "confidence": 0.79
+          },
+          {
+            "id": "ent-98206a827b",
+            "type": "parked_vehicle",
+            "description": "Dark grey hatchback parked along the left kerb, taking the edge of the carriageway beside the footpath.",
+            "confidence": 0.539
+          },
+          {
+            "id": "ent-9c4e2a2574",
+            "type": "tree",
+            "description": "Large tree trunk at the footpath edge with a heavy canopy over the walkway.",
+            "confidence": 0.327
+          },
+          {
+            "id": "ent-9f86b1275b",
+            "type": "parked_vehicle",
+            "description": "A row of parked two-wheelers along the right side kerb.",
+            "confidence": 0.483
+          },
+          {
+            "id": "ent-a027d9aba4",
+            "type": "parked_vehicle",
+            "description": "White car stopped on the carriageway close to the kerb.",
+            "confidence": 0.738
+          },
+          {
+            "id": "ent-a35cb992e4",
+            "type": "bollard",
+            "description": "Short black bollards along the right footpath edge.",
+            "confidence": 0.49
+          },
+          {
+            "id": "ent-a9577ba03e",
+            "type": "pole",
+            "description": "Slim lamp pole on the footpath edge.",
+            "confidence": 0.265
+          },
+          {
+            "id": "ent-ad671a666d",
+            "type": "parked_vehicle",
+            "description": "Red car parked at the right edge, beside the footpath.",
+            "confidence": 0.627
+          },
+          {
+            "id": "ent-aed418bf56",
+            "type": "parked_vehicle",
+            "description": "White car on the carriageway close behind the camera.",
+            "confidence": 0.686
+          },
+          {
+            "id": "ent-b1b543216b",
+            "type": "bollard",
+            "description": "Row of black bollards and orange cones separating the footpath from the road.",
+            "confidence": 0.261
+          },
+          {
+            "id": "ent-b676ca3168",
+            "type": "tree",
+            "description": "Tree trunk standing on the right footpath with exposed roots.",
+            "confidence": 0.616
+          },
+          {
+            "id": "ent-b6fc12c6ab",
+            "type": "parked_vehicle",
+            "description": "Dark car parked near the left kerb ahead, beside the footpath.",
+            "confidence": 0.373
+          },
+          {
+            "id": "ent-b7035c2ac0",
+            "type": "parked_vehicle",
+            "description": "Red hatchback parked at left kerb, very close to the camera.",
+            "confidence": 0.805
+          },
+          {
+            "id": "ent-c28fe6f3f6",
+            "type": "parked_vehicle",
+            "description": "Maroon SUV parked on the carriageway at the footpath edge.",
+            "confidence": 0.79
+          },
+          {
+            "id": "ent-c2ba8307fc",
+            "type": "bollard",
+            "description": "Row of black bollards at the edge of the footpath in front of the red shopfront.",
+            "confidence": 0.442
+          },
+          {
+            "id": "ent-cb776b340c",
+            "type": "pole",
+            "description": "Tall grey lamp or utility pole at the left edge of the footpath.",
+            "confidence": 0.278
+          },
+          {
+            "id": "ent-d22f709348",
+            "type": "parked_vehicle",
+            "description": "Yellow and green auto-rickshaw parked at the left kerb.",
+            "confidence": 0.569
+          },
+          {
+            "id": "ent-d6a10173dc",
+            "type": "parked_vehicle",
+            "description": "Motorcycles parked on the left near the compound wall.",
+            "confidence": 0.425
+          },
+          {
+            "id": "ent-e09f48a771",
+            "type": "parked_vehicle",
+            "description": "White hatchback parked along the left kerb, partly on the footpath edge.",
+            "confidence": 0.86
+          },
+          {
+            "id": "ent-e1ae113024",
+            "type": "signboard",
+            "description": "A-frame signboard standing on the footpath beside the tree pit.",
+            "confidence": 0.488
+          },
+          {
+            "id": "ent-e563609b91",
+            "type": "pole",
+            "description": "Street lamp pole with arm on the left footpath edge.",
+            "confidence": 0.282
+          },
+          {
+            "id": "ent-e9391398e0",
+            "type": "bin",
+            "description": "Small dark bin near the compound wall on the footpath.",
+            "confidence": 0.445
+          },
+          {
+            "id": "ent-ec578689fd",
+            "type": "bollard",
+            "description": "Row of short black bollards along the edge of the left footpath.",
+            "confidence": 0.27
+          },
+          {
+            "id": "ent-eea38a2974",
+            "type": "parked_vehicle",
+            "description": "Black SUV parked along the left kerb, close to the footpath edge.",
+            "confidence": 0.793
+          },
+          {
+            "id": "ent-f360db45bb",
+            "type": "tree",
+            "description": "Massive tree trunk at right footpath edge, base on the walkway.",
+            "confidence": 0.643
+          },
+          {
+            "id": "ent-f4e3dcdb0e",
+            "type": "bollard",
+            "description": "Row of black bollards along the footpath edge, leaving the walkway open behind them.",
+            "confidence": 0.678
+          },
+          {
+            "id": "ent-f7a4de8f64",
+            "type": "parked_vehicle",
+            "description": "Green and yellow auto-rickshaw on the carriageway.",
+            "confidence": 0.458
+          },
+          {
+            "id": "ent-fa677d9429",
+            "type": "parked_vehicle",
+            "description": "White sedan stopped next to the right kerb.",
+            "confidence": 0.915
+          }
+        ],
+        "changed": [],
+        "removed": [
+          {
+            "id": "ent-7bb5665f12",
+            "what": "first recorded as removed"
+          },
+          {
+            "id": "ent-90f78777e7",
+            "what": "first recorded as removed"
+          },
+          {
+            "id": "ent-c30db00d42",
+            "what": "first recorded as removed"
+          }
+        ],
+        "contradicted": [
+          {
+            "id": "ctr-0952d33f",
+            "description": "bollard and parked_vehicle detected 3.7 m apart near s=66.4 m."
+          },
+          {
+            "id": "ctr-0c2d7dcd",
+            "description": "pole ent-e563609b91 was seen in 1 view(s) but not found in 2 others that should show it."
+          },
+          {
+            "id": "ctr-157f4d99",
+            "description": "pole ent-a9577ba03e was seen in 1 view(s) but not found in 2 others that should show it."
+          },
+          {
+            "id": "ctr-18e3380c",
+            "description": "bollard ent-ec578689fd was seen in 1 view(s) but not found in 2 others that should show it."
+          },
+          {
+            "id": "ctr-1d5b42cc",
+            "description": "parked_vehicle and tree detected 2.4 m apart near s=99.1 m."
+          },
+          {
+            "id": "ctr-26ed6735",
+            "description": "parked_vehicle ent-2b5265f98e was seen in 1 view(s) but not found in 2 others that should show it."
+          },
+          {
+            "id": "ctr-3c8a3d88",
+            "description": "parked_vehicle ent-b6fc12c6ab was seen in 1 view(s) but not found in 1 others that should show it."
+          },
+          {
+            "id": "ctr-4d117c6d",
+            "description": "bollard ent-c2ba8307fc was seen in 1 view(s) but not found in 2 others that should show it."
+          },
+          {
+            "id": "ctr-4e9cfee3",
+            "description": "pole ent-cb776b340c was seen in 2 view(s) but not found in 2 others that should show it."
+          },
+          {
+            "id": "ctr-52f1a80e",
+            "description": "parked_vehicle ent-fa677d9429: attribute 'colour' is 'white' in some views and 'dark blue' in others."
+          },
+          {
+            "id": "ctr-549c9079",
+            "description": "parked_vehicle ent-4f38ae229a was seen in 1 view(s) but not found in 2 others that should show it."
+          },
+          {
+            "id": "ctr-562cbe9e",
+            "description": "bollard and tree detected 1.2 m apart near s=66.5 m."
+          },
+          {
+            "id": "ctr-6e7c7b45",
+            "description": "bollard ent-8d4ff2ee96 was seen in 2 view(s) but not found in 1 others that should show it."
+          },
+          {
+            "id": "ctr-750a9541",
+            "description": "parked_vehicle ent-f7a4de8f64 was seen in 1 view(s) but not found in 2 others that should show it."
+          },
+          {
+            "id": "ctr-773d77e7",
+            "description": "wall ent-55e799c027 was seen in 1 view(s) but not found in 2 others that should show it."
+          },
+          {
+            "id": "ctr-908c84c6",
+            "description": "parked_vehicle ent-d6a10173dc was seen in 2 view(s) but not found in 1 others that should show it."
+          },
+          {
+            "id": "ctr-a97a7d93",
+            "description": "parked_vehicle ent-928c28bcbd was seen in 1 view(s) but not found in 1 others that should show it."
+          },
+          {
+            "id": "ctr-ad0ca091",
+            "description": "tree ent-8f2382a1cb was seen in 1 view(s) but not found in 2 others that should show it."
+          },
+          {
+            "id": "ctr-ae71c033",
+            "description": "parked_vehicle ent-302ae8da09 was seen in 2 view(s) but not found in 2 others that should show it."
+          },
+          {
+            "id": "ctr-b2c679e7",
+            "description": "tree ent-4a0a78a8cb was seen in 1 view(s) but not found in 3 others that should show it."
+          },
+          {
+            "id": "ctr-cda3c35b",
+            "description": "parked_vehicle and tree detected 2.2 m apart near s=23.1 m."
+          },
+          {
+            "id": "ctr-ce8576d8",
+            "description": "bollard ent-b1b543216b was seen in 1 view(s) but not found in 2 others that should show it."
+          },
+          {
+            "id": "ctr-dc00389f",
+            "description": "tree ent-9c4e2a2574 was seen in 1 view(s) but not found in 2 others that should show it."
+          },
+          {
+            "id": "ctr-dd2d19c8",
+            "description": "tree and bollard detected 1.7 m apart near s=14.6 m."
+          },
+          {
+            "id": "ctr-e8744d0e",
+            "description": "parked_vehicle ent-420622c05c was seen in 1 view(s) but not found in 2 others that should show it."
+          },
+          {
+            "id": "ctr-f0b88109",
+            "description": "signboard ent-73cd970b11 was seen in 1 view(s) but not found in 1 others that should show it."
+          },
+          {
+            "id": "ctr-f8c5733f",
+            "description": "parked_vehicle ent-98206a827b: attribute 'colour' is 'dark grey' in some views and 'black' in others."
+          }
+        ],
+        "unchanged_count": 0
+      },
+      "profile_changes": [
+        "0-5 m: unknown (centre) added",
+        "5-28 m: footpath_state unknown \u2192 encroached; unknown (centre) added",
+        "28-35 m: footpath_state unknown \u2192 intact; unknown (centre) added",
+        "35-92 m: footpath_state unknown \u2192 encroached; unknown (centre) added",
+        "92-98 m: footpath_state unknown \u2192 encroached; forecourt (right) edge moved 4.5 m; forecourt (right) material unknown \u2192 paver; unknown (centre) added",
+        "98-100 m: footpath_state unknown \u2192 encroached; forecourt (right) edge moved 5.6 m; forecourt (right) material unknown \u2192 paver; unknown (centre) added"
+      ],
+      "fidelity": {
+        "before": {
+          "overall": 0.0,
+          "histogram_m": {
+            "L0": 100.0
+          }
+        },
+        "after": {
+          "overall": 1.0,
+          "histogram_m": {
+            "L1": 100.0
+          }
+        },
+        "improved_intervals": [
+          {
+            "s_from": 0.0,
+            "s_to": 100.0,
+            "from": "L0",
+            "to": "L1"
+          }
+        ]
+      },
+      "confidence_changes": [],
+      "cost": {
+        "anthropic_usd": 0.321537,
+        "anthropic_calls": 6,
+        "input_tokens": 40584,
+        "output_tokens": 13319,
+        "google_new_requests": 23,
+        "google_cached": 1,
+        "google_est_usd": 0.146,
+        "total_usd": 0.4675,
+        "run_cap_usd": 1.0,
+        "budget_remaining_usd": 49.6785
+      },
+      "warnings": [
+        "15 detection(s) had a ground-plane range that disagrees with the model's estimate."
+      ],
+      "degraded": false,
+      "summary": "Run added 23 new images (1 of 24 images were already cached) and created model v1 from v0: 56 new objects, 0 changed, 3 removed, 27 newly contradicted; fidelity L0 -> L1. Cost $0.47. 1 warning raised.",
+      "suggestions": [
+        "Metres 0-100 are the least certain (seen from one viewpoint only; 35 objects below 60 % confidence; 27 unresolved conflicts).",
+        "A photo facing left or right from another spot around 0-100 m would raise it to L2.",
+        "Review the warnings, then run again to pick up anything that was skipped."
+      ]
+    },
+    "anthropic_usd": 0.321537,
+    "anthropic_calls": 6,
+    "google": {
+      "new": 34,
+      "cached": 1
+    },
+    "fidelity": {
+      "before": {
+        "overall": 0.0,
+        "histogram_m": {
+          "L0": 100.0
+        }
+      },
+      "after": {
+        "overall": 1.0,
+        "histogram_m": {
+          "L1": 100.0
+        }
+      },
+      "before_to_after_overall": [
+        0.0,
+        1.0
+      ]
+    },
+    "entity_counts": {
+      "total": 59,
+      "by_type": {
+        "bollard": 12,
+        "tree": 11,
+        "other": 1,
+        "parked_vehicle": 28,
+        "signboard": 2,
+        "bin": 1,
+        "pole": 3,
+        "wall": 1
+      }
+    },
+    "head_version": 1
+  },
+  "run2": {
+    "run_id": "ca4b6153-2535-4b11-acc1-e2a404ae8f75",
+    "report": {
+      "run_id": "ca4b6153-2535-4b11-acc1-e2a404ae8f75",
+      "segment_slug": "100-feet-road-indiranagar-canonical-demo-e",
+      "mode": "generate",
+      "base_version": 1,
+      "result_version": 2,
+      "version_created": true,
+      "started_at": "2026-10-30T15:27:36.115765Z",
+      "finished_at": "2026-10-30T15:28:53.684506Z",
+      "duration_s": 77.6,
+      "images": {
+        "planned": 44,
+        "used_total": 44,
+        "new": 20,
+        "cached": 24,
+        "fused_this_run": 20,
+        "by_source": {
+          "google_static_maps": 4,
+          "google_streetview": 40
+        },
+        "by_kind": {
+          "satellite_crop": 3,
+          "satellite_overview": 1,
+          "streetview": 40
+        },
+        "by_view": {
+          "back": 10,
+          "forward": 10,
+          "left": 10,
+          "right": 10
+        },
+        "new_observation_ids": [
+          "0dd48a9e-ba5a-4286-a1f7-470fa7ee8f59",
+          "115db1c1-d37f-4667-99ae-680d699c6021",
+          "1892a05f-408c-47b4-8fc1-ffe28ff5c614",
+          "18d1bef0-db59-489a-a45b-c8c0eeafe1b8",
+          "355779e4-6656-47cf-9311-e44270a79e48",
+          "4e56cf36-8401-4377-9cfb-b45be73b75a9",
+          "5b324f56-7f9d-4f1c-b816-844c1e695d8e",
+          "689b5f24-663b-4750-9850-0f6926e73827",
+          "7d6dc863-2b2e-4808-9afa-7a5b31ccb645",
+          "83596de8-11eb-42f7-8320-b9550691df36",
+          "84833d16-baca-4f7c-993f-94c649ef831c",
+          "94bbc0ed-74fe-4fde-af98-1358df34f6be",
+          "b0d3fa0b-4f12-4c40-a2f8-a013e487dbb2",
+          "c36e289a-cd8d-4c54-b06c-991d1cdc0d9c",
+          "d92cb207-cce7-4538-a784-ba0b9dbe5847",
+          "e9349b8a-1340-4044-ba2d-ba270702b0c0",
+          "eb85e6f3-c758-43b4-a674-3c913ae09d54",
+          "eb9124f0-609c-487d-9cdb-9eb6fdcf53ce",
+          "eb9c9993-b8d3-49ed-8aa7-b37af4345783",
+          "fcff2755-9ac4-44cb-8e07-c4a977fe96a3"
+        ],
+        "skipped": []
+      },
+      "detections": {
+        "new": [
+          {
+            "id": "ent-0908407e50",
+            "type": "bollard",
+            "description": "Row of black bollards along the footpath edge, spaced about 0.5 m apart.",
+            "confidence": 0.686
+          },
+          {
+            "id": "ent-323a2c5935",
+            "type": "tree",
+            "description": "Tree trunk in front of the red shop, on the footpath.",
+            "confidence": 0.452
+          },
+          {
+            "id": "ent-3a9742868e",
+            "type": "tree",
+            "description": "Large tree trunk and canopy over the right footpath.",
+            "confidence": 0.74
+          },
+          {
+            "id": "ent-3ac367a72e",
+            "type": "parked_vehicle",
+            "description": "Row of two-wheelers parked in front of the shops on the right-hand footpath.",
+            "confidence": 0.577
+          },
+          {
+            "id": "ent-47b5aa99e7",
+            "type": "debris",
+            "description": "Litter and dry leaves piled in the tree pit beside the footpath.",
+            "confidence": 0.585
+          },
+          {
+            "id": "ent-4f5381772c",
+            "type": "parked_vehicle",
+            "description": "Group of scooters parked in front of the red shop.",
+            "confidence": 0.369
+          },
+          {
+            "id": "ent-5273861f6a",
+            "type": "tree",
+            "description": "Large tree with a thick trunk on the footpath and a wide low canopy; it narrows the walkway.",
+            "confidence": 0.791
+          },
+          {
+            "id": "ent-555d5f0e5c",
+            "type": "parked_vehicle",
+            "description": "Dark blue sedan parked on the right side.",
+            "confidence": 0.612
+          },
+          {
+            "id": "ent-565b4cebd7",
+            "type": "tree",
+            "description": "Big tree on the far side with a wide canopy.",
+            "confidence": 0.558
+          },
+          {
+            "id": "ent-5dba044ed7",
+            "type": "other",
+            "description": "Grey utility box on the footpath, next to a pedestrian.",
+            "confidence": 0.311
+          },
+          {
+            "id": "ent-5e6304b91a",
+            "type": "bollard",
+            "description": "Group of black bollards beside the tree trunk.",
+            "confidence": 0.585
+          },
+          {
+            "id": "ent-604be251ed",
+            "type": "bollard",
+            "description": "Row of short black bollards along the footpath edge at the shopfront.",
+            "confidence": 0.493
+          },
+          {
+            "id": "ent-662d940d16",
+            "type": "parked_vehicle",
+            "description": "Motorcycles parked on the footpath near the shop entrance.",
+            "confidence": 0.548
+          },
+          {
+            "id": "ent-7694c41c70",
+            "type": "pole",
+            "description": "Metal pole at the footpath edge in front of the shop.",
+            "confidence": 0.59
+          },
+          {
+            "id": "ent-7b0bec0104",
+            "type": "tree",
+            "description": "Tree trunk by the compound wall at the footpath.",
+            "confidence": 0.521
+          },
+          {
+            "id": "ent-7ff1d5b0bf",
+            "type": "tree",
+            "description": "Large leaning tree trunk growing from the footpath, taking up part of the walkway.",
+            "confidence": 0.738
+          },
+          {
+            "id": "ent-81540a9169",
+            "type": "parked_vehicle",
+            "description": "Black scooter parked on the paved surface near the footpath.",
+            "confidence": 0.686
+          },
+          {
+            "id": "ent-85df102113",
+            "type": "parked_vehicle",
+            "description": "Motorcycle parked on the paved area in front of the shop.",
+            "confidence": 0.566
+          },
+          {
+            "id": "ent-8d72dfe351",
+            "type": "parked_vehicle",
+            "description": "Grey hatchback parked along the opposite kerb.",
+            "confidence": 0.635
+          },
+          {
+            "id": "ent-8fb3413672",
+            "type": "wall",
+            "description": "White compound wall behind the footpath.",
+            "confidence": 0.495
+          },
+          {
+            "id": "ent-90aa8f26af",
+            "type": "parked_vehicle",
+            "description": "White car in the foreground on the carriageway.",
+            "confidence": 0.686
+          },
+          {
+            "id": "ent-917ca583e1",
+            "type": "tree",
+            "description": "Large tree trunk with a wide canopy at the footpath edge, with branches overhead.",
+            "confidence": 0.851
+          },
+          {
+            "id": "ent-9dc9c8951d",
+            "type": "parked_vehicle",
+            "description": "Motorcycle with a rider in a blue shirt, parked on the paved area.",
+            "confidence": 0.585
+          },
+          {
+            "id": "ent-9dffb90c48",
+            "type": "debris",
+            "description": "Litter and dry vegetation on an unpaved strip of the footpath.",
+            "confidence": 0.536
+          },
+          {
+            "id": "ent-a2c20cf215",
+            "type": "parked_vehicle",
+            "description": "White pickup parked at the near kerb on the carriageway.",
+            "confidence": 0.686
+          },
+          {
+            "id": "ent-a992c13850",
+            "type": "parked_vehicle",
+            "description": "Small cream cargo truck parked on the carriageway edge on the right.",
+            "confidence": 0.715
+          },
+          {
+            "id": "ent-ba563696ae",
+            "type": "parked_vehicle",
+            "description": "Orange small car parked beside the footpath.",
+            "confidence": 0.492
+          },
+          {
+            "id": "ent-bb4527fab3",
+            "type": "pole",
+            "description": "Tall metal pole standing at the footpath edge.",
+            "confidence": 0.686
+          },
+          {
+            "id": "ent-c9a4674a05",
+            "type": "gate",
+            "description": "Black metal gate to a property on the footpath edge.",
+            "confidence": 0.493
+          },
+          {
+            "id": "ent-cc8a933b2d",
+            "type": "parked_vehicle",
+            "description": "Black SUV parked in the open space beyond the footpath.",
+            "confidence": 0.491
+          },
+          {
+            "id": "ent-cd61ae042f",
+            "type": "parked_vehicle",
+            "description": "Cluster of scooters and motorcycles parked at the right footpath edge by the tree.",
+            "confidence": 0.576
+          },
+          {
+            "id": "ent-d04373177b",
+            "type": "parked_vehicle",
+            "description": "Yellow-orange car parked further along in front of the shop.",
+            "confidence": 0.316
+          },
+          {
+            "id": "ent-d6f9ac14e7",
+            "type": "debris",
+            "description": "Litter and a broken wooden board lie on the footpath edge near the tree.",
+            "confidence": 0.488
+          },
+          {
+            "id": "ent-d7782180f8",
+            "type": "pole",
+            "description": "Grey utility pole at the footpath edge on the left.",
+            "confidence": 0.495
+          },
+          {
+            "id": "ent-ec87fde066",
+            "type": "debris",
+            "description": "Orange and white traffic cone placed beside the bollards.",
+            "confidence": 0.488
+          }
+        ],
+        "changed": [
+          {
+            "id": "ent-02833b40e3",
+            "what": "confidence 0.514 -> 0.621, position [23.75, 4.95] -> [23.84, 5.53]"
+          },
+          {
+            "id": "ent-10868556db",
+            "what": "confidence 0.488 -> 0.366, state present -> disputed"
+          },
+          {
+            "id": "ent-1675b908b9",
+            "what": "confidence 0.444 -> 0.563, description A row of short black bollards lines the left footpath edge in the distance. They leave the walkway open behind them. -> Row of black bollards along the footpath edge in front of the shops., position [100.0, 12.06] -> [100.0, 12.61]"
+          },
+          {
+            "id": "ent-2b5265f98e",
+            "what": "position [35.16, 7.29] -> [33.83, 7.9]"
+          },
+          {
+            "id": "ent-2de36b713c",
+            "what": "confidence 0.613 -> 0.49, state present -> disputed"
+          },
+          {
+            "id": "ent-302ae8da09",
+            "what": "confidence 0.125 -> 0.211"
+          },
+          {
+            "id": "ent-36be6e1d03",
+            "what": "confidence 0.635 -> 0.513"
+          },
+          {
+            "id": "ent-42f28861ea",
+            "what": "confidence 0.504 -> 0.382, state present -> disputed"
+          },
+          {
+            "id": "ent-442d777dba",
+            "what": "confidence 0.672 -> 0.739, position [26.82, 9.99] -> [28.01, 11.01]"
+          },
+          {
+            "id": "ent-4676aa9f21",
+            "what": "confidence 0.57 -> 0.783, position [95.06, 0.61] -> [96.31, -1.58]"
+          },
+          {
+            "id": "ent-490d180c5e",
+            "what": "confidence 0.726 -> 0.617"
+          },
+          {
+            "id": "ent-4f38ae229a",
+            "what": "confidence 0.352 -> 0.248"
+          },
+          {
+            "id": "ent-55005fb3d8",
+            "what": "confidence 0.738 -> 0.835, position [0.83, 5.27] -> [1.35, 5.77], subtype None -> trunk"
+          },
+          {
+            "id": "ent-611fd2adb2",
+            "what": "confidence 0.803 -> 0.896, position [87.86, 7.27] -> [88.29, 6.69]"
+          },
+          {
+            "id": "ent-61a59318a0",
+            "what": "confidence 0.496 -> 0.374, state present -> disputed"
+          },
+          {
+            "id": "ent-666ca3f8db",
+            "what": "confidence 0.603 -> 0.479, state present -> disputed"
+          },
+          {
+            "id": "ent-73cd970b11",
+            "what": "confidence 0.366 -> 0.259"
+          },
+          {
+            "id": "ent-73f2efc87b",
+            "what": "confidence 0.679 -> 0.562"
+          },
+          {
+            "id": "ent-73f8882abc",
+            "what": "confidence 0.588 -> 0.464, state present -> disputed"
+          },
+          {
+            "id": "ent-81689c0a4e",
+            "what": "confidence 0.606 -> 0.483, state present -> disputed"
+          },
+          {
+            "id": "ent-8a48109fd4",
+            "what": "confidence 0.53 -> 0.406, state present -> disputed"
+          },
+          {
+            "id": "ent-8f2382a1cb",
+            "what": "confidence 0.32 -> 0.255, description Big tree trunk at the back of the left footpath, base on the walkway. -> Orange traffic cone on the footpath edge., position [82.77, 9.19] -> [83.69, 10.17]"
+          },
+          {
+            "id": "ent-928c28bcbd",
+            "what": "confidence 0.473 -> 0.661, position [84.61, 3.35] -> [84.48, 5.0], state disputed -> present"
+          },
+          {
+            "id": "ent-9336c13303",
+            "what": "confidence 0.518 -> 0.659, position [66.39, 4.57] -> [67.11, 4.38]"
+          },
+          {
+            "id": "ent-9514f3838c",
+            "what": "position [37.71, 4.54] -> [37.17, 4.69]"
+          },
+          {
+            "id": "ent-98206a827b",
+            "what": "confidence 0.539 -> 0.619, position [52.3, 3.28] -> [52.45, 3.69]"
+          },
+          {
+            "id": "ent-9c4e2a2574",
+            "what": "confidence 0.327 -> 0.228"
+          },
+          {
+            "id": "ent-9f86b1275b",
+            "what": "confidence 0.483 -> 0.362, state present -> disputed"
+          },
+          {
+            "id": "ent-a027d9aba4",
+            "what": "confidence 0.738 -> 0.631"
+          },
+          {
+            "id": "ent-a35cb992e4",
+            "what": "confidence 0.49 -> 0.369, state present -> disputed"
+          },
+          {
+            "id": "ent-a9577ba03e",
+            "what": "confidence 0.265 -> 0.179"
+          },
+          {
+            "id": "ent-ad671a666d",
+            "what": "confidence 0.627 -> 0.382, state present -> disputed"
+          },
+          {
+            "id": "ent-aed418bf56",
+            "what": "confidence 0.686 -> 0.57"
+          },
+          {
+            "id": "ent-b1b543216b",
+            "what": "confidence 0.261 -> 0.176"
+          },
+          {
+            "id": "ent-b676ca3168",
+            "what": "confidence 0.616 -> 0.777, description Tree trunk standing on the right footpath with exposed roots. -> Big leaning tree with a thick trunk on the footpath, with a low branch spreading over the walkway., position [56.57, 8.32] -> [56.98, 6.84]"
+          },
+          {
+            "id": "ent-b6fc12c6ab",
+            "what": "confidence 0.373 -> 0.265"
+          },
+          {
+            "id": "ent-b7035c2ac0",
+            "what": "confidence 0.805 -> 0.881"
+          },
+          {
+            "id": "ent-c28fe6f3f6",
+            "what": "confidence 0.79 -> 0.871, position [7.42, 4.72] -> [6.69, 4.89]"
+          },
+          {
+            "id": "ent-c2ba8307fc",
+            "what": "confidence 0.442 -> 0.325"
+          },
+          {
+            "id": "ent-d22f709348",
+            "what": "confidence 0.569 -> 0.445, state present -> disputed"
+          },
+          {
+            "id": "ent-d6a10173dc",
+            "what": "confidence 0.425 -> 0.57, position [46.54, 5.67] -> [46.24, 5.39], state disputed -> present"
+          },
+          {
+            "id": "ent-e09f48a771",
+            "what": "position [41.49, 5.23] -> [42.09, 5.37]"
+          },
+          {
+            "id": "ent-e1ae113024",
+            "what": "confidence 0.488 -> 0.366, state present -> disputed"
+          },
+          {
+            "id": "ent-e563609b91",
+            "what": "confidence 0.282 -> 0.192"
+          },
+          {
+            "id": "ent-e9391398e0",
+            "what": "confidence 0.445 -> 0.327, state present -> disputed"
+          },
+          {
+            "id": "ent-ec578689fd",
+            "what": "confidence 0.27 -> 0.323, position [65.18, 9.3] -> [63.88, 9.67]"
+          },
+          {
+            "id": "ent-eea38a2974",
+            "what": "confidence 0.793 -> 0.856, position [18.66, 4.16] -> [18.33, 4.52]"
+          },
+          {
+            "id": "ent-f360db45bb",
+            "what": "confidence 0.643 -> 0.797, description Massive tree trunk at right footpath edge, base on the walkway. -> Tree with a big trunk and a cut-off limb on the footpath edge., position [66.47, 9.44] -> [69.08, 8.69]"
+          },
+          {
+            "id": "ent-f4e3dcdb0e",
+            "what": "confidence 0.678 -> 0.56"
+          },
+          {
+            "id": "ent-f7a4de8f64",
+            "what": "confidence 0.458 -> 0.339"
+          },
+          {
+            "id": "ent-fa677d9429",
+            "what": "position [72.11, 5.21] -> [73.29, 5.33]"
+          }
+        ],
+        "removed": [
+          {
+            "id": "ent-4a0a78a8cb",
+            "what": "not seen in 5 later views; confidence 0.32 \u2192 0.15"
+          },
+          {
+            "id": "ent-55e799c027",
+            "what": "not seen in 3 later views; confidence 0.21 \u2192 0.14"
+          },
+          {
+            "id": "ent-8d4ff2ee96",
+            "what": "not seen in 2 later views; confidence 0.19 \u2192 0.11"
+          },
+          {
+            "id": "ent-cb776b340c",
+            "what": "not seen in 4 later views; confidence 0.28 \u2192 0.12"
+          }
+        ],
+        "contradicted": [
+          {
+            "id": "ctr-0715603e",
+            "description": "tree and parked_vehicle detected 2.1 m apart near s=46.5 m."
+          },
+          {
+            "id": "ctr-11ce2dfd",
+            "description": "pole and bollard detected 2.0 m apart near s=14.6 m."
+          },
+          {
+            "id": "ctr-14c1f439",
+            "description": "tree ent-323a2c5935 was seen in 1 view(s) but not found in 1 others that should show it."
+          },
+          {
+            "id": "ctr-19c57421",
+            "description": "parked_vehicle and tree detected 4.0 m apart near s=24.8 m."
+          },
+          {
+            "id": "ctr-2017ebb4",
+            "description": "signboard ent-e1ae113024 was seen in 1 view(s) but not found in 1 others that should show it."
+          },
+          {
+            "id": "ctr-2cef54bf",
+            "description": "tree and parked_vehicle detected 1.8 m apart near s=47.1 m."
+          },
+          {
+            "id": "ctr-32059588",
+            "description": "tree and pole detected 0.3 m apart near s=15.2 m."
+          },
+          {
+            "id": "ctr-3ae93c5e",
+            "description": "bollard ent-2de36b713c was seen in 2 view(s) but not found in 2 others that should show it."
+          },
+          {
+            "id": "ctr-3d27c59a",
+            "description": "bollard ent-a35cb992e4 was seen in 1 view(s) but not found in 1 others that should show it."
+          },
+          {
+            "id": "ctr-41a202b7",
+            "description": "bollard ent-666ca3f8db was seen in 1 view(s) but not found in 1 others that should show it."
+          },
+          {
+            "id": "ctr-456e1e0e",
+            "description": "tree and debris detected 3.5 m apart near s=26.3 m."
+          },
+          {
+            "id": "ctr-470ba668",
+            "description": "bollard and tree detected 2.5 m apart near s=69.3 m."
+          },
+          {
+            "id": "ctr-4b1159ad",
+            "description": "tree ent-10868556db was seen in 1 view(s) but not found in 1 others that should show it."
+          },
+          {
+            "id": "ctr-66bf35c6",
+            "description": "bollard ent-42f28861ea was seen in 2 view(s) but not found in 2 others that should show it."
+          },
+          {
+            "id": "ctr-6c810464",
+            "description": "tree ent-73f8882abc was seen in 1 view(s) but not found in 1 others that should show it."
+          },
+          {
+            "id": "ctr-793996b7",
+            "description": "parked_vehicle and tree detected 1.0 m apart near s=56.8 m."
+          },
+          {
+            "id": "ctr-86fa0c66",
+            "description": "parked_vehicle and debris detected 3.0 m apart near s=25.3 m."
+          },
+          {
+            "id": "ctr-99b69c8d",
+            "description": "parked_vehicle ent-ad671a666d was seen in 2 view(s) but not found in 2 others that should show it."
+          },
+          {
+            "id": "ctr-a3569efd",
+            "description": "parked_vehicle ent-9f86b1275b was seen in 2 view(s) but not found in 1 others that should show it."
+          },
+          {
+            "id": "ctr-ada7411e",
+            "description": "bollard and parked_vehicle detected 3.1 m apart near s=57.3 m."
+          },
+          {
+            "id": "ctr-b3482a49",
+            "description": "parked_vehicle ent-4f5381772c was seen in 1 view(s) but not found in 1 others that should show it."
+          },
+          {
+            "id": "ctr-b8455a16",
+            "description": "tree ent-8a48109fd4 was seen in 1 view(s) but not found in 1 others that should show it."
+          },
+          {
+            "id": "ctr-c0138028",
+            "description": "tree ent-81689c0a4e was seen in 1 view(s) but not found in 1 others that should show it."
+          },
+          {
+            "id": "ctr-c1c00e8a",
+            "description": "A parked_vehicle blocks the footpath at 79 m, which is recorded as 'intact'."
+          },
+          {
+            "id": "ctr-c2b74be3",
+            "description": "bollard ent-61a59318a0 was seen in 1 view(s) but not found in 1 others that should show it."
+          },
+          {
+            "id": "ctr-c96a076f",
+            "description": "parked_vehicle ent-d04373177b was seen in 1 view(s) but not found in 1 others that should show it."
+          },
+          {
+            "id": "ctr-cf87848f",
+            "description": "parked_vehicle ent-d22f709348 was seen in 1 view(s) but not found in 1 others that should show it."
+          },
+          {
+            "id": "ctr-e1bf70aa",
+            "description": "other ent-5dba044ed7 was seen in 1 view(s) but not found in 1 others that should show it."
+          },
+          {
+            "id": "ctr-ecc3e4ab",
+            "description": "A parked_vehicle blocks the footpath at 73 m, which is recorded as 'intact'."
+          },
+          {
+            "id": "ctr-f883c5f0",
+            "description": "bollard and tree detected 2.1 m apart near s=57.5 m."
+          },
+          {
+            "id": "ctr-f97360fb",
+            "description": "bin ent-e9391398e0 was seen in 1 view(s) but not found in 1 others that should show it."
+          },
+          {
+            "id": "ctr-fa909cec",
+            "description": "bollard and tree detected 3.0 m apart near s=26.9 m."
+          }
+        ],
+        "unchanged_count": 4
+      },
+      "profile_changes": [
+        "0-5 m: footpath_state unknown \u2192 encroached",
+        "28-35 m: footpath_state intact \u2192 encroached",
+        "52-60 m: footpath_state encroached \u2192 intact",
+        "72-80 m: footpath_state encroached \u2192 intact"
+      ],
+      "fidelity": {
+        "before": {
+          "overall": 1.0,
+          "histogram_m": {
+            "L1": 100.0
+          }
+        },
+        "after": {
+          "overall": 2.0,
+          "histogram_m": {
+            "L2": 100.0
+          }
+        },
+        "improved_intervals": [
+          {
+            "s_from": 0.0,
+            "s_to": 100.0,
+            "from": "L1",
+            "to": "L2"
+          }
+        ]
+      },
+      "confidence_changes": [
+        {
+          "entity_id": "ent-02833b40e3",
+          "type": "parked_vehicle",
+          "before": 0.514,
+          "after": 0.621,
+          "reason": "1 more supporting view"
+        },
+        {
+          "entity_id": "ent-10868556db",
+          "type": "tree",
+          "before": 0.488,
+          "after": 0.366,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-1675b908b9",
+          "type": "bollard",
+          "before": 0.444,
+          "after": 0.563,
+          "reason": "1 more supporting view"
+        },
+        {
+          "entity_id": "ent-2de36b713c",
+          "type": "bollard",
+          "before": 0.613,
+          "after": 0.49,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-302ae8da09",
+          "type": "parked_vehicle",
+          "before": 0.125,
+          "after": 0.211,
+          "reason": "3 more supporting views"
+        },
+        {
+          "entity_id": "ent-36be6e1d03",
+          "type": "parked_vehicle",
+          "before": 0.635,
+          "after": 0.513,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-42f28861ea",
+          "type": "bollard",
+          "before": 0.504,
+          "after": 0.382,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-442d777dba",
+          "type": "bollard",
+          "before": 0.672,
+          "after": 0.739,
+          "reason": "2 more supporting views"
+        },
+        {
+          "entity_id": "ent-4676aa9f21",
+          "type": "parked_vehicle",
+          "before": 0.57,
+          "after": 0.783,
+          "reason": "1 more supporting view"
+        },
+        {
+          "entity_id": "ent-490d180c5e",
+          "type": "tree",
+          "before": 0.726,
+          "after": 0.617,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-4f38ae229a",
+          "type": "parked_vehicle",
+          "before": 0.352,
+          "after": 0.248,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-55005fb3d8",
+          "type": "tree",
+          "before": 0.738,
+          "after": 0.835,
+          "reason": "1 more supporting view"
+        },
+        {
+          "entity_id": "ent-611fd2adb2",
+          "type": "parked_vehicle",
+          "before": 0.803,
+          "after": 0.896,
+          "reason": "1 more supporting view"
+        },
+        {
+          "entity_id": "ent-61a59318a0",
+          "type": "bollard",
+          "before": 0.496,
+          "after": 0.374,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-666ca3f8db",
+          "type": "bollard",
+          "before": 0.603,
+          "after": 0.479,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-73cd970b11",
+          "type": "signboard",
+          "before": 0.366,
+          "after": 0.259,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-73f2efc87b",
+          "type": "parked_vehicle",
+          "before": 0.679,
+          "after": 0.562,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-73f8882abc",
+          "type": "tree",
+          "before": 0.588,
+          "after": 0.464,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-81689c0a4e",
+          "type": "tree",
+          "before": 0.606,
+          "after": 0.483,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-8a48109fd4",
+          "type": "tree",
+          "before": 0.53,
+          "after": 0.406,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-8f2382a1cb",
+          "type": "tree",
+          "before": 0.32,
+          "after": 0.255,
+          "reason": "1 more supporting view"
+        },
+        {
+          "entity_id": "ent-928c28bcbd",
+          "type": "parked_vehicle",
+          "before": 0.473,
+          "after": 0.661,
+          "reason": "1 more supporting view"
+        },
+        {
+          "entity_id": "ent-9336c13303",
+          "type": "parked_vehicle",
+          "before": 0.518,
+          "after": 0.659,
+          "reason": "1 more supporting view"
+        },
+        {
+          "entity_id": "ent-98206a827b",
+          "type": "parked_vehicle",
+          "before": 0.539,
+          "after": 0.619,
+          "reason": "1 more supporting view"
+        },
+        {
+          "entity_id": "ent-9c4e2a2574",
+          "type": "tree",
+          "before": 0.327,
+          "after": 0.228,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-9f86b1275b",
+          "type": "parked_vehicle",
+          "before": 0.483,
+          "after": 0.362,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-a027d9aba4",
+          "type": "parked_vehicle",
+          "before": 0.738,
+          "after": 0.631,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-a35cb992e4",
+          "type": "bollard",
+          "before": 0.49,
+          "after": 0.369,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-a9577ba03e",
+          "type": "pole",
+          "before": 0.265,
+          "after": 0.179,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-ad671a666d",
+          "type": "parked_vehicle",
+          "before": 0.627,
+          "after": 0.382,
+          "reason": "2 views did not see it"
+        },
+        {
+          "entity_id": "ent-aed418bf56",
+          "type": "parked_vehicle",
+          "before": 0.686,
+          "after": 0.57,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-b1b543216b",
+          "type": "bollard",
+          "before": 0.261,
+          "after": 0.176,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-b676ca3168",
+          "type": "tree",
+          "before": 0.616,
+          "after": 0.777,
+          "reason": "1 more supporting view"
+        },
+        {
+          "entity_id": "ent-b6fc12c6ab",
+          "type": "parked_vehicle",
+          "before": 0.373,
+          "after": 0.265,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-b7035c2ac0",
+          "type": "parked_vehicle",
+          "before": 0.805,
+          "after": 0.881,
+          "reason": "1 more supporting view"
+        },
+        {
+          "entity_id": "ent-c28fe6f3f6",
+          "type": "parked_vehicle",
+          "before": 0.79,
+          "after": 0.871,
+          "reason": "1 more supporting view"
+        },
+        {
+          "entity_id": "ent-c2ba8307fc",
+          "type": "bollard",
+          "before": 0.442,
+          "after": 0.325,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-d22f709348",
+          "type": "parked_vehicle",
+          "before": 0.569,
+          "after": 0.445,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-d6a10173dc",
+          "type": "parked_vehicle",
+          "before": 0.425,
+          "after": 0.57,
+          "reason": "1 more supporting view"
+        },
+        {
+          "entity_id": "ent-e1ae113024",
+          "type": "signboard",
+          "before": 0.488,
+          "after": 0.366,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-e563609b91",
+          "type": "pole",
+          "before": 0.282,
+          "after": 0.192,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-e9391398e0",
+          "type": "bin",
+          "before": 0.445,
+          "after": 0.327,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-ec578689fd",
+          "type": "bollard",
+          "before": 0.27,
+          "after": 0.323,
+          "reason": "1 more supporting view"
+        },
+        {
+          "entity_id": "ent-eea38a2974",
+          "type": "parked_vehicle",
+          "before": 0.793,
+          "after": 0.856,
+          "reason": "1 more supporting view"
+        },
+        {
+          "entity_id": "ent-f360db45bb",
+          "type": "tree",
+          "before": 0.643,
+          "after": 0.797,
+          "reason": "1 more supporting view"
+        },
+        {
+          "entity_id": "ent-f4e3dcdb0e",
+          "type": "bollard",
+          "before": 0.678,
+          "after": 0.56,
+          "reason": "1 view did not see it"
+        },
+        {
+          "entity_id": "ent-f7a4de8f64",
+          "type": "parked_vehicle",
+          "before": 0.458,
+          "after": 0.339,
+          "reason": "1 view did not see it"
+        }
+      ],
+      "cost": {
+        "anthropic_usd": 0.259113,
+        "anthropic_calls": 4,
+        "input_tokens": 36036,
+        "output_tokens": 10067,
+        "google_new_requests": 20,
+        "google_cached": 24,
+        "google_est_usd": 0.14,
+        "total_usd": 0.3991,
+        "run_cap_usd": 1.0,
+        "budget_remaining_usd": 49.4194
+      },
+      "warnings": [
+        "8 detection(s) had a ground-plane range that disagrees with the model's estimate.",
+        "consistency: parked_vehicle ent-b7035c2ac0 sits on the footpath at 79 m but the footpath is 'intact'",
+        "consistency: parked_vehicle ent-fa677d9429 sits on the footpath at 73 m but the footpath is 'intact'"
+      ],
+      "degraded": false,
+      "summary": "Run added 20 new images (24 of 44 images were already cached) and created model v2 from v1: 35 new objects, 51 changed, 4 removed, 32 newly contradicted; fidelity L1 -> L2. Cost $0.40. 3 warnings raised.",
+      "suggestions": [
+        "Metres 0-100 are the least certain (57 objects below 60 % confidence; 49 unresolved conflicts).",
+        "A close-up photo around 0-100 m would raise it to L3.",
+        "Review the warnings, then run again to pick up anything that was skipped."
+      ]
+    },
+    "anthropic_usd": 0.259113,
+    "anthropic_calls": 4,
+    "google": {
+      "new": 20,
+      "cached": 35
+    },
+    "fidelity": {
+      "before": {
+        "overall": 1.0,
+        "histogram_m": {
+          "L1": 100.0
+        }
+      },
+      "after": {
+        "overall": 2.0,
+        "histogram_m": {
+          "L2": 100.0
+        }
+      },
+      "before_to_after_overall": [
+        1.0,
+        2.0
+      ]
+    },
+    "entity_counts": {
+      "total": 94,
+      "by_type": {
+        "bollard": 15,
+        "tree": 18,
+        "debris": 4,
+        "parked_vehicle": 43,
+        "other": 2,
+        "gate": 1,
+        "signboard": 2,
+        "pole": 6,
+        "bin": 1,
+        "wall": 2
+      }
+    },
+    "head_version": 2
+  },
+  "run3": {
+    "run_id": "41fd12e7-bf4f-44a8-88a8-f1f86739ddaf",
+    "report": {
+      "run_id": "41fd12e7-bf4f-44a8-88a8-f1f86739ddaf",
+      "segment_slug": "100-feet-road-indiranagar-canonical-demo-e",
+      "mode": "generate",
+      "base_version": 2,
+      "result_version": 2,
+      "version_created": false,
+      "started_at": "2026-10-30T15:28:55.428943Z",
+      "finished_at": "2026-10-30T15:28:55.590356Z",
+      "duration_s": 0.2,
+      "images": {
+        "planned": 44,
+        "used_total": 44,
+        "new": 0,
+        "cached": 44,
+        "fused_this_run": 0,
+        "by_source": {
+          "google_static_maps": 4,
+          "google_streetview": 40
+        },
+        "by_kind": {
+          "satellite_crop": 3,
+          "satellite_overview": 1,
+          "streetview": 40
+        },
+        "by_view": {
+          "back": 10,
+          "forward": 10,
+          "left": 10,
+          "right": 10
+        },
+        "new_observation_ids": [],
+        "skipped": []
+      },
+      "detections": {
+        "new": [],
+        "changed": [],
+        "removed": [],
+        "contradicted": [],
+        "unchanged_count": 0
+      },
+      "profile_changes": [],
+      "fidelity": {
+        "before": {
+          "overall": 2.0,
+          "histogram_m": {
+            "L2": 100.0
+          }
+        },
+        "after": {
+          "overall": 2.0,
+          "histogram_m": {
+            "L2": 100.0
+          }
+        },
+        "improved_intervals": []
+      },
+      "confidence_changes": [],
+      "cost": {
+        "anthropic_usd": 0.0,
+        "anthropic_calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "google_new_requests": 0,
+        "google_cached": 44,
+        "google_est_usd": 0.0,
+        "total_usd": 0.0,
+        "run_cap_usd": 0.05,
+        "budget_remaining_usd": 49.4194
+      },
+      "warnings": [],
+      "degraded": false,
+      "summary": "Run found no new images to fuse, so the model stays at v2 and nothing new was spent (44 images already stored).",
+      "suggestions": [
+        "Metres 0-100 are the least certain (57 objects below 60 % confidence; 49 unresolved conflicts).",
+        "A close-up photo around 0-100 m would raise it to L3."
+      ]
+    },
+    "anthropic_usd": 0.0,
+    "anthropic_calls": 0,
+    "google": {
+      "new": 0,
+      "cached": 55
+    },
+    "fidelity": {
+      "before": {
+        "overall": 2.0,
+        "histogram_m": {
+          "L2": 100.0
+        }
+      },
+      "after": {
+        "overall": 2.0,
+        "histogram_m": {
+          "L2": 100.0
+        }
+      },
+      "before_to_after_overall": [
+        2.0,
+        2.0
+      ]
+    },
+    "entity_counts": {
+      "total": 94,
+      "by_type": {
+        "bollard": 15,
+        "tree": 18,
+        "debris": 4,
+        "parked_vehicle": 43,
+        "other": 2,
+        "gate": 1,
+        "signboard": 2,
+        "pole": 6,
+        "bin": 1,
+        "wall": 2
+      }
+    },
+    "head_version": 2
+  },
+  "total_anthropic_usd": 0.5806,
+  "app_spent_usd": 0.58065,
+  "llm_runs": 2,
+  "calibration": {
+    "params": {
+      "cal_a": 0.05,
+      "cal_b": 0.85,
+      "cal_gamma": 1.3,
+      "cal_lo": 0.05,
+      "cal_hi": 0.9,
+      "r1": 10.0,
+      "r2": 20.0,
+      "r3": 30.0,
+      "w2": 0.6,
+      "w3": 0.3,
+      "sigma_base": 0.4,
+      "sigma_per_m": 0.1,
+      "sigma_estimated_extra": 1.0,
+      "conf_min": 0.02,
+      "conf_max": 0.98,
+      "logit_clamp": 5.0
+    },
+    "confidence": [
+      {
+        "raw": 0.0,
+        "calibrated": 0.05
+      },
+      {
+        "raw": 0.25,
+        "calibrated": 0.1902
+      },
+      {
+        "raw": 0.5,
+        "calibrated": 0.3952
+      },
+      {
+        "raw": 0.75,
+        "calibrated": 0.6348
+      },
+      {
+        "raw": 1.0,
+        "calibrated": 0.9
+      }
+    ],
+    "range_weight": [
+      {
+        "range_m": 5,
+        "weight": 1.0
+      },
+      {
+        "range_m": 10,
+        "weight": 1.0
+      },
+      {
+        "range_m": 15,
+        "weight": 0.8
+      },
+      {
+        "range_m": 20,
+        "weight": 0.6
+      },
+      {
+        "range_m": 25,
+        "weight": 0.45
+      },
+      {
+        "range_m": 30,
+        "weight": 0.3
+      },
+      {
+        "range_m": 40,
+        "weight": 0.0
+      }
+    ],
+    "position_sigma_m": [
+      {
+        "range_m": 5,
+        "sigma": 0.9
+      },
+      {
+        "range_m": 10,
+        "sigma": 1.4
+      },
+      {
+        "range_m": 20,
+        "sigma": 2.4
+      },
+      {
+        "range_m": 30,
+        "sigma": 3.4
+      }
+    ]
+  }
+}
