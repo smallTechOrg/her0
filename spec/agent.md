@@ -67,7 +67,7 @@ error: PipelineError | None  # code, message, step
 | 5 | `detect_layout` | **one** call: raw tile + annotated tile (segment line, 10 m ticks, footpath-side arrow, OSM overlay if present) → `LayoutGraph` | A | schema invalid → one re-ask; still invalid → fail run |
 | 6 | `detect_obstacles` | **one** call: all panos (each labelled with its x_m and heading) → `ObstacleGraph` | B | skipped if no panos; invalid twice → `obstacles=None`, warning, quality `satellite_only` |
 | 7 | `assemble_scene` | merge → `Scene`: cross-section lanes from layout widths, footpath coverage, buildings (OSM footprints preferred, vision boxes otherwise), objects with lane/action mapping, tokens on intact footpath + crossings, crops → billboard files, `latlon` + `tile_px` for every object, walkability | no | any exception → fail run |
-| 8 | `review_iteration_N` | render top-down preview (tile + scene drawn) → **one** call with preview + tile + panos → `{accepted, critique, patch_ops[]}`; apply patch; re-render; stop when `accepted` or N = max | R | invalid patch → ignore patch, mark iteration `rejected`, continue; LLM error → stop loop, keep current scene, warning |
+| 8 | `review_iteration_N` | render top-down preview (tile + scene drawn) → **one** call with preview + tile + panos → `{accepted, critique, patch_ops[]}`; apply patch; re-render; stop when `accepted` or N = max | R | patch applied per-op: an op on an unknown/already-removed id is skipped and reported in the iteration `detail`; the patch is rejected whole (iteration `rejected`, scene unchanged, continue) only if no op applies or the patched scene fails validation; LLM error → stop loop, keep current scene, warning |
 | 9 | `finalize` | validate Scene, compute `generation.quality` + `confidence_overall`, write thumbnail preview, persist scene on segment, run `succeeded` | no | fail run |
 
 Budget guard wraps every LLM step: before the call, `BudgetGuard.check(run_id, est_usd)`
@@ -86,7 +86,8 @@ Linear 1→2→3→(4)→5→(6)→7→8…→9. Conditional edges: 3 decides 4 
 `patch_ops: list[{op, target, …}]` with `op ∈ {move, remove, add, relabel, set_coverage}`:
 `move {object_id, x_m, lane}`, `remove {object_id}`, `add {object: Object}`,
 `relabel {object_id, type, action, confidence}`, `set_coverage {from_m, to_m, state}`.
-Applied by `hero.pipeline.review.apply_patch(scene, ops)` which validates and clamps.
+Applied by `hero.pipeline.review.apply_patch(scene, ops)` which validates and clamps,
+per-op tolerant (see step 8): unknown/stale targets are skipped and reported, never fatal on their own.
 
 ## Error handler
 

@@ -79,7 +79,7 @@ Error state if posting the run fails: results still show from local data with a 
 
 ## 4. Pipeline view — `/admin/run.html?id=<run_id>` (`data-hero-page="admin-run"`)
 
-Polls every 1.5 s until terminal; shows "Live" indicator while running.
+Polls every 2 s until terminal; shows "Live" indicator while running.
 - Header: segment name, status chip (`queued/running/succeeded/failed/failed_budget`), elapsed.
 - Cost panel: input/output tokens, USD this run, budget bar (spent total / budget), Google
   requests "N new / M cached", per-call table (step, model, tokens, USD, latency).

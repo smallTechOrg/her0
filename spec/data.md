@@ -11,7 +11,7 @@ queried by field. Imagery lives on disk under the data dir and is referenced by 
 | field | type | notes |
 |---|---|---|
 | id | uuid pk | |
-| slug | text unique | url id, e.g. `100-feet-road-indiranagar-w` |
+| slug | text unique | url id, e.g. `100-feet-road-indiranagar-w`. Derived: slugify(name minus any parenthetical) + `-` + compass letter of the footpath side (`n|e|s|w`, from heading + side); `-2`, `-3`… suffix on collision; admin create may pass an explicit `slug` |
 | name | text | "100 Feet Road, Indiranagar (west footpath)" |
 | city | text | "Bengaluru" |
 | start_lat, start_lon, end_lat, end_lon | float | ~50–100 m apart (validated 30–150 m) |
@@ -21,7 +21,7 @@ queried by field. Imagery lives on disk under the data dir and is referenced by 
 | quality | enum `full|satellite_only|generic` nullable | from the last successful run |
 | scene_json | json text nullable | the current Scene (below) |
 | thumbnail_path | text nullable | `previews/<run_id>/thumb.png` |
-| latest_run_id | uuid fk nullable | |
+| latest_run_id | uuid nullable | logical FK to pipeline_runs (not DB-enforced in Phase 1) |
 | best_score, best_distance_m | int / float nullable | denormalised from game_runs |
 | created_at, updated_at | datetime | |
 
@@ -98,7 +98,7 @@ modelled footpath side**. Up is up. The game maps `x_m → -z` (runner travels t
     "slug": "100-feet-road-indiranagar-w", "name": "100 Feet Road, Indiranagar (west footpath)",
     "city": "Bengaluru",
     "start": {"lat": 12.97400, "lon": 77.64050}, "end": {"lat": 12.97467, "lon": 77.64058},
-    "length_m": 74.6, "heading_deg": 6.7, "footpath_side": "left"
+    "length_m": 74.6, "heading_deg": 6.7, "footpath_side": "left"   // 74.6 is a fixture constant; a real seed segment with these endpoints computes 75.0 m by haversine
   },
   "ground": {
     "tile_url": "/media/imagery/3f9a…c1.png",           // satellite, 1280×1280 px
@@ -136,30 +136,30 @@ modelled footpath side**. Up is up. The game maps `x_m → -z` (runner travels t
       "confidence": 0.85,
       "source": {"image_url": "/media/imagery/7b2d…e0.png", "crop_px": [210, 300, 180, 140]},  // nullable
       "billboard_url": "/media/crops/<run_id>/o1.png",     // nullable → game draws a labelled box
-      "latlon": {"lat": 12.974112, "lon": 77.640454}, "tile_px": [589.5, 805.8] },
+      "latlon": {"lat": 12.974116, "lon": 77.640472}, "tile_px": [589.5, 805.8] },
     { "id": "o2", "type": "footpath_gap", "label": "footpath missing",
       "x_m": 22.0, "length_m": 9.0, "lanes": [0], "action": "dodge", "size_m": {"w": 1.8, "h": 0.2, "d": 9.0},
       "confidence": 0.7, "source": null, "billboard_url": null,
-      "latlon": {"lat": 12.974197, "lon": 77.640466}, "tile_px": [590.9, 740.2] },
+      "latlon": {"lat": 12.974202, "lon": 77.640474}, "tile_px": [590.9, 740.2] },
     { "id": "o3", "type": "pothole", "label": "pothole", "x_m": 40.0, "length_m": 1.0, "lanes": [2],
       "action": "jump", "size_m": {"w": 1.0, "h": 0.1, "d": 1.0}, "confidence": 0.6,
       "source": {"image_url": "/media/imagery/9c…11.png", "crop_px": [300, 420, 90, 60]},
       "billboard_url": "/media/crops/<run_id>/o3.png",
-      "latlon": {"lat": 12.974359, "lon": 77.640488}, "tile_px": [629.9, 620.2] },
+      "latlon": {"lat": 12.974359, "lon": 77.640527}, "tile_px": [629.9, 620.2] },
     { "id": "o4", "type": "low_branch", "label": "low branch", "x_m": 55.0, "length_m": 1.0, "lanes": [0],
       "action": "slide", "size_m": {"w": 1.8, "h": 0.6, "d": 1.0}, "confidence": 0.5,
       "source": null, "billboard_url": null,
-      "latlon": {"lat": 12.974494, "lon": 77.640504}, "tile_px": [617.3, 514.8] },
+      "latlon": {"lat": 12.974497, "lon": 77.640510}, "tile_px": [617.3, 514.8] },
     { "id": "o5", "type": "crossing", "label": "zebra crossing", "x_m": 60.0, "length_m": 3.0, "lanes": [0, 1, 2],
       "action": "none", "size_m": {"w": 9.0, "h": 0.0, "d": 3.0}, "confidence": 0.8,
       "source": null, "billboard_url": null,
-      "latlon": {"lat": 12.974539, "lon": 77.640509}, "tile_px": [633.6, 482.1] }
+      "latlon": {"lat": 12.974540, "lon": 77.640532}, "tile_px": [633.6, 482.1] }
   ],
   "tokens": [
     { "id": "t1", "x_m": 8.0, "lane": 0, "reason": "intact_footpath",
-      "latlon": {"lat": 12.974072, "lon": 77.640455}, "tile_px": [579.7, 835.9] },
+      "latlon": {"lat": 12.974077, "lon": 77.640459}, "tile_px": [579.7, 835.9] },
     { "id": "t2", "x_m": 60.0, "lane": 1, "reason": "crossing",
-      "latlon": {"lat": 12.974539, "lon": 77.640509}, "tile_px": [633.6, 482.1] }
+      "latlon": {"lat": 12.974540, "lon": 77.640532}, "tile_px": [633.6, 482.1] }
   ],
   "walkability": {
     "footpath_coverage_pct": 29.5, "hazard_count": 4, "crossing_present": true, "score": 50
@@ -211,6 +211,7 @@ modelled footpath side**. Up is up. The game maps `x_m → -z` (runner travels t
 `ObstacleGraph` (pass B): `{objects[{type, label, pano_index, crop_px, x_m, lanes, length_m, size_m, action, confidence}], facades[{x_from_m, x_to_m, color_hex, pano_index, crop_px}], notes}`.
 `ReviewResult`: `{accepted: bool, critique: str (≤1500 chars), patch_ops: [...] (≤10)}` — ops in `spec/agent.md`.
 
-The canonical example above is shipped verbatim as `src/hero/scene/example_scene.json`
+The canonical example above is shipped equivalent (placeholders like the `tile_url` hash /
+`run_id` filled with real values) as `src/hero/scene/example_scene.json`
 and copied to `tests/e2e/fixtures/scene_example.json` (with `tile_url` pointing at a 1280×1280
 test PNG under `tests/e2e/fixtures/`); both must validate against `hero.scene.schema.Scene`.

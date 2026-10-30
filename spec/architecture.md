@@ -60,7 +60,7 @@ via asdf, `uv`, Node 22 available, no deployment, bind `0.0.0.0`, non-default po
 |---|---|---|
 | Runtime / deps | Python 3.12.5 (`.python-version`), `uv` project with `.venv`; every command `uv run …` | binding |
 | Web framework | FastAPI 0.115+ / Starlette ≥ 0.40, `uvicorn[standard]`; entry `hero-serve` console script = `uvicorn hero.main:app --host 0.0.0.0 --port 8711` | binding; port 8711 avoids 8000 (`tech-stack.md`); env-overridable `HERO_PORT`/`HERO_HOST` |
-| LLM | Anthropic Python SDK ≥ 0.40, model `claude-sonnet-4-5` (validated) via `HERO_VISION_MODEL`, `HERO_REVIEW_MODEL`; `default_headers={"anthropic-workspace-id": …}` on every request; structured output via forced tool-use with the Pydantic-derived JSON schema | validated key/slug; org-level key requires the header; tool-use gives schema-valid JSON without prose parsing |
+| LLM | Anthropic Python SDK ≥ 0.40, model `claude-sonnet-4-5` (validated; EOL 2026-11-30; `claude-sonnet-5-5` answers plain calls but rejects forced `tool_choice` (HTTP 400), so it needs an auto-tool-choice code path before it can be the default) via `HERO_VISION_MODEL`, `HERO_REVIEW_MODEL`; `default_headers={"anthropic-workspace-id": …}` on every request; structured output via forced tool-use with the Pydantic-derived JSON schema. Note: `claude-sonnet-4-5` emits an SDK deprecation warning (EOL 2026-11-30) — re-validate the model slug and `prices.json` with `check_keys` before then; both models are configurable via `HERO_VISION_MODEL` / `HERO_REVIEW_MODEL` | validated key/slug; org-level key requires the header; tool-use gives schema-valid JSON without prose parsing |
 | Imagery | `httpx` (sync) for Google Static Maps, Street View Static + metadata, Overpass; `Pillow` for annotation, cropping, top-down preview rendering | no browser needed in the pipeline; previews are 2D drawings over the tile |
 | Database | **SQLite** file `data/hero.db`, SQLAlchemy 2.x (sync, `pysqlite`), Alembic migrations, WAL mode, `timeout=30`, `check_same_thread=False` | > **Assumed:** single process, one admin, tens of segments, no deployment — SQLite is the production engine and is guaranteed locally-available (Postgres is not verified on this Mac). Tests run on the same engine (`data/hero_test.db`). The ORM + migrations keep the path to Postgres open for the public beta. |
 | Logging | `structlog` JSON lines to stdout | structured per-request and per-step fields required in Phase 1 |
@@ -92,7 +92,7 @@ Environment variables (`.env.example` must list all; secrets never printed):
 | `HERO_STREETVIEW_SAMPLES` | `3` | panoramas per segment (0 m, mid, end) |
 | `HERO_LOG_LEVEL` | `INFO` | |
 
-> **Assumed:** price table ships with `claude-sonnet-4-5: 3.00 / 15.00` and
+> **Assumed:** price table ships with `claude-sonnet-5-5` and `claude-sonnet-4-5` both at 3.00 / 15.00 (5-5 rate assumed equal; verify) and
 > `claude-haiku-4-5: 1.00 / 5.00` USD per million tokens; a model missing from the table makes
 > the pipeline fail fast at startup of a run (never silently $0). Haiku is listed so the admin
 > can switch the vision model via env after `check_keys` validates the slug; Sonnet stays the

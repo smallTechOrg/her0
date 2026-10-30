@@ -47,11 +47,12 @@ Top runs by score: `data: [{score, distance_m, tokens_collected, created_at}]`.
 ## Admin
 
 ### `GET /api/admin/status`
-`data: {budget_usd, spent_usd, remaining_usd, run_budget_usd, runs: {total, succeeded, failed, failed_budget}, google: {requests, cache_hits, est_cost_usd}, models: {vision, review}, streetview_available_last: bool|null}`.
+`data: {budget_usd, spent_usd, remaining_usd, run_budget_usd, runs: {total, succeeded, failed, failed_budget}, google: {requests, cache_hits, est_cost_usd}, models: {vision, review}, streetview_available_last: bool|null, seed_segment: {name, city, start, end, footpath_side}, active_run_id: uuid|null}`.
+`seed_segment` prefills the "New segment" form (the seed is not pre-inserted in the DB — see `spec/roadmap.md`).
 Also serves as login check (401 on bad password).
 
 ### `GET /api/admin/segments`
-All segments (any status) with `latest_run: {id, status, cost_usd, finished_at} | null`.
+All segments (any status) with `walkability`, `latest_run_id`, and `latest_run: {id, status, cost_usd, finished_at} | null`.
 
 ### `POST /api/admin/segments`
 Body `{name, city, start: {lat, lon}, end: {lat, lon}, footpath_side}` → 201 `data: segment`.
@@ -60,10 +61,11 @@ Length outside 30–150 m → 422. Slug generated from name + side (suffix `-2` 
 ### `POST /api/admin/segments/{slug}/generate`
 Starts a pipeline run. 202 `data: {run_id, status: "queued"}`.
 409 `run_in_progress` if any run is queued/running; 402 `budget_exhausted` if `remaining_usd <= 0`.
+Stale-run self-heal: a `queued|running` run with no live worker that is older than 15 min is marked `failed` on the next generate call before the 409 check.
 
 ### `GET /api/admin/runs/{run_id}`
-Full run for the pipeline view (polled every 1.5 s while `queued|running`):
-`data: {id, segment: {slug, name}, status, started_at, finished_at, inputs, steps[], imagery: {satellite: {url, zoom, meters_per_px}, streetview: [{url, x_m, heading}], osm_available, streetview_available}, layout, obstacles, iterations: [{n, preview_url, accepted, critique, patch_ops, applied}], scene, cost: {input_tokens, output_tokens, cost_usd, calls: [{step, model, input_tokens, output_tokens, cost_usd, latency_ms, ok}]}, google: {requests, cache_hits}, error, budget: {spent_total_usd, budget_usd}}`.
+Full run for the pipeline view (polled every 2 s while `queued|running`):
+`data: {id, segment: {slug, name}, status, started_at, finished_at, inputs, steps[], imagery: {satellite: {url, annotated_url, zoom, meters_per_px}, streetview: [{url, x_m, heading}], streetview_status, osm_available, streetview_available, warnings[]}, layout, obstacles, iterations: [{n, preview_url, accepted, critique, patch_ops, applied, detail}], scene, preview_url, thumbnail_url, cost: {input_tokens, output_tokens, cost_usd, calls: [{step, model, input_tokens, output_tokens, cost_usd, latency_ms, ok}]}, google: {requests, cache_hits}, error, budget: {spent_total_usd, budget_usd}}`.
 
 ### `GET /api/admin/runs?limit=20`
 Recent runs summary list.

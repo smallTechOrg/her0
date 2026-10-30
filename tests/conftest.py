@@ -107,6 +107,26 @@ def live_server(test_db: str):
 
 @pytest.fixture(scope="session")
 def generated_segment(test_db: str) -> str:
-    """SEAM for S2-pipeline: replace this body with one real ``run_pipeline`` against the
-    seed segment on the test DB and return the ready segment slug. Reused by S3/S4/S5 tests."""
-    raise NotImplementedError("generated_segment is implemented by slice S2-pipeline in tests/conftest.py")
+    """ONE real generation per pytest session: creates the seed segment on the test DB, runs
+    ``run_pipeline`` against the real Anthropic + Google APIs (keys from .env) and returns the
+    ready segment's slug. Reused by the admin, public-API and e2e tests."""
+    from hero.api.admin import SEED_SEGMENT
+    from hero.db import repo
+    from hero.db.repo import SegmentCreate
+    from hero.pipeline.registry import create_queued_run
+    from hero.pipeline.runner import run_pipeline
+    from hero.scene.schema import RunStatus, SegmentStatus
+
+    reset_settings()
+    settings = get_settings()
+    for name in ("anthropic_api_key", "anthropic_workspace_id", "google_maps_api_key"):
+        assert getattr(settings, name).get_secret_value(), f"HERO_{name.upper()} missing in .env (gate is BLOCKED)"
+    segment = repo.get_segment("100-feet-road-indiranagar-w") or repo.create_segment(
+        SegmentCreate.model_validate({**SEED_SEGMENT, "slug": "100-feet-road-indiranagar-w"}))
+    run = create_queued_run(segment)
+    finished = run_pipeline(run.id)
+    assert finished.status is RunStatus.succeeded, (
+        f"seed generation ended {finished.status.value}: {finished.error} steps={[s.model_dump() for s in finished.steps]}")
+    ready = repo.require_segment(segment.slug)
+    assert ready.status is SegmentStatus.ready and ready.scene is not None
+    return ready.slug

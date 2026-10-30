@@ -137,8 +137,9 @@ Plus: one JSON log line with `event="pipeline.step"` and one with `event="llm.ca
 **How the user tests it**
 
 1. Open `http://<mac-ip>:8711/admin/` on the Mac. Enter the admin password. See spend
-   `$0.00 / $50.00`. The seed segment "100 Feet Road, Indiranagar (west footpath)" is listed.
-   Press **Generate**. The run page opens; watch steps appear with timings (fetching imagery →
+   `$0.00 / $50.00`. The seed segment is NOT pre-inserted: the "New segment" form is prefilled
+   with "100 Feet Road, Indiranagar (west footpath)" — press **Create segment** (prefilled), it
+   appears in the list, then press **Generate**. The run page opens; watch steps appear with timings (fetching imagery →
    detecting layout → detecting obstacles → assembling → review 1 → review 2 → finalize), the
    satellite tile and the Street View frames, the per-pass scene graph JSON, each review
    iteration's top-down preview + critique, the final scene JSON, tokens/USD/Google requests.

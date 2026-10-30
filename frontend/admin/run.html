@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>#hero · Pipeline run</title>
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <main id="app" data-hero-page="admin-run" class="page admin-page">
+    <header class="page-header admin-header">
+      <div>
+        <p class="crumbs"><a href="/admin/">← Admin</a></p>
+        <h1 id="run-title">Pipeline run</h1>
+        <p class="tagline run-meta">
+          <span id="run-status" class="chip">loading</span>
+          <span id="live" class="live" hidden><span class="dot"></span>Live</span>
+          <span id="elapsed" class="muted"></span>
+        </p>
+      </div>
+      <div class="header-actions">
+        <a id="play-link" class="button-link" hidden>Open in game</a>
+        <span class="stub-wrap">
+          <button type="button" disabled data-stub="true" title="Coming in Phase 2: drag footpath ranges and objects on the satellite tile, no re-spend">Correct detected lines — Phase 2</button>
+          <small class="muted">Coming in Phase 2</small>
+        </span>
+      </div>
+    </header>
+
+    <section id="login" class="card login-card" hidden>
+      <h2>Admin password</h2>
+      <form novalidate>
+        <label for="password">Admin password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+        <p class="login-msg error" role="alert" hidden></p>
+        <button type="submit">Enter</button>
+      </form>
+    </section>
+
+    <div id="run" class="states" hidden>
+      <p data-state="loading" class="card muted">Loading run…</p>
+      <div data-state="error" class="card error-box"><p class="error" id="run-error"></p><a href="/admin/">Back to admin</a></div>
+      <div data-state="populated">
+        <section class="card" id="error-panel" hidden aria-labelledby="error-title">
+          <h2 id="error-title">Run failed</h2>
+          <p><code id="err-code"></code> at step <code id="err-step"></code></p>
+          <p id="err-message"></p>
+          <p class="muted" id="err-advice"></p>
+        </section>
+
+        <section class="card" aria-labelledby="cost-title">
+          <h2 id="cost-title">Cost</h2>
+          <dl class="kv">
+            <dt>Tokens</dt><dd id="tokens">—</dd>
+            <dt>USD this run</dt><dd id="cost-usd">—</dd>
+            <dt>Google requests</dt><dd id="google-counts">—</dd>
+            <dt>Budget</dt><dd><span id="budget-text">—</span>
+              <div class="bar small" role="progressbar" aria-labelledby="budget-text"><div class="bar-fill" id="budget-bar"></div></div></dd>
+          </dl>
+          <div class="table-wrap">
+            <table id="calls" class="calls-table">
+              <thead><tr><th>Step</th><th>Model</th><th>In</th><th>Out</th><th>USD</th><th>Latency</th><th>OK</th></tr></thead>
+              <tbody></tbody>
+            </table>
+            <p id="calls-empty" class="muted" hidden>No LLM calls yet.</p>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="steps-title">
+          <h2 id="steps-title">Steps</h2>
+          <ol id="steps" class="steps"></ol>
+          <p id="steps-empty" class="muted" hidden>Waiting for the first step…</p>
+        </section>
+
+        <section class="card" id="imagery" aria-labelledby="imagery-title">
+          <h2 id="imagery-title">Imagery</h2>
+          <p id="streetview-notice" class="notice" hidden>Street View unavailable here → satellite-only scene.</p>
+          <div class="imagery-grid">
+            <figure id="satellite-fig" hidden>
+              <img class="satellite" alt="Satellite tile">
+              <figcaption><span id="satellite-caption"></span> <button type="button" id="annotated-toggle" class="secondary small" hidden>Show annotated</button></figcaption>
+            </figure>
+            <div id="panos" class="panos"></div>
+          </div>
+          <p id="imagery-empty" class="muted" hidden>No imagery fetched yet.</p>
+        </section>
+
+        <section class="card" aria-labelledby="graphs-title">
+          <h2 id="graphs-title">Scene graph</h2>
+          <details id="layout-json"><summary>Layout (pass A)</summary><pre class="json"></pre></details>
+          <details id="obstacles-json"><summary>Obstacles (pass B)</summary><pre class="json"></pre></details>
+        </section>
+
+        <section class="card" aria-labelledby="iter-title">
+          <h2 id="iter-title">Review iterations</h2>
+          <div id="iterations"></div>
+          <p id="iterations-empty" class="muted" hidden>No review iterations yet.</p>
+        </section>
+
+        <section class="card" aria-labelledby="final-title">
+          <h2 id="final-title">Final scene</h2>
+          <div id="final" hidden>
+            <figure id="final-preview-fig" hidden><img id="final-preview" alt="Final top-down preview"><figcaption>Final top-down preview</figcaption></figure>
+            <dl class="kv" id="walkability"></dl>
+            <details id="final-scene"><summary>Scene JSON</summary><pre class="json"></pre></details>
+          </div>
+          <p id="final-empty" class="muted" hidden>No scene yet — appears when the run finalizes.</p>
+        </section>
+      </div>
+    </div>
+  </main>
+  <script type="module" src="/js/admin/run_view.js"></script>
+</body>
+</html>

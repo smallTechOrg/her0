@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>#hero · Admin</title>
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <main id="app" data-hero-page="admin" class="page admin-page">
+    <header class="page-header admin-header">
+      <div>
+        <h1><a href="/" class="wordmark">#hero</a> <span class="muted">/ admin</span></h1>
+        <p class="tagline">Generate streets from satellite + Street View. Watch the spend.</p>
+      </div>
+      <button type="button" id="logout" class="secondary" hidden>Log out</button>
+    </header>
+
+    <section id="login" class="card login-card" hidden>
+      <h2>Admin password</h2>
+      <form novalidate>
+        <label for="password">Admin password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+        <p class="login-msg error" role="alert" hidden></p>
+        <button type="submit">Enter</button>
+      </form>
+    </section>
+
+    <section id="dashboard" hidden>
+      <section class="card" id="status-card" aria-labelledby="status-title">
+        <h2 id="status-title">Budget</h2>
+        <div class="spend-row">
+          <strong id="spend" class="spend">$0.00 / $0.00</strong>
+          <span class="muted" id="remaining"></span>
+        </div>
+        <div class="bar" role="progressbar" aria-labelledby="spend" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="bar-fill" id="spend-bar"></div>
+        </div>
+        <dl class="kv">
+          <dt>Runs</dt><dd id="runs-totals">—</dd>
+          <dt>Google</dt><dd id="google-totals">—</dd>
+          <dt>Models</dt><dd id="models">—</dd>
+          <dt>Street View last check</dt><dd id="streetview-last">—</dd>
+        </dl>
+      </section>
+
+      <section class="card" aria-labelledby="segments-title">
+        <div class="section-head">
+          <h2 id="segments-title">Segments</h2>
+          <button type="button" id="refresh" class="secondary">Refresh</button>
+        </div>
+        <p id="segments-msg" class="notice" role="status" hidden></p>
+        <div id="segments" class="states">
+          <p data-state="loading" class="muted">Loading segments…</p>
+          <p data-state="empty" class="muted">No segments yet — create one below (the form is prefilled with the seed street).</p>
+          <div data-state="error" class="error-box"><p class="error" id="segments-error"></p><button type="button" id="segments-retry" class="secondary">Retry</button></div>
+          <div data-state="populated" class="table-wrap">
+            <table class="segments-table">
+              <thead><tr><th>Name</th><th>City</th><th>Length</th><th>Status</th><th>Quality</th><th>Latest run</th><th></th></tr></thead>
+              <tbody id="segments-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="create-title">
+        <h2 id="create-title">New segment</h2>
+        <form id="create-form" novalidate class="create-form">
+          <div class="field wide"><label for="f-name">Name</label><input id="f-name" name="name" required value="100 Feet Road, Indiranagar (west footpath)"></div>
+          <div class="field"><label for="f-city">City</label><input id="f-city" name="city" required value="Bengaluru"></div>
+          <div class="field"><label for="f-side">Footpath side</label>
+            <select id="f-side" name="footpath_side"><option value="left" selected>left</option><option value="right">right</option></select></div>
+          <div class="field"><label for="f-start-lat">Start lat</label><input id="f-start-lat" name="start_lat" inputmode="decimal" required value="12.97400"></div>
+          <div class="field"><label for="f-start-lon">Start lon</label><input id="f-start-lon" name="start_lon" inputmode="decimal" required value="77.64050"></div>
+          <div class="field"><label for="f-end-lat">End lat</label><input id="f-end-lat" name="end_lat" inputmode="decimal" required value="12.97467"></div>
+          <div class="field"><label for="f-end-lon">End lon</label><input id="f-end-lon" name="end_lon" inputmode="decimal" required value="77.64058"></div>
+          <p class="muted wide">Endpoints must be 30–150 m apart. Footpath side is relative to travel from start to end.</p>
+          <p id="create-msg" class="wide" role="alert" hidden></p>
+          <div class="wide actions">
+            <button type="submit" id="create-btn">Create segment</button>
+            <span class="stub-wrap">
+              <button type="button" disabled data-stub="true" title="Coming in Phase 2: loads the Bengaluru seed file and creates every segment in it">Seed city — Phase 2</button>
+              <small class="muted">Coming in Phase 2</small>
+            </span>
+          </div>
+        </form>
+      </section>
+
+      <section class="card" aria-labelledby="runs-title">
+        <h2 id="runs-title">Recent runs</h2>
+        <div id="runs" class="states">
+          <p data-state="loading" class="muted">Loading runs…</p>
+          <p data-state="empty" class="muted">No runs yet — press Generate on a segment.</p>
+          <p data-state="error" class="error" id="runs-error"></p>
+          <div data-state="populated" class="table-wrap">
+            <table class="runs-table">
+              <thead><tr><th>Started</th><th>Segment</th><th>Status</th><th>Cost</th><th>Duration</th><th></th></tr></thead>
+              <tbody id="runs-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+  <script type="module" src="/js/admin/segments.js"></script>
+</body>
+</html>

@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import os
-
 import pytest
 
 from hero.config import ConfigError, Settings, reset_settings, strip_inline_comment
@@ -34,11 +32,11 @@ def test_unknown_api_path_uses_failure_envelope(client):
     assert "message" in body["error"]
 
 
-def test_admin_router_rejects_missing_password_on_unknown_route(client):
-    # No admin routes yet; a 404 (not a 401) is acceptable for an unknown path, but a route
-    # under /api/admin must never leak without the dependency - checked via explicit 401 path
-    # in S2's tests. Here we only assert the envelope shape.
+def test_unknown_admin_path_uses_failure_envelope(client):
+    # No admin routes exist in the scaffold, so this is a 404 envelope check only; the real
+    # 401 (missing/wrong X-Hero-Admin-Password) is asserted by S2's admin API tests.
     resp = client.get("/api/admin/nope")
+    assert resp.status_code == 404
     assert resp.json()["ok"] is False
 
 
@@ -62,6 +60,22 @@ def test_strip_inline_comment():
     assert strip_inline_comment("claude-sonnet-4-5   # model") == "claude-sonnet-4-5"
     assert strip_inline_comment("  50 ") == "50"
     assert strip_inline_comment(7) == 7
+
+
+def test_strip_inline_comment_keeps_hash_not_preceded_by_whitespace():
+    assert strip_inline_comment("pa#ss#word") == "pa#ss#word"
+    assert strip_inline_comment("#leading") == "#leading"
+    assert strip_inline_comment("pa#ss # note") == "pa#ss"
+    assert strip_inline_comment("value\t# tab comment") == "value"
+
+
+def test_secret_fields_are_never_comment_stripped(monkeypatch):
+    monkeypatch.setenv("HERO_ADMIN_PASSWORD", "top #secret # really")
+    monkeypatch.setenv("HERO_ANTHROPIC_API_KEY", "sk-ant-abc#def")
+    s = Settings()
+    assert s.admin_password.get_secret_value() == "top #secret # really"
+    assert s.anthropic_api_key.get_secret_value() == "sk-ant-abc#def"
+    reset_settings()
 
 
 def test_settings_fail_loudly_naming_missing_required_var(monkeypatch):

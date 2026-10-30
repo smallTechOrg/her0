@@ -1,16 +1,19 @@
 """Settings loaded from the environment / .env (prefix HERO_).
 
-Inline ``# comment`` suffixes on values are stripped so a copied .env.example works
-unchanged. Required secrets fail loudly, naming the variable, when empty.
+Inline ``# comment`` suffixes (a ``#`` preceded by whitespace) are stripped from
+non-secret values so a copied .env.example works unchanged. Secrets are taken verbatim: a
+password or key may legitimately contain ``#``. Required secrets fail loudly, naming the
+variable, when empty.
 """
 
 from __future__ import annotations
 
+import re
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-from pydantic import SecretStr, field_validator, model_validator
+from pydantic import SecretStr, ValidationInfo, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -24,15 +27,17 @@ REQUIRED_SECRETS = (
 )
 
 
+_INLINE_COMMENT = re.compile(r"\s#.*$")
+
+
 def strip_inline_comment(value: Any) -> Any:
-    """Return ``value`` without a trailing ``# comment`` (and surrounding whitespace)."""
+    """Return ``value`` without a trailing ``<whitespace># comment`` (and surrounding whitespace).
+
+    A ``#`` that is not preceded by whitespace is part of the value (``pa#ss`` stays intact).
+    """
     if not isinstance(value, str):
         return value
-    text = value
-    hash_at = text.find("#")
-    if hash_at != -1:
-        text = text[:hash_at]
-    return text.strip()
+    return _INLINE_COMMENT.sub("", value).strip()
 
 
 class ConfigError(RuntimeError):
@@ -75,7 +80,9 @@ class Settings(BaseSettings):
 
     @field_validator("*", mode="before")
     @classmethod
-    def _strip_comments(cls, value: Any) -> Any:
+    def _strip_comments(cls, value: Any, info: ValidationInfo) -> Any:
+        if info.field_name in REQUIRED_SECRETS:
+            return value
         return strip_inline_comment(value)
 
     @model_validator(mode="after")

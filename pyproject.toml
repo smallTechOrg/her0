@@ -37,4 +37,4 @@ packages = ["src/hero"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 timeout = 600
-addopts = "-p no:cacheprovider"
+addopts = "-p no:cacheprovider --tb=short"
