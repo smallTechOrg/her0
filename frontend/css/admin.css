@@ -104,3 +104,9 @@ details summary { cursor: pointer; padding: 6px 0; font-weight: 600; }
 .resolve-list label { display: block; cursor: pointer; }
 .resolve-list small { display: block; opacity: .75; }
 .create-form-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.resolve-list li { cursor: pointer; }
+.resolve-list input[type="radio"] { width: auto; flex: none; margin: 4px 0 0; padding: 0; accent-color: var(--accent, #ffb100); }
+.resolve-list label { flex: 1; min-width: 0; color: inherit; }
+.resolve-list li b { color: var(--text, #fff); font-weight: 600; word-break: break-word; }
+.resolve-list small { opacity: .85; margin-top: 2px; }
+[hidden] { display: none !important; }
