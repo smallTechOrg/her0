@@ -10,6 +10,15 @@ Branch `feature/hero-20261029-1915-v0.1`, PR #1 against `main`. Last commit `419
 - **Phase 2.1:** deterministic Python mesh builder producing `street.glb` + manifest, scene schema v3, satellite-textured footpath/kerb/road, continuous frontage, gap filling, dynamic obstacles (cars etc. are not baked in; a seeded spawner places them per run), "How to improve this model" admin panel, photo upload, model dropdown (Sonnet 5.5 default, Opus 5.5 option), Max quality preset, per-run cost cap removed.
 - **Latest user verdict:** better, but **not realistic enough**. That is the main goal for next work.
 
+## Top priority from the user (latest)
+Make the **entire environment realistic, including the obstacles** (they must look very real). Obstacles stay dynamic: placed by the seeded spawner at play time, never baked into the street model. Cars, stalls, debris etc. need real-looking meshes/textures, not boxes.
+
+## Keys and spend
+GitHub repo secrets are set on smallTechOrg/her0: `HERO_ANTHROPIC_API_KEY`, `HERO_ANTHROPIC_WORKSPACE_ID`, `HERO_GOOGLE_MAPS_API_KEY` (plus none for admin password). The repo is PUBLIC: never print secrets, never commit imagery or `data/`. The user has NOT set a spending limit for the cloud session: make no paid Claude/Google calls until they give one (ask them). `HERO_CLAUDE_BUDGET_USD` counts per `data/hero.db`, so a fresh cloud db starts at 0 spent; set it to the agreed limit.
+
+## Real Bellandur data
+Packaged locally by the user at `her0-bellandur-data.zip` (hero.db, imagery, crops, osm, geocode, exports for bellandur-main-road-n-2 and -n-3). Not in git (public repo, Google imagery). User shares it via private Drive link. Unzip into the repo so you get `data/`, then run alembic + recompile.
+
 ## Not in git: you must recreate
 `data/` is gitignored (157 MB: `hero.db`, `imagery/`, `crops/`, `previews/`, `exports/`). `.env` and `frontend/vendor/` are also ignored.
 - Local machine holds the real data. For a cloud session either copy `data/` over, or regenerate (costs Claude and Google credits).
