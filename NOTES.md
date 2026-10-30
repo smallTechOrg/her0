@@ -50,3 +50,8 @@ Run start: 2026-10-29 ~19:00 local. Platform: Claude Code (VS Code extension), b
   uses (forced tool-use + image), not a bare "hi". Default stays `claude-sonnet-4-5`; README
   documents the 2026-11-30 EOL.
 - **Org-level key needs the workspace header in every ad-hoc script**, not just the app client.
+
+## Phase 1 playtest feedback (2026-10-30)
+
+- **Instant game-over on first hit felt broken.** On the real street the first hazard (a low branch over the footpath) ended the run seconds after start, so the player saw nothing of the street. Fix: 100 health, 20 per hit, 1.2 s invulnerability, one hit per object per loop. Lesson: the intake "reliability/difficulty" questions should ask how forgiving collisions are; for a civic-awareness game the street must be seen, so default to health, not one-hit death. Specs that mandate "run ends on first crash" should be questioned when the product goal is exploration.
+- Existing e2e tests encoded the instant-crash rule and had to be rewritten; keep game-rule constants in the spec so tests derive from them.

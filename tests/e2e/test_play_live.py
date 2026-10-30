@@ -62,8 +62,9 @@ def test_generated_street_appears_in_the_gallery_and_plays_to_a_crash_with_a_res
     _wait_state(page, "s.phase === 'running'", 10_000)
     _wait_state(page, "s.distance_m > 20 || s.phase !== 'running'", 15_000)
 
-    # Spec: against the real street the run ends in a crash within 90 s without input.
-    s = _wait_state(page, "s.phase === 'results'", 90_000)
+    # Spec: against the real street the run ends (health 0) within 180 s without input.
+    s = _wait_state(page, "s.phase === 'results'", 180_000)
+    assert s["health"] == 0 and s["hits"] >= 1
     assert s["crashed_into"] is not None
     assert s["crashed_into"]["id"] in {o["id"] for o in hazards}
     assert s["score"] == round(s["distance_m"]) + 50 * s["tokens"]

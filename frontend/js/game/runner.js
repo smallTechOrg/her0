@@ -2,7 +2,7 @@
 export const C = Object.freeze({
   LANE_TWEEN_MS: 150, JUMP_MS: 500, SLIDE_MS: 600,
   SPEED_START: 6, SPEED_PER_LOOP: 0.1, SPEED_MAX: 12,
-  TOKEN_VALUE: 50, RUNNER_HALF_M: 0.3, TOKEN_RADIUS_M: 0.6, JUMP_HEIGHT_M: 1.3,
+  TOKEN_VALUE: 50, HEALTH_MAX: 100, HIT_DAMAGE: 20, INVULN_S: 1.2, RUNNER_HALF_M: 0.3, TOKEN_RADIUS_M: 0.6, JUMP_HEIGHT_M: 1.3,
 });
 
 const LANE_CMDS = { left: -1, right: +1 };
@@ -27,13 +27,19 @@ export class Runner {
     this.tokens = 0;
     this.collected = new Set();
     this.queued = null;
-    this.crashed = null;      // scene object or null
+    this.crashed = null;      // scene object that took health to 0, or null
+    this.health = C.HEALTH_MAX;
+    this.hits = 0;
+    this.invulnUntil = 0;     // elapsed-time (s) until which hits are ignored
+    this.hitKeys = new Set(); // `${objId}:${loop}` already damaged this pass
+    this.lastHit = null;
     this.elapsed = 0;
   }
 
   get speed() { return Math.min(C.SPEED_MAX, C.SPEED_START + C.SPEED_PER_LOOP * this.loops); }
   get score() { return Math.round(this.x) + C.TOKEN_VALUE * this.tokens; }
   get xWrapped() { return this.x - this.loops * this.lengthM; }
+  get invulnerable() { return this.elapsed < this.invulnUntil; }
   get airborne() { return this.action === 'jumping'; }
   get sliding() { return this.action === 'sliding'; }
 
@@ -106,8 +112,18 @@ export class Runner {
       if (!this._overlaps(obj, xw) && !this._overlaps(obj, xw + this.lengthM)) continue;
       if (obj.action === 'jump' && this.airborne) continue;
       if (obj.action === 'slide' && this.sliding) continue;
-      this.crashed = obj;
-      events.push({ type: 'crash', object: obj });
+      const key = `${obj.id}:${this.loops}`;
+      if (this.invulnerable || this.hitKeys.has(key)) continue;
+      this.hitKeys.add(key);
+      this.health = Math.max(0, this.health - C.HIT_DAMAGE);
+      this.hits += 1;
+      this.lastHit = obj;
+      this.invulnUntil = this.elapsed + C.INVULN_S;
+      events.push({ type: 'hit', object: obj, health: this.health });
+      if (this.health <= 0) {
+        this.crashed = obj;
+        events.push({ type: 'crash', object: obj });
+      }
       break;
     }
     return events;
@@ -140,6 +156,10 @@ export class Runner {
       action: this.action,
       loops: this.loops,
       speed: Math.round(this.speed * 100) / 100,
+      health: this.health,
+      hits: this.hits,
+      invulnerable: this.invulnerable,
+      last_hit: this.lastHit ? { id: this.lastHit.id, type: this.lastHit.type, label: this.lastHit.label } : null,
       crashed_into: this.crashed ? { id: this.crashed.id, type: this.crashed.type } : null,
       elapsed_s: Math.round(this.elapsed * 10) / 10,
     };

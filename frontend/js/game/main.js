@@ -109,6 +109,7 @@ function frame(ts) {
     for (const ev of events) {
       if (ev.type === 'token') { const m = world.tokensByCopy[0].get(ev.id); if (m) m.visible = false; }
       if (ev.type === 'loop') { for (const m of world.tokensByCopy[0].values()) m.visible = true; }
+      if (ev.type === 'hit') onHit();
       if (ev.type === 'crash') onCrash();
     }
     applySnapshot();
@@ -116,8 +117,16 @@ function frame(ts) {
     runner.elapsed += dt;
     runnerMesh.rotation.x = Math.min(Math.PI / 2, runnerMesh.rotation.x + dt * 6);
   }
-  if (runner) { syncWorld(); placeRunner(); }
+  if (runner) { syncWorld(); placeRunner(); if (runnerMesh && state.phase === 'running') runnerMesh.visible = !runner.invulnerable || Math.floor(runner.elapsed * 12) % 2 === 0; }
   if (renderer) renderer.render(three, camera);
+}
+
+function onHit() {
+  if (reducedMotion) return;
+  const flash = $('flash');
+  flash.classList.remove('on');
+  void flash.offsetWidth;
+  flash.classList.add('on');
 }
 
 function onCrash() {
@@ -173,6 +182,7 @@ function runAgain() {
   runner.reset();
   for (const map of world.tokensByCopy) for (const m of map.values()) m.visible = true;
   runnerMesh.rotation.x = 0;
+  runnerMesh.visible = true;
   state.run_post = null;
   state.results = null;
   applySnapshot();

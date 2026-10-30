@@ -73,10 +73,11 @@ export function renderResults(root, { scene, snap, post, onRunAgain }) {
   }
 
   root.replaceChildren(
-    el(`<h2>${crashedObj ? `You hit ${esc(crashedObj.label)}` : 'Run over'}</h2>`),
+    el(`<h2>${crashedObj ? `Out of health at ${esc(crashedObj.label)}` : 'Run over'}</h2>`),
     el(`<div class="score-line"><span class="score-big" id="result-score">${snap.score}</span><span>points</span>${bestHtml}</div>`),
     el(`<div class="stat-row"><span><b id="result-distance">${Math.round(snap.distance_m)}</b> m</span>
-        <span><b id="result-tokens">${snap.tokens}</b> tokens</span><span>Loops <b id="result-loops">${snap.loops}</b></span></div>`),
+        <span><b id="result-tokens">${snap.tokens}</b> tokens</span><span>Loops <b id="result-loops">${snap.loops}</b></span>
+        <span><b id="result-hits">${snap.hits ?? 0}</b> hits</span></div>`),
     el(`<div class="notice" id="save-notice" ${post.status === 'failed' ? '' : 'hidden'}>Score couldn't be saved — check your connection${post.error ? ` (${esc(post.error)})` : ''}</div>`),
     el(`<section class="card" aria-labelledby="walk-h"><h3 id="walk-h">Walkability — ${esc(scene.segment.name)}</h3>
         <dl class="walk-grid">

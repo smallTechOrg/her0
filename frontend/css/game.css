@@ -102,3 +102,9 @@ a { color: var(--accent); }
 .tag-low { background: #3a3d44; color: var(--muted); }
 .results .buttons { display: grid; gap: 10px; padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px); }
 .results .buttons button, .results .buttons a { text-align: center; font-size: 1.1rem; }
+
+#hud .health { min-width: 110px; }
+#hud .hud-bar { display: block; height: 8px; margin-top: 4px; border-radius: 4px; background: rgba(255,255,255,.18); overflow: hidden; }
+#hud-health-bar { display: block; height: 100%; width: 100%; background: #3ecf8e; transition: width .15s ease-out, background-color .15s; }
+#hud-health-bar[data-level="mid"] { background: #ffb100; }
+#hud-health-bar[data-level="low"] { background: #ff4d4f; }
