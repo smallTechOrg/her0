@@ -27,10 +27,12 @@ export function renderHazardMap(container, captionEl, scene, crashedId) {
 
   const markers = [];
   for (const o of scene.objects) {
+    if (!o.tile_px) continue; // v2 objects may lack a tile position
     markers.push({ id: o.id, label: o.label, confidence: o.confidence, kind: o.action, type: o.type,
       x: o.tile_px[0] * scale, y: o.tile_px[1] * scale, crashed: o.id === crashedId });
   }
   for (const t of scene.tokens) {
+    if (!t.tile_px) continue;
     markers.push({ id: t.id, label: `token (${t.reason.replace('_', ' ')})`, confidence: null, kind: 'token',
       x: t.tile_px[0] * scale, y: t.tile_px[1] * scale, crashed: false });
   }
@@ -40,15 +42,17 @@ export function renderHazardMap(container, captionEl, scene, crashedId) {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, cssW, cssH);
     if (img) ctx.drawImage(img, 0, 0, cssW, cssH);
-    // segment line start → end along the centreline
-    const [sx, sy] = framePx(scene.ground, 0, 0);
+    // segment line: the traced path (v2, samples carry tile_px) or start → end along the centreline (v1)
+    const traced = scene.schema_version === 2 ? scene.path.samples.filter((p) => p.tile_px) : [];
+    const [sx, sy] = traced.length > 1 ? traced[0].tile_px : framePx(scene.ground, 0, 0);
     const [ex, ey] = framePx(scene.ground, scene.segment.length_m, 0);
     ctx.strokeStyle = '#ffffff';
     ctx.lineWidth = 2;
     ctx.setLineDash([6, 4]);
     ctx.beginPath();
     ctx.moveTo(sx * scale, sy * scale);
-    ctx.lineTo(ex * scale, ey * scale);
+    if (traced.length > 1) for (const p of traced.slice(1)) ctx.lineTo(p.tile_px[0] * scale, p.tile_px[1] * scale);
+    else ctx.lineTo(ex * scale, ey * scale);
     ctx.stroke();
     ctx.setLineDash([]);
     ctx.fillStyle = '#fff';
@@ -74,9 +78,11 @@ export function renderHazardMap(container, captionEl, scene, crashedId) {
   };
 
   draw(null);
-  const img = new Image();
-  img.onload = () => draw(img);
-  img.src = scene.ground.tile_url;
+  if (scene.ground.tile_url) {
+    const img = new Image();
+    img.onload = () => draw(img);
+    img.src = scene.ground.tile_url;
+  }
 
   canvas.addEventListener('click', (ev) => {
     const rect = canvas.getBoundingClientRect();

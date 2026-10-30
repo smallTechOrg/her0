@@ -3,7 +3,8 @@
 // POST /api/admin/segments/{slug}/generate, GET /api/admin/runs?limit=20.
 
 import { api, ApiError } from '/js/api.js?v=3';
-import { gate, logout, el, fmtUsd, fmtMs, setState } from '/js/admin/auth.js?v=3';
+import { gate, logout, el, fmtUsd, fmtMs, setState } from '/js/admin/auth.js?v=4';
+import { placementButton } from '/js/admin/placement.js?v=4';
 
 const state = { status: null, segments: null, runs: null, error: null };
 window.__hero = { page: 'admin', get state() { return structuredClone(state); } };
@@ -51,6 +52,13 @@ function generateDisabledReason(seg) {
   return '';
 }
 
+function modelCell(m) {
+  if (!m) return el('span', { class: 'muted', text: '—' });
+  const bits = [el('span', { class: 'model-cell', 'data-fidelity': m.fidelity_level, text: `v${m.head_version} · ${m.fidelity_level}` })];
+  if (m.legacy) bits.push(' ', el('span', { class: 'chip kind-legacy', title: 'Imported Phase-1 scene; placement unverified', text: 'legacy' }));
+  return el('span', {}, bits);
+}
+
 function segmentRow(seg) {
   const lr = seg.latest_run;
   const reason = generateDisabledReason(seg);
@@ -71,8 +79,10 @@ function segmentRow(seg) {
     el('td', { text: seg.length_m != null ? `${Number(seg.length_m).toFixed(0)} m` : '—' }),
     el('td', {}, chip(seg.status)),
     el('td', { text: seg.quality || '—' }),
+    el('td', {}, modelCell(seg.model)),
     el('td', {}, latest),
-    el('td', {}, btn),
+    el('td', { class: 'row-actions' }, [
+      el('a', { class: 'button-link small', href: `/admin/segment.html?slug=${encodeURIComponent(seg.slug)}`, 'data-testid': 'open-segment', text: 'Open' }), ' ', btn]),
   ]);
 }
 
@@ -136,7 +146,9 @@ function renderRuns() {
     return el('tr', {}, [
       el('td', { text: started }),
       el('td', { text: seg.name || r.segment_slug || seg.slug || '—' }),
+      el('td', {}, r.mode ? chip(r.mode) : el('span', { class: 'muted', text: '—' })),
       el('td', {}, chip(r.status)),
+      el('td', { text: r.version_created === true ? 'new version' : r.version_created === false ? 'no change' : '—' }),
       el('td', { text: fmtUsd(r.cost_usd) }),
       el('td', { text: dur }),
       el('td', {}, el('a', { href: `/admin/run.html?id=${encodeURIComponent(r.id)}`, text: 'Open' })),
@@ -244,8 +256,14 @@ async function onCreate(ev) {
   try {
     const seg = await api.post('/api/admin/segments/from-address', body, { admin: true });
     msg.className = 'wide notice ok';
-    msg.textContent = `Created "${seg.name}" (${seg.slug}, ${Number(seg.length_m).toFixed(0)} m). Press Generate to build it.`;
+    msg.textContent = `Created "${seg.name}" (${seg.slug}, ${Number(seg.length_m).toFixed(0)} m). Check the placement, then press Generate to build it.`;
     msg.hidden = false;
+    const box = $('placement-box');
+    box.hidden = true;
+    const acts = $('created-actions');
+    acts.replaceChildren(placementButton(seg.slug, { box, onError: handleAuthError }),
+      el('a', { class: 'button-link', href: `/admin/segment.html?slug=${encodeURIComponent(seg.slug)}`, text: 'Open segment page' }));
+    acts.hidden = false;
     await loadSegments();
     document.querySelector(`tr[data-slug="${CSS.escape(seg.slug)}"]`)?.scrollIntoView({ block: 'center' });
   } catch (err) {

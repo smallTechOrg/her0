@@ -2,11 +2,12 @@
 // Phases: loading → ready → running → crashed → results | error. window.__hero.state is read-only.
 import * as THREE from '/vendor/three.module.js';
 import { api } from '/js/api.js?v=3';
-import { buildWorld, makeRunnerMesh, latToX } from '/js/game/scene_builder.js?v=3';
-import { Runner, C } from '/js/game/runner.js?v=3';
-import { attachControls } from '/js/game/controls.js?v=3';
-import { createHud } from '/js/game/hud.js?v=3';
-import { renderResults } from '/js/game/results.js?v=3';
+import { buildWorld, makeRunnerMesh } from '/js/game/scene_builder.js?v=4';
+import { Runner, C } from '/js/game/runner.js?v=4';
+import { attachControls } from '/js/game/controls.js?v=4';
+import { createHud } from '/js/game/hud.js?v=4';
+import { renderResults } from '/js/game/results.js?v=4';
+import { createAbout } from '/js/game/about.js?v=4';
 
 const MAX_DT_S = 0.1;
 const CRASH_STUMBLE_MS = 400;
@@ -22,7 +23,9 @@ const state = {
   distance_m: 0, score: 0, tokens: 0, lane: 0, lane_name: 'footpath', action: 'none', loops: 0, speed: C.SPEED_START,
   crashed_into: null, elapsed_s: 0, run_post: null, results: null,
 };
-window.__hero = { page: 'play', get state() { return structuredClone(state); } };
+// Read-only debug handle (drives the e2e tests). `perf` is sampled from renderer.info after each render.
+const perf = { draw_calls: 0, triangles: 0, fps_avg: 0 };
+window.__hero = { page: 'play', get state() { return structuredClone(state); }, get perf() { return { ...perf }; } };
 
 function showPanel(which) {
   for (const [k, p] of Object.entries(panels)) p.hidden = k !== which;
@@ -48,7 +51,7 @@ try {
 } catch (err) {
   renderer = null;
 }
-const camera = new THREE.PerspectiveCamera(62, 1, 0.1, 140);
+const camera = new THREE.PerspectiveCamera(62, 1, 0.2, 140);
 const three = new THREE.Scene();
 three.background = new THREE.Color(0x0f1115);
 three.fog = new THREE.Fog(0x0f1115, 60, 120);
@@ -70,7 +73,8 @@ window.addEventListener('resize', resize);
 // ----------------------------------------------------------------- game
 
 let scene = null, world = null, runner = null, runnerMesh = null, hud = null, controls = null;
-let lastTs = 0, rafId = 0, crashTimer = 0, camX = 0;
+let lastTs = 0, rafId = 0, crashTimer = 0, camLat = 0, about = null, resumePhase = null;
+const fpsWindow = [];
 
 function applySnapshot() {
   const snap = runner.snapshot();
@@ -79,36 +83,69 @@ function applySnapshot() {
   return snap;
 }
 
+const CAM_BACK_M = 5.6, CAM_LOOK_AHEAD_M = 9;
+
+// Runner and camera follow the path: position = P(s) + lat * n(s), heading = theta(s).
 function placeRunner() {
+  const track = runner.track;
+  const sw = runner.xWrapped;
   const lat = runner.visualLatM(easeOut);
-  const x = latToX(lat);
+  const w = track.world(sw, lat);
   const y = runner.jumpY();
-  runnerMesh.position.set(x, y, 0);
+  runnerMesh.position.set(w.x, y, w.z);
+  runnerMesh.rotation.y = -w.theta;
   const body = runnerMesh.userData.body;
   body.scale.y = runner.sliding ? 0.5 : 1;
   body.position.y = runner.sliding ? 0.4 : 0.67;
   runnerMesh.userData.shadow.position.y = 0.02 - y;
-  camX += (x - camX) * 0.2;
+  camLat += (lat - camLat) * 0.2;
   const bob = reducedMotion || !runner || runner.crashed ? 0 : Math.sin(runner.elapsed * 9) * 0.04;
-  camera.position.set(camX, 3.1 + bob, 5.6);
-  camera.lookAt(camX, 0.9, -9);
+  const back = track.world(sw - CAM_BACK_M, camLat);
+  const ahead = track.world(sw + CAM_LOOK_AHEAD_M, camLat);
+  camera.position.set(back.x, 3.1 + bob, back.z);
+  camera.lookAt(ahead.x, 0.9, ahead.z);
+  if (scene.schema_version === 2) updateCorridorState(sw, lat, w);
+}
+
+const r3 = (v) => Math.round(v * 1000) / 1000;
+function updateCorridorState(sw, lat, w) {
+  const track = runner.track;
+  const fp = track.footpathAt(sw);
+  state.s = r3(sw);
+  state.lat_m = r3(lat);
+  state.footpath_centre_m = fp ? r3(fp.centre) : null;
+  state.footpath_offset_m = fp ? r3(Math.abs(track.laneLat(sw, 0) - fp.centre)) : null;
+  state.on_strip = track.stripAt(sw, lat);
+  state.world = { x: r3(w.x), z: r3(w.z) };
+  state.heading_deg = r3(track.headingDeg(sw));
 }
 
 function syncWorld() {
-  world.world.position.z = runner.xWrapped;
-  const t = runner.elapsed;
-  for (const m of world.allTokens) m.rotation.y = t * 3;
+  world.tick(runner.elapsed);
+}
+
+function samplePerf(dtMs) {
+  if (dtMs > 0 && dtMs < 1000) {
+    fpsWindow.push(dtMs);
+    if (fpsWindow.length > 60) fpsWindow.shift();
+    perf.fps_avg = Math.round(1000 / (fpsWindow.reduce((a, b) => a + b, 0) / fpsWindow.length) * 10) / 10;
+  }
+  if (renderer) {
+    perf.draw_calls = renderer.info.render.calls;
+    perf.triangles = renderer.info.render.triangles;
+  }
 }
 
 function frame(ts) {
   rafId = requestAnimationFrame(frame);
-  const dt = Math.min(MAX_DT_S, lastTs ? (ts - lastTs) / 1000 : 0);
+  const rawDt = lastTs ? (ts - lastTs) / 1000 : 0;
+  const dt = Math.min(MAX_DT_S, rawDt);
   lastTs = ts;
   if (state.phase === 'running') {
     const events = runner.update(dt);
     for (const ev of events) {
-      if (ev.type === 'token') { const m = world.tokensByCopy[0].get(ev.id); if (m) m.visible = false; }
-      if (ev.type === 'loop') { for (const m of world.tokensByCopy[0].values()) m.visible = true; }
+      if (ev.type === 'token') world.hideToken(ev.id);
+      if (ev.type === 'loop') world.showAllTokens();
       if (ev.type === 'hit') onHit();
       if (ev.type === 'crash') onCrash();
     }
@@ -119,6 +156,7 @@ function frame(ts) {
   }
   if (runner) { syncWorld(); placeRunner(); if (runnerMesh && state.phase === 'running') runnerMesh.visible = !runner.invulnerable || Math.floor(runner.elapsed * 12) % 2 === 0; }
   if (renderer) renderer.render(three, camera);
+  samplePerf(rawDt * 1000);
 }
 
 function onHit() {
@@ -159,7 +197,9 @@ async function showResults() {
     post = { status: 'failed', error: err.message };
     state.run_post = 'failed';
   }
-  const { crashMarker } = renderResults(panels.results, { scene, snap, post, onRunAgain: runAgain });
+  const { crashMarker } = renderResults(panels.results, {
+    scene, snap, post, onRunAgain: runAgain, onAbout: (opener) => about.open(opener),
+  });
   state.results = {
     posted: body, response: post.status === 'saved' ? post.data : null, error: post.error || null,
     crash_marker_xy: crashMarker ? { x: crashMarker.x, y: crashMarker.y } : null,
@@ -180,7 +220,7 @@ function startRun() {
 function runAgain() {
   clearTimeout(crashTimer);
   runner.reset();
-  for (const map of world.tokensByCopy) for (const m of map.values()) m.visible = true;
+  world.showAllTokens();
   runnerMesh.rotation.x = 0;
   runnerMesh.visible = true;
   state.run_post = null;
@@ -197,6 +237,39 @@ function onCommand(cmd) {
   runner.input(cmd);
 }
 
+// ----------------------------------------------------------------- about panel + model badge
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+function fmtDate(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
+  return m ? `${Number(m[3])} ${MONTHS[Number(m[2]) - 1]} ${m[1]}` : (iso || '');
+}
+
+function modelOf(sc) {
+  if (sc.schema_version === 2) {
+    const a = sc.about;
+    return { version: sc.model.version, fidelity: a.fidelity.level, photos: a.photos.total, legacy: !!a.legacy };
+  }
+  return { version: null, fidelity: 'legacy', photos: null, legacy: true };
+}
+
+function modelBadge(sc) {
+  if (sc.schema_version !== 2) return 'Legacy scene · placement unverified';
+  const a = sc.about;
+  if (a.legacy) return 'Legacy scene · placement unverified';
+  if (a.degraded || a.fidelity.level === 'L0') return `Map-only sketch · updated ${fmtDate(a.last_updated)}`;
+  return `Fidelity ${a.fidelity.level} · ${a.photos.total} photos · updated ${fmtDate(a.last_updated)}`;
+}
+
+// Opening About from the HUD pauses the run; closing resumes it.
+function pauseForAbout() {
+  if (state.phase === 'running') { resumePhase = 'running'; setPhase('paused'); }
+}
+function resumeFromAbout() {
+  if (resumePhase === 'running' && state.phase === 'paused') { lastTs = 0; setPhase('running'); }
+  resumePhase = null;
+}
+
 // ----------------------------------------------------------------- boot
 
 async function boot() {
@@ -211,8 +284,11 @@ async function boot() {
     return;
   }
   state.name = scene.segment.name;
+  state.model = modelOf(scene);
   $('loading-name').textContent = scene.segment.name;
   $('ready-name').textContent = scene.segment.name;
+  $('model-badge').textContent = modelBadge(scene);
+  $('model-badge').dataset.fidelity = state.model.fidelity;
   document.title = `#hero — ${scene.segment.name}`;
   try {
     world = await buildWorld(scene, (loaded, total) => {
@@ -228,9 +304,12 @@ async function boot() {
   three.add(runnerMesh);
   runner = new Runner(scene);
   hud = createHud();
-  camX = latToX(scene.cross_section.lanes[0].lat_m);
+  camLat = runner.track.laneLat(0, 0);
   resize();
   applySnapshot();
+  about = createAbout($('about-panel'), scene, { onOpen: () => pauseForAbout(), onClose: () => resumeFromAbout() });
+  $('about-open').addEventListener('click', () => about.open($('about-open')));
+  $('hud-about').addEventListener('click', () => about.open($('hud-about')));
   controls = attachControls(canvas, onCommand, () => state.phase === 'running');
   $('start').addEventListener('click', startRun);
   $('start').disabled = false;

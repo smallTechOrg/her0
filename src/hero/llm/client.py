@@ -32,7 +32,9 @@ class LLMUsage:
 class LLMClient(Protocol):
     def vision_json(self, *, run_id: str, step: str, images: Sequence[LLMImage], prompt: str,
                     schema: type[T], model: str, prompt_name: str, system: str | None = None,
-                    max_tokens: int = 4096) -> tuple[T, LLMUsage]:
-        """Send ``images`` + ``prompt`` in ONE request; the model must answer via a forced tool whose
-        input schema is ``schema``; returns the validated object and the priced usage."""
+                    max_tokens: int = 4096, structured_mode: str | None = None
+                    ) -> tuple[T, LLMUsage]:
+        """Send ``images`` + ``prompt`` in ONE request; the model answers a JSON object matching ``schema``
+        via ``structured_mode`` (``auto|forced_tool|auto_tool|json_text``; None = the configured default).
+        Returns the validated object and the priced usage."""
         ...

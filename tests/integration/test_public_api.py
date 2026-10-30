@@ -22,7 +22,7 @@ END = LatLon(lat=12.97467, lon=77.64058)
 EXAMPLE_TOKENS = 2
 EXAMPLE_HAZARD_IDS = {"o1", "o2", "o3", "o4"}
 LIST_KEYS = {"slug", "name", "city", "quality", "length_m", "thumbnail_url", "best_score", "best_distance_m",
-             "run_count", "walkability"}
+             "run_count", "walkability", "model"}
 HAZARD_KEYS = {"id", "type", "label", "confidence", "tile_px", "latlon", "action"}
 
 
@@ -274,53 +274,68 @@ def test_phase_2_endpoints_are_not_served_in_phase_1(client, ready_segment):
     assert client.get(f"/api/segments/{ready_segment.slug}/runs?limit=5").status_code in (404, 405)
 
 
-# ---------------------------------------------------------------- the really generated street (S2 fixture)
+# ---------------------------------------------------------------- the recorded v2 street (replaces the live-generated fixture)
+# Real generation is exercised by the live tier (tests/live, slice S7); here the same routes run on a recorded v2 street.
 
 
-def test_generated_street_is_in_the_gallery_with_a_servable_thumbnail(client, generated_segment):
-    entry = _gallery_entry(client, generated_segment)
+def test_v2_street_is_in_the_gallery_with_ready_quality(client, v2_street):
+    entry = _gallery_entry(client, v2_street.slug)
 
-    assert entry is not None, "generated street must appear in the gallery"
+    assert entry is not None, "published v2 street must appear in the gallery"
     assert set(entry) == LIST_KEYS
-    assert entry["quality"] in ("full", "satellite_only")
-    assert 30.0 <= entry["length_m"] <= 150.0
-    assert 0 <= entry["walkability"]["score"] <= 100
-    assert entry["thumbnail_url"].startswith("/media/previews/")
-    thumb = client.get(entry["thumbnail_url"])
-    assert thumb.status_code == 200 and thumb.headers["Cache-Control"] == "public, max-age=86400"
-    assert thumb.content[:8] == b"\x89PNG\r\n\x1a\n"
+    assert entry["length_m"] == pytest.approx(100.0)
+    assert 0 <= entry["walkability"]["score"] <= 100 and entry["run_count"] == 0
 
 
-def test_generated_scene_validates_and_its_media_urls_resolve(client, generated_segment):
-    body = client.get(f"/api/segments/{generated_segment}/scene").json()
+def test_v2_scene_validates_as_scene_v2(client, v2_street):
+    from hero.model.scene_v2 import SceneV2
+
+    body = client.get(f"/api/segments/{v2_street.slug}/scene").json()
 
     assert body["ok"] is True
-    scene = Scene.model_validate(body["data"])
-    assert scene.segment.slug == generated_segment
-    tile = client.get(scene.ground.tile_url)
-    assert tile.status_code == 200 and tile.headers["Content-Type"].startswith("image/")
-    for obj in scene.objects:
-        if obj.billboard_url:
-            assert client.get(obj.billboard_url).status_code == 200, obj.id
-    for building in scene.buildings:
-        if building.facade_url:
-            assert client.get(building.facade_url).status_code == 200, building.id
+    scene = SceneV2.model_validate(body["data"])
+    assert scene.segment.slug == v2_street.slug and scene.about.model_version == 2
 
 
-def test_run_on_generated_street_reports_its_real_hazards(client, generated_segment):
-    scene = Scene.model_validate(client.get(f"/api/segments/{generated_segment}/scene").json()["data"])
-    distance = scene.segment.length_m * 1.5
-    tokens = min(len(scene.tokens), 1)
-    body = _valid_run(score=round(distance) + 50 * tokens, distance_m=distance, tokens=tokens)
-    body["loops"] = 1
-    body["crashed_into_type"] = scene.hazards()[0].type.value if scene.hazards() else None
-    body["crashed_into_id"] = scene.hazards()[0].id if scene.hazards() else None
+# ---------------------------------------------------------------- Phase 2: model badge, scene v2
 
-    resp = client.post(f"/api/segments/{generated_segment}/runs", json=body)
+
+@pytest.fixture()
+def v2_street(test_db, tmp_path):
+    from hero.tools.load_fixture_street import seed_fixture_segment
+    from tests.fixtures.street_fixtures import write_mini_fixture_dir
+
+    slug = f"pub-v2-{uuid.uuid4().hex[:8]}"
+    return seed_fixture_segment(slug, fixture_dir=write_mini_fixture_dir(tmp_path / "fx", slug=slug))
+
+
+def test_gallery_phase1_segment_has_null_model_badge(client, ready_segment):
+    assert _gallery_entry(client, ready_segment.slug)["model"] is None
+
+
+def test_gallery_v2_segment_has_fidelity_badge(client, v2_street):
+    entry = _gallery_entry(client, v2_street.slug)
+
+    assert set(entry["model"]) == {"version", "fidelity_level", "fidelity_label", "photos", "updated_at", "legacy"}
+    assert entry["model"]["version"] == 2 and entry["model"]["fidelity_level"] == "L2"
+    assert entry["model"]["photos"] == 4 and entry["model"]["legacy"] is False
+    assert "Multi-view" in entry["model"]["fidelity_label"]
+    assert client.get(f"/api/segments/{v2_street.slug}").json()["data"]["model"] == entry["model"]
+
+
+def test_scene_v2_is_served_with_about(client, v2_street):
+    scene = client.get(f"/api/segments/{v2_street.slug}/scene").json()["data"]
+    assert scene["schema_version"] == 2 and scene["about"]["model_version"] == 2
+    assert "path" in scene and "corridor" in scene
+
+
+def test_scene_v1_still_served_for_phase1_segment(client, ready_segment):
+    assert client.get(f"/api/segments/{ready_segment.slug}/scene").json()["data"]["schema_version"] == 1
+
+
+def test_game_run_on_v2_segment_returns_hazards_with_string_types(client, v2_street):
+    resp = client.post(f"/api/segments/{v2_street.slug}/runs", json=_valid_run(score=5, distance_m=5.0, tokens=0))
 
     assert resp.status_code == 200, resp.text
-    data = resp.json()["data"]
-    assert data["walkability"] == scene.walkability.model_dump()
-    assert [h["id"] for h in data["hazards"]] == [h.id for h in scene.hazards()]
-    assert data["best_score"] >= data["score"]
-    assert _gallery_entry(client, generated_segment)["run_count"] >= 1
+    hazards = resp.json()["data"]["hazards"]
+    assert hazards and hazards[0]["type"] == "parked_vehicle" and hazards[0]["action"] == "dodge"

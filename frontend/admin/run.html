@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>#hero · Pipeline run</title>
   <link rel="stylesheet" href="/css/base.css?v=3">
-  <link rel="stylesheet" href="/css/admin.css?v=3">
+  <link rel="stylesheet" href="/css/admin.css?v=4">
 </head>
 <body>
   <main id="app" data-hero-page="admin-run" class="page admin-page">
@@ -16,14 +16,16 @@
         <p class="tagline run-meta">
           <span id="run-status" class="chip">loading</span>
           <span id="live" class="live" hidden><span class="dot"></span>Live</span>
+          <span id="mode-chip" class="chip" data-testid="mode-chip" hidden></span>
           <span id="elapsed" class="muted"></span>
         </p>
+        <p id="model-line" class="model-line" data-testid="model-line" hidden></p>
       </div>
       <div class="header-actions">
         <a id="play-link" class="button-link" hidden>Open in game</a>
         <span class="stub-wrap">
-          <button type="button" disabled data-stub="true" title="Coming in Phase 2: drag footpath ranges and objects on the satellite tile, no re-spend">Correct detected lines — Phase 2</button>
-          <small class="muted">Coming in Phase 2</small>
+          <button type="button" disabled data-stub="true" title="Coming in Phase 3: drag footpath ranges and objects on the satellite tile, no re-spend">Correct detected lines — Phase 3</button>
+          <small class="muted">Coming in Phase 3</small>
         </span>
       </div>
     </header>
@@ -47,6 +49,13 @@
           <p><code id="err-code"></code> at step <code id="err-step"></code></p>
           <p id="err-message"></p>
           <p class="muted" id="err-advice"></p>
+        </section>
+
+        <section class="card" id="report-card" data-testid="run-report" aria-labelledby="report-title" hidden>
+          <h2 id="report-title">Run report</h2>
+          <p id="report-loading" class="muted">Loading report…</p>
+          <div id="report-error" class="error-box" hidden><p class="error"></p><button type="button" class="secondary" id="report-retry">Retry</button></div>
+          <div id="report-body"></div>
         </section>
 
         <section class="card" aria-labelledby="cost-title">
@@ -73,6 +82,11 @@
           <p id="steps-empty" class="muted" hidden>Waiting for the first step…</p>
         </section>
 
+        <section class="card" id="images-used" data-testid="images-used" aria-labelledby="used-title" hidden>
+          <h2 id="used-title">Images used</h2>
+          <div class="obs-grid"></div>
+        </section>
+
         <section class="card" id="imagery" aria-labelledby="imagery-title">
           <h2 id="imagery-title">Imagery</h2>
           <p id="streetview-notice" class="notice" hidden>Street View unavailable here → satellite-only scene.</p>
@@ -86,19 +100,19 @@
           <p id="imagery-empty" class="muted" hidden>No imagery fetched yet.</p>
         </section>
 
-        <section class="card" aria-labelledby="graphs-title">
+        <section class="card" id="card-graphs" aria-labelledby="graphs-title">
           <h2 id="graphs-title">Scene graph</h2>
           <details id="layout-json"><summary>Layout (pass A)</summary><pre class="json"></pre></details>
           <details id="obstacles-json"><summary>Obstacles (pass B)</summary><pre class="json"></pre></details>
         </section>
 
-        <section class="card" aria-labelledby="iter-title">
+        <section class="card" id="card-iter" aria-labelledby="iter-title">
           <h2 id="iter-title">Review iterations</h2>
           <div id="iterations"></div>
           <p id="iterations-empty" class="muted" hidden>No review iterations yet.</p>
         </section>
 
-        <section class="card" aria-labelledby="final-title">
+        <section class="card" id="card-final" aria-labelledby="final-title">
           <h2 id="final-title">Final scene</h2>
           <div id="final" hidden>
             <figure id="final-preview-fig" hidden><img id="final-preview" alt="Final top-down preview"><figcaption>Final top-down preview</figcaption></figure>
@@ -110,6 +124,6 @@
       </div>
     </div>
   </main>
-  <script type="module" src="/js/admin/run_view.js?v=3"></script>
+  <script type="module" src="/js/admin/run_view.js?v=4"></script>
 </body>
 </html>

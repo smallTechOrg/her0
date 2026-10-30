@@ -1,17 +1,30 @@
-// Builds the Three.js world from a Scene JSON: x_m -> -z, lat_m -> +x (spec/data.md).
-// Low-poly, Lambert/Basic materials, no post-processing. One segment group is built and cloned
-// for the next loop so geometry/materials are shared.
+// Builds the Three.js world from a Scene JSON (v1 or v2) along a Track (path.js).
+// Low-poly, Lambert/Basic materials, no post-processing. Draw-call budget (spec/ui.md): ground, footpath/kerb/
+// carriageway strips, buildings and object boxes are each MERGED into one vertex-coloured mesh per copy;
+// tokens are one InstancedMesh per copy; geometry/materials are shared by the three chained copies.
 import * as THREE from '/vendor/three.module.js';
+import { makeTrack } from '/js/game/path.js?v=4';
 
 export const ACTION_COLORS = { jump: 0x4ea1ff, slide: 0xc07bff, dodge: 0xff4d4f, none: 0xd9d9d9 };
-const TYPE_COLORS = {
-  parked_vehicle: 0xb8c0cc, pothole: 0x2b2b2b, open_drain: 0x1d3a4a, debris: 0x8a6d3b, pole: 0x9aa0a6,
+export const TYPE_COLORS = {
+  parked_vehicle: 0xb8c0cc, pothole: 0x2b2b2b, open_drain: 0x1d3a4a, drain: 0x1d3a4a, debris: 0x8a6d3b, pole: 0x9aa0a6,
   tree: 0x2f7d3a, signboard: 0xffd166, low_branch: 0x4c8a3a, footpath_gap: 0x5a4a3a, crossing: 0xf2f2f2, ramp: 0xaaaaaa,
+  bollard: 0xe8e8e8, wall: 0x8c8479, gate: 0x6a6f78, kerb_cut: 0xaaaaaa, bus_stop: 0x3d7cc9, shopfront: 0xc99a5b,
 };
+const FOOTPATH_COLORS = { intact: 0x8d8d8d, broken: 0x5e5248, blocked: 0xd9a23a, encroached: 0xd9a23a, unknown: 0x6d6d73 };
+const STRIP_COLORS = {
+  carriageway: 0x34373d, shoulder: 0x44474d, parking: 0x3f4248, cycle_lane: 0x3f6b5a, verge: 0x4f6b3a, planting: 0x3f6b30,
+  median: 0x707070, kerb: 0x9a9a9a, forecourt: 0x7a6f62, unknown: 0x55585d, footpath: 0x8d8d8d,
+};
+const KERB_COLOR = 0xb9b9b9;
+const EARTH_COLOR = 0x6b4f35;
+const SCENERY_DIM = 0.45;
 const MAX_TILE_PX = 1024;
 const MAX_CROP_PX = 256;
-const GROUND_LAT_MIN = -40;
-const GROUND_LAT_MAX = 40;
+const MAX_LABELS_PER_COPY = 6;
+const COPIES = 3;
+// ground_uv is tile (px / size), y down, same convention as tile_px; Three's flipped CanvasTexture wants 1 - v.
+const uvY = (v) => 1 - v;
 
 export function latToX(latM) { return latM; }
 export function xmToZ(xM) { return -xM; }
@@ -45,7 +58,7 @@ async function loadTexture(url, maxPx, tracker) {
   return tex;
 }
 
-function textSprite(text, { color = '#ffffff', bg = 'rgba(0,0,0,0.6)', px = 48, scale = 1 } = {}) {
+function textTexture(text, { color = '#ffffff', bg = 'rgba(0,0,0,0.6)', px = 48 } = {}) {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   ctx.font = `bold ${px}px system-ui, sans-serif`;
@@ -60,135 +73,313 @@ function textSprite(text, { color = '#ffffff', bg = 'rgba(0,0,0,0.6)', px = 48, 
   ctx.fillText(text, 12, canvas.height / 2);
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
+  return { tex, aspect: canvas.width / canvas.height };
+}
+
+function textSprite(text, opts = {}) {
+  const { scale = 1, ...rest } = opts;
+  const { tex, aspect } = textTexture(text, rest);
   const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }));
-  const aspect = canvas.width / canvas.height;
   sprite.scale.set(0.5 * aspect * scale, 0.5 * scale, 1);
   return sprite;
 }
 
-function laneCenterLat(scene, lanes) {
-  const lats = lanes.map((i) => scene.cross_section.lanes[i].lat_m);
-  return lats.reduce((a, b) => a + b, 0) / lats.length;
+// ------------------------------------------------------------------ merged triangle-soup buffer
+
+class Buf {
+  constructor(withUv = false) { this.p = []; this.n = []; this.c = []; this.u = withUv ? [] : null; this.tris = 0; }
+
+  tri(a, b, c, col, uv) {
+    const ux = b[0] - a[0], uy = b[1] - a[1], uz = b[2] - a[2];
+    const vx = c[0] - a[0], vy = c[1] - a[1], vz = c[2] - a[2];
+    let nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+    const len = Math.hypot(nx, ny, nz) || 1;
+    nx /= len; ny /= len; nz /= len;
+    for (const v of [a, b, c]) { this.p.push(v[0], v[1], v[2]); this.n.push(nx, ny, nz); this.c.push(col.r, col.g, col.b); }
+    if (this.u) this.u.push(...(uv || [0, 0, 0, 0, 0, 0]));
+    this.tris += 1;
+  }
+
+  quad(a, b, c, d, col, uv) {
+    this.tri(a, b, c, col, uv && [uv[0], uv[1], uv[2], uv[3], uv[4], uv[5]]);
+    this.tri(a, c, d, col, uv && [uv[0], uv[1], uv[4], uv[5], uv[6], uv[7]]);
+  }
+
+  /** Append a (transformed) three geometry; colour is flat per call. */
+  geometry(geo, matrix, col) {
+    const g = geo.index ? geo.toNonIndexed() : geo.clone();
+    g.applyMatrix4(matrix);
+    const pos = g.getAttribute('position');
+    const uv = g.getAttribute('uv');
+    for (let i = 0; i < pos.count; i += 3) {
+      const v = [0, 1, 2].map((k) => [pos.getX(i + k), pos.getY(i + k), pos.getZ(i + k)]);
+      this.tri(v[0], v[1], v[2], col, this.u && uv ? [uv.getX(i), uv.getY(i), uv.getX(i + 1), uv.getY(i + 1), uv.getX(i + 2), uv.getY(i + 2)] : null);
+    }
+    g.dispose();
+  }
+
+  get empty() { return this.tris === 0; }
+
+  mesh(material, name) {
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(this.p, 3));
+    geo.setAttribute('normal', new THREE.Float32BufferAttribute(this.n, 3));
+    geo.setAttribute('color', new THREE.Float32BufferAttribute(this.c, 3));
+    if (this.u) geo.setAttribute('uv', new THREE.Float32BufferAttribute(this.u, 2));
+    geo.computeBoundingSphere();
+    const m = new THREE.Mesh(geo, material);
+    m.name = name;
+    return m;
+  }
 }
 
-function buildGround(scene, tileTex) {
-  const { frame_to_px: f, size_px } = scene.ground;
-  const L = scene.segment.length_m;
-  const corners = [[0, GROUND_LAT_MIN], [L, GROUND_LAT_MIN], [L, GROUND_LAT_MAX], [0, GROUND_LAT_MAX]];
-  const pos = [];
-  const uv = [];
-  for (const [xm, lat] of corners) {
-    pos.push(latToX(lat), 0, xmToZ(xm));
-    const px = f.origin_px[0] + xm * f.along_px_per_m[0] + lat * f.across_px_per_m[0];
-    const py = f.origin_px[1] + xm * f.along_px_per_m[1] + lat * f.across_px_per_m[1];
-    uv.push(px / size_px[0], 1 - py / size_px[1]);
+const colour = (hex, k = 1) => { const c = new THREE.Color(hex); if (k !== 1) c.multiplyScalar(k); return c; };
+
+// ------------------------------------------------------------------ ground
+
+function buildGround(track, tileTex) {
+  const st = track.stations, sm = track.samples, h = track.groundHalf;
+  const pos = [], uv = [], idx = [];
+  const useUv = !!tileTex;
+  for (let i = 0; i < st.length; i++) {
+    const p = sm[i], c = Math.cos(p.theta), s = Math.sin(p.theta);
+    pos.push(p.x - h * c, 0, p.z - h * s, p.x + h * c, 0, p.z + h * s);
+    const g = st[i].ground_uv;
+    if (useUv && g) uv.push(g[0][0], uvY(g[0][1]), g[1][0], uvY(g[1][1])); else uv.push(0, 0, 0, 0);
+    if (i > 0) { const a = 2 * (i - 1); idx.push(a, a + 1, a + 3, a, a + 3, a + 2); }
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
-  geo.setIndex([0, 2, 1, 0, 3, 2]);
+  geo.setIndex(idx);
   geo.computeVertexNormals();
+  geo.computeBoundingSphere();
   const mat = tileTex ? new THREE.MeshBasicMaterial({ map: tileTex }) : new THREE.MeshBasicMaterial({ color: 0x3a3f47 });
+  mat.polygonOffset = true; mat.polygonOffsetFactor = 1; mat.polygonOffsetUnits = 1;
   const mesh = new THREE.Mesh(geo, mat);
   mesh.name = 'ground';
   return mesh;
 }
 
-function buildCoverageStrips(scene) {
-  const group = new THREE.Group();
-  const lane0 = scene.cross_section.lanes[0];
-  const colors = { intact: 0x8d8d8d, broken: 0x5e5248, missing: null };
-  for (const range of scene.cross_section.footpath_coverage) {
-    const color = colors[range.state];
-    if (color === null || color === undefined) continue;
-    const len = range.to_m - range.from_m;
-    const geo = new THREE.PlaneGeometry(lane0.width_m, len);
-    const mesh = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color }));
-    mesh.rotation.x = -Math.PI / 2;
-    mesh.position.set(latToX(lane0.lat_m), 0.03, xmToZ(range.from_m + len / 2));
-    group.add(mesh);
+// ------------------------------------------------------------------ strips (footpath, kerb, carriageway ...)
+
+function buildStrips(track) {
+  const buf = new Buf();
+  const st = track.stations, sm = track.samples;
+  const pt = (i, lat, y) => {
+    const p = sm[i];
+    return [p.x + lat * Math.cos(p.theta), y, p.z + lat * Math.sin(p.theta)];
+  };
+  // A, B (station i, lo/hi) -> C, D (station i+1): up-facing winding.
+  const ribbon = (i, lo0, hi0, lo1, hi1, y, col) =>
+    buf.quad(pt(i, lo0, y), pt(i, hi0, y), pt(i + 1, hi1, y), pt(i + 1, lo1, y), col);
+  for (let i = 0; i < st.length - 1; i++) {
+    const a = st[i], b = st[i + 1];
+    // 1. non-footpath strips (carriageway darker, verges ...), matched by kind
+    for (const sa of a.strips) {
+      const sb = b.strips.find((x) => x.kind === sa.kind) || sa;
+      ribbon(i, sa.lo, sa.hi, sb.lo, sb.hi, 0.02, colour(STRIP_COLORS[sa.kind] ?? STRIP_COLORS.unknown));
+    }
+    // 2. footpath: raised top coloured by state + a kerb rib along its road-side edge; missing = a gap showing earth
+    const fa = a.footpath, fb = b.footpath;
+    if (fa && fb) {
+      const ha = Math.max(0.1, fa.height_m || 0), hb = Math.max(0.1, fb.height_m || 0);
+      ribbon(i, fa.lo, fa.hi, fb.lo, fb.hi, (ha + hb) / 2, colour(FOOTPATH_COLORS[fa.state] ?? FOOTPATH_COLORS.unknown));
+      const k = colour(KERB_COLOR);
+      // rib on the lo (road-side) edge, facing the road (-lat)
+      buf.quad(pt(i + 1, fb.lo, 0), pt(i, fa.lo, 0), pt(i, fa.lo, ha), pt(i + 1, fb.lo, hb), k);
+    } else {
+      const c0 = a.lane_lat[0], c1 = b.lane_lat[0];
+      ribbon(i, c0 - 0.8, c0 + 0.8, c1 - 0.8, c1 + 0.8, 0.03, colour(EARTH_COLOR));
+    }
   }
-  return group;
+  const mat = new THREE.MeshLambertMaterial({ vertexColors: true });
+  return buf.mesh(mat, 'strips');
 }
 
-function buildBuilding(b, facadeTex) {
-  const xs = b.footprint.map((p) => p[0]);
-  const lats = b.footprint.map((p) => p[1]);
-  const minX = Math.min(...xs), maxX = Math.max(...xs), minLat = Math.min(...lats), maxLat = Math.max(...lats);
-  const depth = Math.max(0.5, maxX - minX), width = Math.max(0.5, maxLat - minLat);
-  const geo = new THREE.BoxGeometry(width, b.height_m, depth);
-  const base = new THREE.MeshLambertMaterial({ color: new THREE.Color(b.color_hex), flatShading: true });
-  let material = base;
-  if (facadeTex) {
-    const facade = new THREE.MeshLambertMaterial({ map: facadeTex });
-    // BoxGeometry faces: +x, -x, +y, -y, +z, -z. Street-facing = toward the road centreline (lat 0).
-    const streetFaceIndex = (minLat + maxLat) / 2 >= 0 ? 1 : 0;
-    material = [base, base, base, base, base, base];
-    material[streetFaceIndex] = facade;
+// ------------------------------------------------------------------ buildings
+
+function subEdges(points, maxStep) {
+  const out = [];
+  for (let i = 0; i < points.length; i++) {
+    const p = points[i], q = points[(i + 1) % points.length];
+    const n = Math.max(1, Math.ceil(Math.hypot(q[0] - p[0], q[1] - p[1]) / maxStep));
+    for (let k = 0; k < n; k++) {
+      out.push({ edge: i, a: [p[0] + (q[0] - p[0]) * k / n, p[1] + (q[1] - p[1]) * k / n],
+        b: [p[0] + (q[0] - p[0]) * (k + 1) / n, p[1] + (q[1] - p[1]) * (k + 1) / n] });
+    }
   }
-  const mesh = new THREE.Mesh(geo, material);
-  mesh.position.set(latToX((minLat + maxLat) / 2), b.height_m / 2, xmToZ((minX + maxX) / 2));
-  mesh.name = `building:${b.id}`;
-  return mesh;
+  return out;
 }
 
-function buildObject(scene, obj, billboardTex) {
-  const group = new THREE.Group();
-  group.name = `object:${obj.id}`;
-  const lat = laneCenterLat(scene, obj.lanes);
-  const z = xmToZ(obj.x_m + obj.length_m / 2);
-  const w = Math.max(obj.size_m.w, 0.4), h = Math.max(obj.size_m.h, 0.05), d = Math.max(obj.length_m, 0.4);
-
-  if (obj.action === 'none') {
-    // crossing / ramp: flat strip across its lanes.
-    const strip = new THREE.Mesh(new THREE.PlaneGeometry(w, d),
-      new THREE.MeshLambertMaterial({ color: TYPE_COLORS[obj.type] || 0xffffff, transparent: true, opacity: 0.85 }));
-    strip.rotation.x = -Math.PI / 2;
-    strip.position.set(latToX(lat), 0.05, z);
-    group.add(strip);
-    return group;
-  }
-
-  if (billboardTex) {
-    const aspect = billboardTex.image.width / billboardTex.image.height;
-    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: billboardTex, transparent: true }));
-    const sh = Math.max(h, 0.5);
-    sprite.scale.set(Math.max(w, sh * aspect), sh, 1);
-    sprite.position.set(latToX(lat), sh / 2, z);
-    group.add(sprite);
-  } else {
-    const box = new THREE.Mesh(new THREE.BoxGeometry(w, Math.max(h, 0.15), d),
-      new THREE.MeshLambertMaterial({ color: TYPE_COLORS[obj.type] || ACTION_COLORS[obj.action], flatShading: true }));
-    box.position.set(latToX(lat), Math.max(h, 0.15) / 2, z);
-    group.add(box);
-    const label = textSprite(obj.label, { bg: 'rgba(0,0,0,0.65)' });
-    label.position.set(latToX(lat), Math.max(h, 0.15) + 0.5, z);
-    group.add(label);
-  }
-  if (obj.confidence < 0.6) {
-    const outline = new THREE.Mesh(new THREE.BoxGeometry(w + 0.2, Math.max(h, 0.15) + 0.2, d + 0.2),
-      new THREE.MeshBasicMaterial({ color: 0x9aa0a6, transparent: true, opacity: 0.25, depthWrite: false }));
-    outline.position.set(latToX(lat), (Math.max(h, 0.15) + 0.2) / 2, z);
-    group.add(outline);
-    const badge = textSprite('?', { color: '#000', bg: '#9aa0a6', scale: 0.8 });
-    badge.position.set(latToX(lat) + w / 2, Math.max(h, 0.5) + 0.9, z);
-    group.add(badge);
-  }
-  return group;
+// Footprints are [s, lat]; each edge is cut every 2.5 m of path so walls follow the bend.
+function buildBuildings(track, scene, facadeTexs) {
+  const walls = new Buf();
+  const facades = [];
+  scene.buildings.forEach((b, bi) => {
+    const col = colour(b.color_hex);
+    const roofCol = colour(b.color_hex, 0.8);
+    const fp = b.footprint;
+    // street-facing edge = nearest to the road centreline among edges running along s (only used with a facade)
+    let facadeEdge = -1;
+    if (facadeTexs[bi]) {
+      let best = Infinity;
+      for (let i = 0; i < fp.length; i++) {
+        const p = fp[i], q = fp[(i + 1) % fp.length];
+        if (Math.abs(q[0] - p[0]) < Math.abs(q[1] - p[1]) || Math.abs(q[0] - p[0]) < 1) continue;
+        const d = Math.abs((p[1] + q[1]) / 2);
+        if (d < best) { best = d; facadeEdge = i; }
+      }
+    }
+    let subs = subEdges(fp, 2.5).map((e) => ({ ...e, wa: track.world(e.a[0], e.a[1]), wb: track.world(e.b[0], e.b[1]) }));
+    // outward-facing walls need negative shoelace area in (x, z)
+    let area = 0;
+    for (const e of subs) area += e.wa.x * e.wb.z - e.wb.x * e.wa.z;
+    if (area > 0) subs = subs.reverse().map((e) => ({ edge: e.edge, a: e.b, b: e.a, wa: e.wb, wb: e.wa }));
+    const H = b.height_m;
+    const fac = [];
+    for (const e of subs) {
+      const q = [[e.wa.x, 0, e.wa.z], [e.wb.x, 0, e.wb.z], [e.wb.x, H, e.wb.z], [e.wa.x, H, e.wa.z]];
+      if (e.edge === facadeEdge) fac.push({ q, sa: e.a[0], sb: e.b[0] }); else walls.quad(q[0], q[1], q[2], q[3], col);
+    }
+    if (fac.length) {
+      const fb = new Buf(true);
+      const lo = Math.min(...fac.map((f) => Math.min(f.sa, f.sb))), hi = Math.max(...fac.map((f) => Math.max(f.sa, f.sb)));
+      const u = (s) => (hi > lo ? (s - lo) / (hi - lo) : 0);
+      for (const f of fac) fb.quad(f.q[0], f.q[1], f.q[2], f.q[3], new THREE.Color(0xffffff), [u(f.sa), 0, u(f.sb), 0, u(f.sb), 1, u(f.sa), 1]);
+      facades.push({ buf: fb, tex: facadeTexs[bi], id: b.id });
+    }
+    // roof: triangulate the (x, z) ring
+    const contour = subs.map((e) => new THREE.Vector2(e.wa.x, e.wa.z));
+    const tris = THREE.ShapeUtils.triangulateShape(contour, []);
+    for (const [i0, i1, i2] of tris) {
+      const A = [contour[i0].x, H, contour[i0].y], B = [contour[i1].x, H, contour[i1].y], C = [contour[i2].x, H, contour[i2].y];
+      const crossY = (B[2] - A[2]) * (C[0] - A[0]) - (B[0] - A[0]) * (C[2] - A[2]);
+      if (crossY >= 0) walls.tri(A, B, C, roofCol); else walls.tri(A, C, B, roofCol);
+    }
+  });
+  const out = [];
+  if (!walls.empty) out.push(walls.mesh(new THREE.MeshLambertMaterial({ vertexColors: true }), 'buildings'));
+  for (const f of facades) out.push(f.buf.mesh(new THREE.MeshLambertMaterial({ map: f.tex }), `facade:${f.id}`));
+  return out;
 }
 
-function buildToken(scene, tok, coinGeo, coinMat) {
-  const mesh = new THREE.Mesh(coinGeo, coinMat);
-  mesh.name = `token:${tok.id}`;
-  mesh.rotation.x = Math.PI / 2;
-  mesh.position.set(latToX(scene.cross_section.lanes[tok.lane].lat_m), 0.9, xmToZ(tok.x_m));
-  return mesh;
+// ------------------------------------------------------------------ objects
+
+const FLAT_TYPES = new Set(['crossing', 'ramp', 'kerb_cut']);
+const UNIT_BOX = new THREE.BoxGeometry(1, 1, 1);
+
+function laneCenterLat(track, scene, obj, sC) {
+  if (typeof obj.lateral_m === 'number') return obj.lateral_m;
+  const lats = obj.lanes.map((i) => track.laneLat(sC, i));
+  return lats.reduce((a, b) => a + b, 0) / lats.length;
 }
 
-// Returns {world, tokensByCopy:[Map, Map, Map], allTokens:[...], tileLoaded}.
-// Three copies of the segment are chained along -z (current, next, next+1): the camera sees ~60 m of
-// fog range ahead, so on a 30 m segment two copies would show void past the second one.
+function buildObjects(track, scene, billboardTexs, questionTex) {
+  const v2 = scene.schema_version === 2;
+  const boxes = new Buf();
+  const outlines = new Buf();
+  const badges = new Buf(true);
+  const extras = [];
+  let labels = 0;
+  scene.objects.forEach((obj, i) => {
+    const sC = Math.min(track.length - 0.01, obj.x_m + obj.length_m / 2);
+    const lat = laneCenterLat(track, scene, obj, sC);
+    const w = track.world(sC, lat);
+    const yaw = -w.theta + (v2 ? THREE.MathUtils.degToRad(obj.yaw_deg || 0) : 0);
+    const dim = obj.scenery ? SCENERY_DIM : 1;
+    const bw = Math.max(obj.size_m.w, 0.4), bh = Math.max(obj.size_m.h, 0.05), bd = Math.max(obj.length_m, 0.4);
+    const rot = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, yaw, 0));
+    const col = colour(TYPE_COLORS[obj.type] ?? ACTION_COLORS[obj.action] ?? 0xffffff, dim);
+
+    if (v2 ? FLAT_TYPES.has(obj.type) : obj.action === 'none') {
+      // crossing / ramp: flat strip across its lanes.
+      const m = new THREE.Matrix4().compose(new THREE.Vector3(w.x, 0.05, w.z), rot, new THREE.Vector3(bw, 0.02, bd));
+      boxes.geometry(UNIT_BOX, m, col);
+      return;
+    }
+    if (v2 && obj.type === 'footpath_gap') return; // the corridor already draws the gap (earth)
+
+    const tex = billboardTexs[i];
+    let top = Math.max(bh, 0.15);
+    if (tex) {
+      const aspect = tex.image.width / tex.image.height;
+      const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: obj.scenery, opacity: obj.scenery ? 0.55 : 1 }));
+      const sh = Math.max(bh, 0.5);
+      sprite.scale.set(Math.max(bw, sh * aspect), sh, 1);
+      sprite.position.set(w.x, sh / 2, w.z);
+      sprite.name = `billboard:${obj.id}`;
+      extras.push(sprite);
+      top = sh;
+    } else {
+      const hh = Math.max(bh, 0.15);
+      const m = new THREE.Matrix4().compose(new THREE.Vector3(w.x, hh / 2, w.z), rot, new THREE.Vector3(bw, hh, bd));
+      boxes.geometry(UNIT_BOX, m, col);
+      if (!obj.scenery && labels < MAX_LABELS_PER_COPY) {
+        const label = textSprite(obj.label, { bg: 'rgba(0,0,0,0.65)' });
+        label.position.set(w.x, hh + 0.5, w.z);
+        extras.push(label);
+        labels += 1;
+      }
+    }
+    if (obj.confidence < 0.6) {
+      const oh = top + 0.2;
+      const m = new THREE.Matrix4().compose(new THREE.Vector3(w.x, oh / 2, w.z), rot, new THREE.Vector3(bw + 0.2, oh, bd + 0.2));
+      outlines.geometry(UNIT_BOX, m, colour(0x9aa0a6));
+      // "?" badge: a quad facing back along the path (towards the camera)
+      const bm = new THREE.Matrix4().compose(
+        new THREE.Vector3(w.x + Math.cos(w.theta) * bw / 2, Math.max(top, 0.5) + 0.9, w.z + Math.sin(w.theta) * bw / 2),
+        new THREE.Quaternion().setFromEuler(new THREE.Euler(0, -w.theta, 0)), new THREE.Vector3(0.7, 0.7, 1));
+      badges.geometry(new THREE.PlaneGeometry(1, 1), bm, new THREE.Color(0xffffff));
+    }
+  });
+  const out = [];
+  if (!boxes.empty) out.push(boxes.mesh(new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }), 'objects'));
+  if (!outlines.empty) {
+    out.push(outlines.mesh(new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.25, depthWrite: false }), 'outlines'));
+  }
+  if (!badges.empty) {
+    out.push(badges.mesh(new THREE.MeshBasicMaterial({ map: questionTex, transparent: true, side: THREE.DoubleSide }), 'badges'));
+  }
+  return [...out, ...extras];
+}
+
+// ------------------------------------------------------------------ tokens (InstancedMesh per copy)
+
+const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _e = new THREE.Euler(), _v = new THREE.Vector3(), _s = new THREE.Vector3(1, 1, 1);
+const ZERO = new THREE.Matrix4().makeScale(0, 0, 0);
+
+function buildTokenSet(track, scene, coinGeo, coinMat) {
+  const defs = scene.tokens.map((tok) => {
+    const w = track.world(tok.x_m, track.laneLat(tok.x_m, tok.lane));
+    return { id: tok.id, x: w.x, z: w.z, theta: w.theta };
+  });
+  const mesh = new THREE.InstancedMesh(coinGeo, coinMat, Math.max(1, defs.length));
+  mesh.count = defs.length;
+  mesh.frustumCulled = false;
+  mesh.name = 'tokens';
+  return { mesh, defs, hidden: new Set(), index: new Map(defs.map((d, i) => [d.id, i])) };
+}
+
+function updateTokenSet(set, t) {
+  for (let i = 0; i < set.defs.length; i++) {
+    const d = set.defs[i];
+    if (set.hidden.has(d.id)) { set.mesh.setMatrixAt(i, ZERO); continue; }
+    _e.set(Math.PI / 2, t * 3 - d.theta, 0, 'YXZ');
+    _q.setFromEuler(_e);
+    _v.set(d.x, 0.9, d.z);
+    set.mesh.setMatrixAt(i, _m.compose(_v, _q, _s));
+  }
+  set.mesh.instanceMatrix.needsUpdate = true;
+}
+
+// ------------------------------------------------------------------ world
+
+// Returns {world, track, hideToken(id), showAllTokens(), tick(t), tileLoaded}.
+// Three rigid copies of the segment are chained along the path (current, next, next+1): the camera sees ~60 m
+// of fog range ahead, so on a short segment fewer copies would show void past the last one.
 export async function buildWorld(scene, onProgress) {
+  const track = makeTrack(scene);
   const urls = [scene.ground.tile_url, ...scene.buildings.map((b) => b.facade_url), ...scene.objects.map((o) => o.billboard_url)]
     .filter(Boolean);
   const tracker = { done: 0, total: urls.length, onProgress: onProgress || (() => {}) };
@@ -200,37 +391,38 @@ export async function buildWorld(scene, onProgress) {
     Promise.all(scene.objects.map((o) => (o.billboard_url ? loadTexture(o.billboard_url, MAX_CROP_PX, tracker) : null))),
   ]);
 
+  const q = textTexture('?', { color: '#000', bg: '#9aa0a6', px: 64 });
   const segment = new THREE.Group();
   segment.name = 'segment';
-  segment.add(buildGround(scene, tileTex));
-  segment.add(buildCoverageStrips(scene));
-  scene.buildings.forEach((b, i) => segment.add(buildBuilding(b, facadeTexs[i])));
-  scene.objects.forEach((o, i) => segment.add(buildObject(scene, o, billboardTexs[i])));
+  segment.add(buildGround(track, tileTex));
+  segment.add(buildStrips(track));
+  for (const m of buildBuildings(track, scene, facadeTexs)) segment.add(m);
+  for (const m of buildObjects(track, scene, billboardTexs, q.tex)) segment.add(m);
+
   const coinGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.08, 12);
   const coinMat = new THREE.MeshLambertMaterial({ color: 0xffb100, emissive: 0x553a00 });
-  const tokenMeshes = [];
-  for (const tok of scene.tokens) {
-    const m = buildToken(scene, tok, coinGeo, coinMat);
-    tokenMeshes.push(m);
-    segment.add(m);
-  }
 
-  const L = scene.segment.length_m;
-  const copyA = segment;
-  const copyB = segment.clone(true);
-  copyB.position.z = xmToZ(L);
-  const copyC = segment.clone(true);
-  copyC.position.z = xmToZ(2 * L);
   const world = new THREE.Group();
-  world.add(copyA, copyB, copyC);
-
-  const tokensByCopy = [copyA, copyB, copyC].map((g) => {
-    const map = new Map();
-    g.traverse((n) => { if (n.name.startsWith('token:')) map.set(n.name.slice(6), n); });
-    return map;
-  });
-  const allTokens = tokensByCopy.flatMap((m) => [...m.values()]);
-  return { world, tokensByCopy, allTokens, tileLoaded: !!tileTex };
+  const tokenSets = [];
+  for (let k = 0; k < COPIES; k++) {
+    const copy = k === 0 ? segment : segment.clone(true);
+    const p = track.applyCopy({ x: 0, z: 0, theta: 0 }, k);
+    copy.position.set(p.x, 0, p.z);
+    copy.rotation.y = -p.theta;
+    const set = buildTokenSet(track, scene, coinGeo, coinMat);
+    copy.add(set.mesh);
+    // token positions are computed in the segment's local frame (the copy transform is applied by the group)
+    tokenSets.push(set);
+    world.add(copy);
+  }
+  const tick = (t) => { for (const set of tokenSets) updateTokenSet(set, t); };
+  tick(0);
+  return {
+    world, track, tileLoaded: !!tileTex,
+    hideToken(id) { const s = tokenSets[0]; if (s.index.has(id)) s.hidden.add(id); },
+    showAllTokens() { for (const s of tokenSets) s.hidden.clear(); },
+    tick,
+  };
 }
 
 export function makeRunnerMesh() {

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
   <title>#hero — play</title>
   <link rel="stylesheet" href="/css/base.css?v=3">
-  <link rel="stylesheet" href="/css/game.css?v=3">
+  <link rel="stylesheet" href="/css/game.css?v=4">
 </head>
 <body>
   <main id="app" data-hero-page="play" class="play">
@@ -17,6 +17,7 @@
       <div class="hud-item tokens"><span class="hud-label">Tokens</span><span class="hud-value" id="hud-tokens">0</span></div>
       <div class="hud-item health"><span class="hud-label">Health <span id="hud-health">100</span></span><span class="hud-bar"><span id="hud-health-bar" data-level="ok"></span></span></div>
       <div id="hud-lane">footpath</div>
+      <button type="button" id="hud-about" data-testid="hud-about" class="hud-pause" aria-label="Pause and show About this street" title="Pause · About this street">&#10074;&#10074;</button>
     </div>
     <div id="flash" aria-hidden="true"></div>
 
@@ -35,15 +36,19 @@
     <section id="panel-ready" class="panel" hidden>
       <h2 id="ready-name"></h2>
       <p class="muted">Lanes: footpath · road edge · road</p>
+      <p class="model-badge" id="model-badge" data-testid="model-badge"></p>
       <ul class="hints">
         <li><b>⇠ ⇢</b> swipe: lane</li><li><b>⇡</b> swipe up: jump</li>
         <li><b>⇣</b> swipe down: slide</li><li><b>⌨</b> desktop: arrow keys</li>
       </ul>
       <button type="button" id="start" disabled>Tap to run</button>
+      <button type="button" id="about-open" data-testid="about-open" class="btn-secondary">About this street</button>
     </section>
+
+    <section id="about-panel" data-testid="about-panel" class="panel about" hidden></section>
 
     <section id="results" class="panel results" hidden aria-label="Run results"></section>
   </main>
-  <script type="module" src="/js/game/main.js?v=3"></script>
+  <script type="module" src="/js/game/main.js?v=4"></script>
 </body>
 </html>

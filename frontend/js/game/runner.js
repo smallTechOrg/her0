@@ -1,4 +1,6 @@
 // Pure run simulation (no Three.js): lanes, actions, loops, tokens, collisions. Constants per spec/ui.md.
+import { makeTrack } from '/js/game/path.js?v=4';
+
 export const C = Object.freeze({
   LANE_TWEEN_MS: 150, JUMP_MS: 500, SLIDE_MS: 600,
   SPEED_START: 6, SPEED_PER_LOOP: 0.1, SPEED_MAX: 12,
@@ -10,6 +12,7 @@ const LANE_CMDS = { left: -1, right: +1 };
 export class Runner {
   constructor(scene) {
     this.lengthM = scene.segment.length_m;
+    this.track = makeTrack(scene);
     this.lanes = scene.cross_section.lanes;
     this.hazards = scene.objects.filter((o) => o.action !== 'none');
     this.tokenDefs = scene.tokens;
@@ -45,8 +48,10 @@ export class Runner {
 
   // Visual lateral offset (lat_m) interpolating the lane tween.
   visualLatM(easing = (t) => t) {
-    const from = this.lanes[this.laneFrom].lat_m;
-    const to = this.lanes[this.lane].lat_m;
+    // Lane centres follow the traced strips: lane_lat[] interpolated at the runner's station (v1: constants).
+    const sw = this.xWrapped;
+    const from = this.track.laneLat(sw, this.laneFrom);
+    const to = this.track.laneLat(sw, this.lane);
     return from + (to - from) * easing(Math.min(1, this.tweenT));
   }
 

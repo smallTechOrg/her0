@@ -35,6 +35,24 @@ export function fmtMs(ms) {
   return ms >= 1000 ? `${(ms / 1000).toFixed(1)} s` : `${Math.round(ms)} ms`;
 }
 
+export function fmtDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return String(iso);
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+}
+
+export const pct = (x) => `${Math.round(100 * Number(x || 0))}%`;
+export const m1 = (x) => `${Number(x).toFixed(Number.isInteger(Number(x)) ? 0 : 1)}`;
+
+/** Admin GET/POST helpers with the password header. */
+export const aget = (path) => api.get(path, { admin: true });
+export const apost = (path, body) => api.post(path, body, { admin: true });
+export const segPath = (slug, rest = '') => `/api/admin/segments/${encodeURIComponent(slug)}${rest}`;
+
+/** Image URL as served: absolute path under /media, passed through untouched. */
+export const mediaUrl = (u) => u || '';
+
 export function setState(root, state) {
   root.dataset.current = state;
   for (const panel of root.querySelectorAll('[data-state]')) {

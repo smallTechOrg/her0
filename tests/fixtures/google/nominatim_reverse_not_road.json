@@ -1,0 +1,30 @@
+{
+ "category": "building",
+ "geojson": {
+  "coordinates": [
+   [
+    [
+     77.6,
+     12.9
+    ],
+    [
+     77.61,
+     12.9
+    ],
+    [
+     77.61,
+     12.91
+    ],
+    [
+     77.6,
+     12.9
+    ]
+   ]
+  ],
+  "type": "Polygon"
+ },
+ "osm_id": 99,
+ "osm_type": "way",
+ "place_id": 2,
+ "type": "yes"
+}

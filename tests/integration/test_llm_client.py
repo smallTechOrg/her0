@@ -124,3 +124,18 @@ def test_wrong_api_key_surfaces_as_actionable_upstream_error_and_records_failed_
     assert "HERO_ANTHROPIC_API_KEY" in exc.value.message
     calls = repo.list_llm_calls(run_id)
     assert len(calls) == 1 and calls[0].ok is False and calls[0].cost_usd == 0.0
+
+
+@pytest.mark.parametrize("mode", ["auto", "json_text"])
+def test_vision_json_real_call_in_each_structured_mode_returns_valid_object(run_id, mode):
+    settings = get_settings()
+    image = image_payload(_red_square(), "a synthetic test image", 256)
+
+    report, usage = _client(settings).vision_json(
+        run_id=run_id, step=f"test_{mode}", images=[image], schema=ColourReport, model=settings.vision_model,
+        prompt_name="test", max_tokens=300, structured_mode=mode,
+        prompt="Describe the attached image: dominant colour as one lowercase word, width in pixels (160), shapes.",
+    )
+
+    assert isinstance(report, ColourReport) and report.width_px > 0
+    assert usage.cost_usd > 0 and all(c.step == f"test_{mode}" for c in repo.list_llm_calls(run_id))

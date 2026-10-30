@@ -23,6 +23,28 @@ function qualityLabel(quality) {
   return quality || 'unknown quality';
 }
 
+// Fidelity chip from `model` (null = Phase-1 street that has no model yet = legacy).
+function fidelityChip(seg) {
+  const m = seg.model;
+  const chip = document.createElement('span');
+  chip.className = 'badge badge-fidelity';
+  if (!m || m.legacy) {
+    chip.textContent = 'legacy · placement unverified';
+    chip.dataset.fidelity = m && m.fidelity_level ? m.fidelity_level : 'legacy';
+    chip.dataset.legacy = 'true';
+    chip.title = 'Phase-1 street: position was not verified against the road.';
+  } else if (m.fidelity_level === 'L0') {
+    chip.textContent = 'map-only sketch';
+    chip.dataset.fidelity = 'L0';
+    chip.title = 'Built from the map alone: no street photos yet.';
+  } else {
+    chip.textContent = `${m.fidelity_level} · ${m.photos} photos`;
+    chip.dataset.fidelity = m.fidelity_level;
+    chip.title = m.fidelity_label || `Fidelity ${m.fidelity_level}`;
+  }
+  return chip;
+}
+
 function card(seg) {
   const li = document.createElement('li');
   const article = document.createElement('article');
@@ -65,6 +87,7 @@ function card(seg) {
     tag.textContent = q;
     row.appendChild(tag);
   }
+  row.appendChild(fidelityChip(seg));
   const best = formatBest(seg);
   const bestEl = document.createElement('span');
   bestEl.className = 'best' + (best.none ? ' none' : '');

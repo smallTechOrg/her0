@@ -145,8 +145,36 @@ def test_gallery_lists_the_fixture_street_with_no_runs_yet_and_a_labelled_stub(p
     stub = page.query_selector('button[data-stub="true"]')
     assert stub is not None and stub.is_disabled()
     assert "Use my location" in stub.inner_text()
-    assert "Coming in Phase 2" in page.inner_text("main")
+    assert "Coming in Phase 3" in page.inner_text("main")
+    assert "Coming in Phase 2" not in page.inner_text("main")
+    # Phase-1 (scene v1) street: labelled legacy chip, never silent
+    chip = card.query_selector(".badge-fidelity")
+    assert chip is not None and chip.inner_text() == "legacy · placement unverified"
+    assert chip.get_attribute("data-legacy") == "true"
     assert page.query_selector('a[href="/admin/"]') is not None
+    assert not page.hero_errors, page.hero_errors  # type: ignore[attr-defined]
+
+
+def test_v1_scene_ready_overlay_about_panel_and_render_budget(page: Page, live_server: str, fixture_segment: dict):
+    """A Phase-1 scene still plays: labelled legacy badge, the v1 About text, a straight track, within the budget."""
+    page.goto(f"{live_server}/play/?segment={fixture_segment['slug']}")
+    page.wait_for_selector("#start:not([disabled])")
+    _wait_state(page, "s.phase === 'ready'")
+    assert page.get_by_test_id("model-badge").inner_text() == "Legacy scene · placement unverified"
+    page.get_by_test_id("about-open").click()
+    panel = page.get_by_test_id("about-panel")
+    panel.wait_for(state="visible")
+    txt = panel.inner_text()
+    assert "This street was built with the first-generation model (2 photos); its position was not verified." in txt
+    assert "Legacy scene, placement unverified" in txt
+    page.keyboard.press("Escape")
+    panel.wait_for(state="hidden")
+    assert _state(page)["phase"] == "ready"
+    page.click("#start")
+    s = _wait_state(page, "s.phase === 'running' && s.distance_m > 3")
+    assert "on_strip" not in s  # v2-only debug fields are absent for v1 scenes
+    perf = page.evaluate("() => window.__hero.perf")
+    assert 0 < perf["draw_calls"] <= 90 and 0 < perf["triangles"] <= 60_000, perf
     assert not page.hero_errors, page.hero_errors  # type: ignore[attr-defined]
 
 
@@ -206,6 +234,9 @@ def test_no_input_crashes_into_the_parked_vehicle_and_results_show_fixture_walka
     assert crashed_row is not None
     assert page.inner_text("#result-hits") == "10"
     assert s["run_post"] == "saved"
+    assert "legacy" in page.inner_text("#results-model-line").lower()
+    assert page.get_by_test_id("about-open-results").is_visible()
+    assert "not yet observed" not in page.get_by_test_id("footpath-states").inner_text()  # v1 fixture has no unknown range
     assert page.query_selector("#run-again") is not None
     assert page.query_selector("#back-gallery").get_attribute("href") == "/"
     assert not page.hero_errors, page.hero_errors  # type: ignore[attr-defined]

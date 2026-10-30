@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Callable
 
 import httpx
@@ -45,6 +45,7 @@ class FetchedImage:
     url: str  # /media/imagery/<sha>.png
     cache_key: str
     cache_hit: bool
+    params: dict[str, Any] = field(default_factory=dict, compare=False)  # canonical request params (no key)
 
 
 @dataclass(frozen=True)
@@ -54,6 +55,7 @@ class StreetViewMeta:
     lat: float | None
     lon: float | None
     cache_hit: bool
+    date: str | None = None  # "YYYY-MM" (Street View capture month) when Google reports it
 
     @property
     def ok(self) -> bool:
@@ -62,6 +64,10 @@ class StreetViewMeta:
 
 def _fmt(value: float) -> str:
     return f"{value:.6f}"
+
+
+class SpendCapExceeded(UpstreamError):
+    """The per-run cap on NEW paid image requests was reached; nothing was sent to Google."""
 
 
 class GoogleImagery:
@@ -73,6 +79,24 @@ class GoogleImagery:
         self._data_dir = settings.data_dir_abs
         self._http = http or httpx.Client(timeout=GOOGLE_TIMEOUT_S)
         self._sleep = sleep
+        self.paid_requests = 0  # NEW (non-cache) image requests sent through this client
+        self._paid_cap: int | None = None
+
+    # ------------------------------------------------------------ cost guard
+
+    def limit_paid_requests(self, n: int | None) -> None:
+        """Allow at most ``n`` more NEW paid image requests (cache hits and free metadata never count)."""
+        self._paid_cap = None if n is None else self.paid_requests + max(0, n)
+
+    @property
+    def paid_remaining(self) -> int | None:
+        return None if self._paid_cap is None else max(0, self._paid_cap - self.paid_requests)
+
+    def _charge(self, kind: str) -> None:
+        if self._paid_cap is not None and self.paid_requests >= self._paid_cap:
+            raise SpendCapExceeded("Per-run cap on new paid Google image requests reached; request not sent.",
+                                   kind=kind, detail={"cap": self._paid_cap})
+        self.paid_requests += 1
 
     # ------------------------------------------------------------ public
 
@@ -80,6 +104,10 @@ class GoogleImagery:
         params = {"center": f"{_fmt(lat)},{_fmt(lon)}", "zoom": zoom, "size": TILE_SIZE, "scale": TILE_SCALE,
                   "maptype": "satellite"}
         return self._cached_image("satellite", STATIC_MAPS_URL, params, suffix="png")
+
+    def satellite_crop(self, lat: float, lon: float, zoom: int) -> FetchedImage:
+        """Close-up / overview tile: the same call (and cache key) as ``satellite_tile``."""
+        return self.satellite_tile(lat, lon, zoom)
 
     def streetview_metadata(self, lat: float, lon: float) -> StreetViewMeta:
         params = {"location": f"{_fmt(lat)},{_fmt(lon)}", "radius": PANO_RADIUS_M, "source": "outdoor"}
@@ -95,7 +123,8 @@ class GoogleImagery:
             body = {"status": "INVALID_RESPONSE"}
         loc = body.get("location") or {}
         return StreetViewMeta(status=str(body.get("status", "UNKNOWN")), pano_id=body.get("pano_id"),
-                              lat=loc.get("lat"), lon=loc.get("lng"), cache_hit=entry.hit)
+                              lat=loc.get("lat"), lon=loc.get("lng"), cache_hit=entry.hit,
+                              date=body.get("date") if isinstance(body.get("date"), str) else None)
 
     def streetview_image(self, lat: float, lon: float, heading_deg: float) -> FetchedImage:
         params = {"location": f"{_fmt(lat)},{_fmt(lon)}", "heading": round(heading_deg, 1), "fov": PANO_FOV,
@@ -103,15 +132,25 @@ class GoogleImagery:
                   "return_error_code": "true"}
         return self._cached_image("streetview", STREETVIEW_URL, params, suffix="jpg")
 
+    def streetview_image_pano(self, pano_id: str, heading_deg: float, *, fov: int = PANO_FOV,
+                              pitch: int = PANO_PITCH) -> FetchedImage:
+        """Street View frame by panorama id (so two stations on the same pano are one cached request)."""
+        params = {"pano": pano_id, "heading": round(heading_deg, 1), "fov": fov, "pitch": pitch, "size": PANO_SIZE,
+                  "return_error_code": "true"}
+        return self._cached_image("streetview", STREETVIEW_URL, params, suffix="jpg")
+
     # ------------------------------------------------------------ internals
 
     def _cached_image(self, kind: str, url: str, params: dict[str, Any], *, suffix: str) -> FetchedImage:
-        entry = self._cache.get_or_fetch(kind, params, lambda: self._get(url, params, kind=kind, expect_image=True),
-                                         suffix=suffix)
+        def fetch() -> bytes:
+            self._charge(kind)
+            return self._get(url, params, kind=kind, expect_image=True)
+
+        entry = self._cache.get_or_fetch(kind, params, fetch, suffix=suffix)
         self._count(kind, entry.key, entry.hit, entry.path)
         rel = entry.path.relative_to(self._data_dir).as_posix()
         return FetchedImage(path=str(entry.path), rel_path=rel, url=f"/media/{rel}", cache_key=entry.key,
-                            cache_hit=entry.hit)
+                            cache_hit=entry.hit, params=dict(params))
 
     def _count(self, kind: str, cache_key: str, hit: bool, path) -> None:
         rel = None

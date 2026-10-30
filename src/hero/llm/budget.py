@@ -33,11 +33,14 @@ class BudgetDecision:
 
 
 class BudgetGuard:
-    def __init__(self, settings: Settings, *,
+    def __init__(self, settings: Settings, *, run_budget_usd: float | None = None,
                  total_spent_fn: Callable[[], float] = repo.total_llm_cost_usd,
                  run_spent_fn: Callable[[str], float] = repo.run_spend_usd):
         self.budget_total_usd = float(settings.claude_budget_usd)
-        self.budget_run_usd = float(settings.run_budget_usd)
+        if run_budget_usd is not None and not run_budget_usd > 0:
+            raise ValueError(f"run_budget_usd override must be positive (got {run_budget_usd!r})")
+        # A per-request override only changes the per-run cap; the global cap is never touched.
+        self.budget_run_usd = float(settings.run_budget_usd if run_budget_usd is None else run_budget_usd)
         self._total_spent = total_spent_fn
         self._run_spent = run_spent_fn
 
@@ -69,6 +72,6 @@ class BudgetGuard:
         log.info(
             "llm.call", run_id=call.run_id, step=call.step, model=call.model, input_tokens=call.input_tokens,
             output_tokens=call.output_tokens, cost_usd=call.cost_usd, latency_ms=call.latency_ms, ok=call.ok,
-            error=call.error,
+            error=call.error, structured_mode=call.structured_mode,
         )
         return record

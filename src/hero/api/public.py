@@ -1,7 +1,9 @@
-"""Public JSON API (spec/api.md ## Public): health, gallery list, segment detail, scene, game runs.
+"""Public JSON API (spec/api.md ## Public): health, gallery list, segment detail, scene (v1 | v2), game runs.
 
-Phase 1 routes only. ``GET /segments/nearest`` and ``GET /segments/{slug}/runs`` are Phase 2
-and deliberately absent (they 404 like any unknown path).
+Phase 2 adds the additive ``model`` fidelity badge on gallery cards / detail (derived from the head
+``model_versions`` row; ``null`` for a segment with no model version). The scene is served verbatim, v1 or v2,
+as stored by ``publish_version`` (v2 carries ``about``). ``GET /segments/nearest`` and
+``GET /segments/{slug}/runs`` are Phase 3 and deliberately absent.
 """
 
 from __future__ import annotations
@@ -14,9 +16,10 @@ from sqlalchemy import text
 
 from hero import __version__
 from hero.api.envelope import ApiError, ok
-from hero.db import repo
+from hero.db import model_repo, repo
 from hero.db.repo import CLIENT_MAX_CHARS, GameRunCreate, InvalidInputError, NotFoundError, SegmentRecord
 from hero.db.session import get_session
+from hero.model.scene_v2 import SceneV2
 from hero.scene.schema import LatLon, Quality, Scene, SegmentStatus, Walkability
 
 router = APIRouter(prefix="/api", tags=["public"])
@@ -29,6 +32,25 @@ NOT_GENERATED_MESSAGE = "This street has not been generated yet."
 
 class _Out(BaseModel):
     model_config = ConfigDict(frozen=True)
+
+
+FIDELITY_LABELS = {
+    0: "Map-only sketch: satellite and map data, no street-level photos",
+    1: "Single viewpoint: every part seen from at least one place",
+    2: "Multi-view: every part seen from at least two places, both sides",
+    3: "Close-up verified: multi-view plus a close-up photo",
+}
+
+
+class ModelBadge(_Out):
+    """Additive Phase-2 fidelity badge shown on gallery cards."""
+
+    version: int
+    fidelity_level: str
+    fidelity_label: str
+    photos: int
+    updated_at: str
+    legacy: bool
 
 
 class SegmentSummary(_Out):
@@ -44,6 +66,7 @@ class SegmentSummary(_Out):
     best_distance_m: float | None
     run_count: int
     walkability: Walkability | None
+    model: ModelBadge | None = None
 
 
 class SegmentDetail(SegmentSummary):
@@ -59,7 +82,7 @@ class HazardOut(_Out):
     type: str
     label: str
     confidence: float
-    tile_px: tuple[float, float]
+    tile_px: tuple[float, float] | None
     latlon: LatLon
     action: str
 
@@ -82,6 +105,18 @@ def thumbnail_url(record: SegmentRecord) -> str | None:
     return f"/media/{record.thumbnail_path}" if record.thumbnail_path else None
 
 
+def model_badge(record: SegmentRecord) -> ModelBadge | None:
+    """Badge from the head model version; ``None`` when the segment has no version (never imported)."""
+    versions = model_repo.list_versions(record.id)
+    if not versions:
+        return None
+    head = versions[-1]
+    level = min(3, max(0, head.fidelity_level))
+    return ModelBadge(version=head.version, fidelity_level=f"L{level}", fidelity_label=FIDELITY_LABELS[level],
+                      photos=head.observation_count, updated_at=head.created_at.isoformat(),
+                      legacy=head.kind == "legacy")
+
+
 def _summary_fields(record: SegmentRecord) -> dict[str, Any]:
     return {
         "slug": record.slug, "name": record.name, "city": record.city, "quality": record.quality,
@@ -89,6 +124,7 @@ def _summary_fields(record: SegmentRecord) -> dict[str, Any]:
         "best_score": record.best_score, "best_distance_m": record.best_distance_m,
         "run_count": repo.count_game_runs(record.id),
         "walkability": record.scene.walkability if record.scene else None,
+        "model": model_badge(record),
     }
 
 
@@ -100,10 +136,14 @@ def to_detail(record: SegmentRecord) -> SegmentDetail:
     return SegmentDetail(**_summary_fields(record), start=record.start, end=record.end, status=record.status)
 
 
-def hazards_of(scene: Scene) -> list[HazardOut]:
+def _val(x: Any) -> str:
+    return x.value if hasattr(x, "value") else str(x)  # v1 uses enums, v2 plain catalogue strings
+
+
+def hazards_of(scene: Scene | SceneV2) -> list[HazardOut]:
     return [
-        HazardOut(id=o.id, type=o.type.value, label=o.label, confidence=o.confidence, tile_px=o.tile_px,
-                  latlon=o.latlon, action=o.action.value)
+        HazardOut(id=o.id, type=_val(o.type), label=o.label, confidence=o.confidence, tile_px=o.tile_px,
+                  latlon=o.latlon, action=_val(o.action))
         for o in scene.hazards()
     ]
 
@@ -121,7 +161,7 @@ def _require(slug: str) -> SegmentRecord:
         raise ApiError("not_found", str(exc)) from exc
 
 
-def _require_ready_scene(record: SegmentRecord) -> Scene:
+def _require_ready_scene(record: SegmentRecord) -> Scene | SceneV2:
     if record.status is not SegmentStatus.ready or record.scene is None:
         raise ApiError("not_found", NOT_GENERATED_MESSAGE)
     return record.scene

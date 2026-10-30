@@ -1,7 +1,6 @@
-"""/media/* - read-only serving of data/{imagery,crops,previews} (path traversal rejected
-by StaticFiles; anything outside those folders is a 404).
-
-# Phase 1 slices extend this file IN PLACE if extra media kinds are needed (S3-public-api).
+"""/media/* - read-only serving of data/{imagery,crops,previews,uploads} (path traversal rejected
+by StaticFiles; anything outside those folders is a 404). `uploads` holds content-addressed user photos
+(data/uploads/<sha256>.jpg|png).
 """
 
 from __future__ import annotations
@@ -13,7 +12,7 @@ from starlette.types import Scope
 
 from hero.config import get_settings
 
-MEDIA_KINDS = ("imagery", "crops", "previews")
+MEDIA_KINDS = ("imagery", "crops", "previews", "uploads")
 CACHE_CONTROL = "public, max-age=86400"
 
 

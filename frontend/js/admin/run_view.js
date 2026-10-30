@@ -2,11 +2,12 @@
 // Admin API paths used: GET /api/admin/status (login gate), GET /api/admin/runs/{run_id} (polled ~2 s while queued|running).
 
 import { api, ApiError } from '/js/api.js?v=3';
-import { gate, logout, el, fmtUsd, fmtUsdPrecise, fmtMs, setState } from '/js/admin/auth.js?v=3';
+import { gate, logout, el, fmtUsd, fmtUsdPrecise, fmtMs, setState, aget } from '/js/admin/auth.js?v=4';
+import { renderReport, renderImagesUsed } from '/js/admin/report.js?v=4';
 
 const POLL_MS = 2000;
 const TERMINAL = new Set(['succeeded', 'failed', 'failed_budget']);
-const state = { runId: new URLSearchParams(location.search).get('id'), run: null, error: null, polling: false };
+const state = { runId: new URLSearchParams(location.search).get('id'), run: null, error: null, polling: false, report: null };
 window.__hero = { page: 'admin-run', get state() { return structuredClone(state); } };
 
 const $ = (id) => document.getElementById(id);
@@ -169,6 +170,57 @@ function renderFinal(run) {
   renderJson('final-scene', scene, '');
 }
 
+function renderModeInfo(run) {
+  const seg = run.segment || {};
+  const mc = $('mode-chip');
+  const ml = $('model-line');
+  mc.hidden = !run.mode;
+  if (run.mode) { mc.textContent = run.mode; mc.className = `chip ${run.mode}`; }
+  const done = TERMINAL.has(run.status);
+  if (!run.mode || !done) { ml.hidden = true; return; }
+  ml.replaceChildren();
+  const href = `/admin/segment.html?slug=${encodeURIComponent(seg.slug || '')}`;
+  if (run.status !== 'succeeded') ml.append('Model unchanged — the run did not finish.');
+  else if (run.mode === 'acquire') ml.append('Images fetched, not yet fused — ', el('a', { href, text: 'open the segment page' }), '.');
+  else if (run.version_created) ml.append(el('a', { href, text: `Model v${run.base_version ?? '?'} → v${run.result_version}` }));
+  else ml.append(`No change — model stays v${run.result_version ?? run.base_version ?? '?'}`, ' (', el('a', { href, text: 'segment page' }), ')');
+  ml.hidden = false;
+}
+
+async function loadReport(run) {
+  const card = $('report-card');
+  if (!run.mode || !TERMINAL.has(run.status) || run.report_available === false) { card.hidden = true; return; }
+  if (state.report || state.reportLoading) return;
+  state.reportLoading = true;
+  card.hidden = false;
+  $('report-loading').hidden = false; $('report-error').hidden = true;
+  try {
+    const r = await aget(`/api/admin/runs/${encodeURIComponent(run.id || state.runId)}/report`);
+    state.report = r;
+    $('report-loading').hidden = true;
+    renderReport($('report-body'), r, { slug: (run.segment || {}).slug });
+  } catch (err) {
+    $('report-loading').hidden = true;
+    if (err.code === 'not_found') { card.hidden = true; } else {
+      $('report-error').hidden = false;
+      $('report-error').querySelector('.error').textContent = `Couldn't load the run report — ${err.message}`;
+    }
+  } finally { state.reportLoading = false; }
+}
+
+function renderPhase2Sections(run) {
+  const used = (run.imagery && run.imagery.observations) || [];
+  $('images-used').hidden = !used.length;
+  if (used.length) renderImagesUsed($('images-used'), used);
+  if (!run.mode) return;
+  // Phase-1 sections with no data are hidden for Phase-2 runs, not shown empty.
+  $('card-graphs').hidden = !run.layout && !run.obstacles;
+  $('card-iter').hidden = !(run.iterations || []).length;
+  $('card-final').hidden = !run.scene;
+  const im = run.imagery || {};
+  $('imagery').hidden = !((im.satellite && im.satellite.url) || (im.streetview || []).length);
+}
+
 function render(run) {
   state.run = run;
   const seg = run.segment || {};
@@ -179,7 +231,7 @@ function render(run) {
   const live = !TERMINAL.has(run.status);
   $('live').hidden = !live;
   const play = $('play-link');
-  if (seg.slug && run.scene) { play.href = `/play/?segment=${encodeURIComponent(seg.slug)}`; play.hidden = false; }
+  if (seg.slug && (run.scene || (run.mode && run.version_created))) { play.href = `/play/?segment=${encodeURIComponent(seg.slug)}`; play.hidden = false; }
   renderError(run);
   renderCost(run);
   renderSteps(run);
@@ -188,6 +240,9 @@ function render(run) {
   renderJson('obstacles-json', run.obstacles, 'Obstacle pass has not produced output (skipped when Street View is unavailable).');
   renderIterations(run);
   renderFinal(run);
+  renderModeInfo(run);
+  renderPhase2Sections(run);
+  loadReport(run);
   setState($('run'), 'populated');
   return live;
 }
@@ -211,6 +266,7 @@ async function poll() {
   }
 }
 
+$('report-retry').addEventListener('click', () => { if (state.run) loadReport(state.run); });
 $('annotated-toggle').addEventListener('click', () => { showAnnotated = !showAnnotated; if (state.run) renderImagery(state.run); });
 
 gate({

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>#hero · Admin</title>
   <link rel="stylesheet" href="/css/base.css?v=3">
-  <link rel="stylesheet" href="/css/admin.css?v=3">
+  <link rel="stylesheet" href="/css/admin.css?v=4">
 </head>
 <body>
   <main id="app" data-hero-page="admin" class="page admin-page">
@@ -57,7 +57,7 @@
           <div data-state="error" class="error-box"><p class="error" id="segments-error"></p><button type="button" id="segments-retry" class="secondary">Retry</button></div>
           <div data-state="populated" class="table-wrap">
             <table class="segments-table">
-              <thead><tr><th>Name</th><th>City</th><th>Length</th><th>Status</th><th>Quality</th><th>Latest run</th><th></th></tr></thead>
+              <thead><tr><th>Name</th><th>City</th><th>Length</th><th>Status</th><th>Quality</th><th>Model</th><th>Latest run</th><th></th></tr></thead>
               <tbody id="segments-body"></tbody>
             </table>
           </div>
@@ -85,11 +85,13 @@
             <p class="muted" id="segment-preview"></p>
           </div>
           <p id="create-msg" class="wide" role="alert" hidden></p>
+          <div id="created-actions" class="wide actions" hidden></div>
+          <div id="placement-box" class="wide placement-box" data-testid="placement-box" hidden></div>
           <div class="wide actions">
             <button type="submit" id="create-btn" disabled>Create segment</button>
             <span class="stub-wrap">
-              <button type="button" disabled data-stub="true" title="Coming in Phase 2: loads the Bengaluru seed file and creates every segment in it">Seed city — Phase 2</button>
-              <small class="muted">Coming in Phase 2</small>
+              <button type="button" disabled data-stub="true" title="Coming in Phase 3: loads the Bengaluru seed file and creates every segment in it">Seed city — Phase 3</button>
+              <small class="muted">Coming in Phase 3</small>
             </span>
           </div>
         </form>
@@ -103,7 +105,7 @@
           <p data-state="error" class="error" id="runs-error"></p>
           <div data-state="populated" class="table-wrap">
             <table class="runs-table">
-              <thead><tr><th>Started</th><th>Segment</th><th>Status</th><th>Cost</th><th>Duration</th><th></th></tr></thead>
+              <thead><tr><th>Started</th><th>Segment</th><th>Mode</th><th>Status</th><th>Model</th><th>Cost</th><th>Duration</th><th></th></tr></thead>
               <tbody id="runs-body"></tbody>
             </table>
           </div>
@@ -111,6 +113,6 @@
       </section>
     </section>
   </main>
-  <script type="module" src="/js/admin/segments.js?v=3"></script>
+  <script type="module" src="/js/admin/segments.js?v=4"></script>
 </body>
 </html>

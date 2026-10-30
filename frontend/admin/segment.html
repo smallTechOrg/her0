@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>#hero · Segment model</title>
+  <link rel="stylesheet" href="/css/base.css?v=3">
+  <link rel="stylesheet" href="/css/admin.css?v=4">
+</head>
+<body>
+  <main id="app" data-hero-page="admin-segment" class="page admin-page">
+    <header class="page-header admin-header">
+      <div>
+        <p class="crumbs"><a href="/admin/">← Admin</a></p>
+        <h1 id="seg-title">Segment</h1>
+        <p class="tagline seg-meta">
+          <span id="seg-city" class="muted"></span>
+          <span id="seg-length" class="muted"></span>
+          <span id="seg-status" class="chip" hidden></span>
+          <span id="model-badge" class="chip model-badge" data-testid="model-badge" hidden></span>
+        </p>
+        <p id="legacy-warning" class="notice error" data-testid="legacy-warning" hidden></p>
+      </div>
+      <div class="header-actions">
+        <button type="button" id="generate-btn" data-testid="generate" disabled>Generate</button>
+        <a id="play-link" class="button-link" hidden>Open in game</a>
+      </div>
+    </header>
+    <p id="header-msg" class="notice" role="status" hidden></p>
+
+    <section id="login" class="card login-card" hidden>
+      <h2>Admin password</h2>
+      <form novalidate>
+        <label for="password">Admin password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+        <p class="login-msg error" role="alert" hidden></p>
+        <button type="submit">Enter</button>
+      </form>
+    </section>
+
+    <div id="page" hidden>
+      <div id="page-error" class="card error-box" hidden><p class="error" id="page-error-text"></p><button type="button" id="page-retry" class="secondary">Retry</button></div>
+      <div id="no-model" class="card" data-testid="no-model" hidden>
+        <h2>No model yet</h2>
+        <p>This segment has no street model. Check the placement of the reference line first (no cost beyond one map tile), then Generate.</p>
+      </div>
+
+      <section class="card sec" id="sec-versions" data-testid="versions" aria-labelledby="versions-title">
+        <h2 id="versions-title">Version history</h2>
+        <p data-state="loading" class="muted">Loading versions…</p>
+        <div data-state="error" class="error-box"><p class="error"></p><button type="button" class="secondary retry">Retry</button></div>
+        <div data-state="populated">
+          <div class="table-wrap"><table class="versions-table">
+            <thead><tr><th>Version</th><th>Kind</th><th>Date</th><th>Run</th><th>Entities</th><th>Fidelity</th><th>Summary</th></tr></thead>
+            <tbody></tbody></table></div>
+          <div class="compare-row">
+            <label for="cmp-from">From</label><select id="cmp-from" name="cmp-from"></select>
+            <label for="cmp-to">To</label><select id="cmp-to" name="cmp-to"></select>
+            <button type="button" data-testid="compare">Compare</button>
+          </div>
+          <p class="cmp-note muted"></p>
+        </div>
+      </section>
+
+      <section class="card sec" id="sec-coverage" data-testid="coverage" aria-labelledby="coverage-title">
+        <h2 id="coverage-title">Coverage / fidelity map</h2>
+        <p data-state="loading" class="muted">Loading coverage…</p>
+        <div data-state="error" class="error-box"><p class="error"></p><button type="button" class="secondary retry">Retry</button></div>
+        <div data-state="populated" class="cov-body"></div>
+      </section>
+
+      <section class="card sec" id="sec-entities" data-testid="entities" aria-labelledby="entities-title">
+        <h2 id="entities-title">Entities</h2>
+        <p data-state="loading" class="muted">Loading entities…</p>
+        <div data-state="error" class="error-box"><p class="error"></p><button type="button" class="secondary retry">Retry</button></div>
+        <p data-state="empty" class="muted">No entities detected yet — add imagery and Generate.</p>
+        <div data-state="populated">
+          <div class="filters">
+            <label>Type <select name="f-type"></select></label>
+            <label>State <select name="f-state"><option value="">All states</option><option value="present">present</option><option value="disputed">disputed</option><option value="removed">removed</option></select></label>
+            <label>Min confidence <select name="f-conf"><option value="0">any</option><option value="0.3">30%</option><option value="0.5">50%</option><option value="0.7">70%</option><option value="0.85">85%</option></select></label>
+            <span class="ent-count muted"></span>
+          </div>
+          <div class="table-wrap"><table class="entities-table">
+            <thead><tr><th>Type</th><th>s (m)</th><th>Side</th><th>Confidence</th><th>State</th><th>Description</th><th>Evidence</th></tr></thead>
+            <tbody></tbody></table></div>
+          <p data-role="empty-filter" class="muted" hidden>No entities match these filters.</p>
+          <aside class="drawer" data-testid="evidence-drawer" aria-label="Evidence" hidden></aside>
+        </div>
+      </section>
+
+      <section class="card sec" id="sec-diff" data-testid="diff" aria-labelledby="diff-title">
+        <h2 id="diff-title">Diff</h2>
+        <p data-state="empty" class="muted">Pick two versions above and press Compare.</p>
+        <p data-state="loading" class="muted">Loading diff…</p>
+        <div data-state="error" class="error-box"><p class="error"></p><button type="button" class="secondary retry">Retry</button></div>
+        <div data-state="populated"><div class="diff-body"></div></div>
+      </section>
+
+      <section class="card sec" id="sec-imagery" data-testid="imagery" aria-labelledby="imagery-title">
+        <h2 id="imagery-title">Imagery</h2>
+        <p data-state="loading" class="muted">Loading imagery…</p>
+        <div data-state="error" class="error-box"><p class="error"></p><button type="button" class="secondary retry">Retry</button></div>
+        <div data-state="populated">
+          <div class="filters">
+            <label>Kind <select name="o-kind"></select></label>
+            <label>View <select name="o-view"><option value="">All views</option><option value="forward">forward</option><option value="back">back</option><option value="left">left</option><option value="right">right</option></select></label>
+            <span class="obs-counts muted"></span>
+          </div>
+          <div class="obs-grid"></div>
+          <p data-role="empty-obs" class="muted" hidden>No imagery matches — use “Add more imagery” below.</p>
+        </div>
+
+        <form id="add-imagery" class="add-imagery" data-testid="add-imagery" novalidate>
+          <h3>Add more imagery</h3>
+          <div class="field"><label for="i-spacing">Street View spacing: <output class="spacing-out"></output> (denser = more images)</label>
+            <input id="i-spacing" name="spacing" type="range" min="4" max="40" step="1" value="10"></div>
+          <fieldset class="field"><legend>Headings</legend>
+            <label class="inline"><input type="checkbox" name="heading" value="forward"> forward</label>
+            <label class="inline"><input type="checkbox" name="heading" value="back"> back</label>
+            <label class="inline"><input type="checkbox" name="heading" value="left"> left</label>
+            <label class="inline"><input type="checkbox" name="heading" value="right"> right</label></fieldset>
+          <fieldset class="field"><legend>Satellite crop zoom</legend>
+            <label class="inline"><input type="radio" name="zoom" value="19"> 19</label>
+            <label class="inline"><input type="radio" name="zoom" value="20"> 20</label></fieldset>
+          <fieldset class="field"><legend>Only this stretch (optional, metres along the street)</legend>
+            <label class="inline">from <input name="s_from" type="number" inputmode="decimal" min="0" step="1" aria-label="From metre"></label>
+            <label class="inline">to <input name="s_to" type="number" inputmode="decimal" min="0" step="1" aria-label="To metre"></label>
+            <button type="button" class="secondary small" id="clear-range">Whole street</button></fieldset>
+          <p class="estimate" data-testid="estimate" role="status"></p>
+          <p class="active-note notice" hidden></p>
+          <p class="form-msg" role="alert" hidden></p>
+          <div class="actions">
+            <button type="button" data-testid="fetch-only">Fetch images only</button>
+            <button type="button" data-testid="fetch-generate">Fetch + Generate</button>
+            <span class="stub-wrap">
+              <button type="button" disabled data-stub="true" data-testid="upload-stub" title="Coming in Phase 3: upload your own photo of this street">Upload a photo</button>
+              <small class="muted">Coming in Phase 3</small>
+            </span>
+          </div>
+        </form>
+      </section>
+
+      <section class="card sec" id="sec-reference" data-testid="reference-line" aria-labelledby="ref-title">
+        <h2 id="ref-title">Reference line</h2>
+        <div id="ref-info"></div>
+        <div id="placement-box" class="placement-box" hidden></div>
+        <div id="placement-action" class="actions"></div>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="/js/admin/segment_view.js?v=4"></script>
+</body>
+</html>
