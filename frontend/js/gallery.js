@@ -1,5 +1,5 @@
 // Gallery: one card per ready segment from GET /api/segments. States: loading / empty / error / populated.
-import { api } from '/js/api.js';
+import { api } from '/js/api.js?v=3';
 
 const state = { phase: 'loading', segments: [], error: null };
 window.__hero = { page: 'gallery', get state() { return structuredClone(state); } };

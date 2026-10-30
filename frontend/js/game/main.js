@@ -1,12 +1,12 @@
 // Play page entry: loads the scene via the public API, builds the world, runs the loop, posts the run.
 // Phases: loading → ready → running → crashed → results | error. window.__hero.state is read-only.
 import * as THREE from '/vendor/three.module.js';
-import { api } from '/js/api.js';
-import { buildWorld, makeRunnerMesh, latToX } from '/js/game/scene_builder.js';
-import { Runner, C } from '/js/game/runner.js';
-import { attachControls } from '/js/game/controls.js';
-import { createHud } from '/js/game/hud.js';
-import { renderResults } from '/js/game/results.js';
+import { api } from '/js/api.js?v=3';
+import { buildWorld, makeRunnerMesh, latToX } from '/js/game/scene_builder.js?v=3';
+import { Runner, C } from '/js/game/runner.js?v=3';
+import { attachControls } from '/js/game/controls.js?v=3';
+import { createHud } from '/js/game/hud.js?v=3';
+import { renderResults } from '/js/game/results.js?v=3';
 
 const MAX_DT_S = 0.1;
 const CRASH_STUMBLE_MS = 400;

@@ -1,7 +1,7 @@
 // Admin password gate shared by /admin/ and /admin/run.html.
 // Password lives in sessionStorage (via api.js); validated with GET /api/admin/status.
 
-import { api, getAdminPassword, setAdminPassword, ApiError } from '/js/api.js';
+import { api, getAdminPassword, setAdminPassword, ApiError } from '/js/api.js?v=3';
 
 export const ADMIN_STATUS_PATH = '/api/admin/status';
 

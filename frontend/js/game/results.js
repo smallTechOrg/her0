@@ -1,5 +1,5 @@
 // Results overlay: score + best status, walkability card, hazard map, detected objects, actions.
-import { renderHazardMap } from '/js/game/overlay.js';
+import { renderHazardMap } from '/js/game/overlay.js?v=3';
 
 const LANE_NAMES = ['footpath', 'road edge', 'road'];
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));

@@ -1,8 +1,8 @@
 // /admin/run.html?id=<run_id>: live pipeline view.
 // Admin API paths used: GET /api/admin/status (login gate), GET /api/admin/runs/{run_id} (polled ~2 s while queued|running).
 
-import { api, ApiError } from '/js/api.js';
-import { gate, logout, el, fmtUsd, fmtUsdPrecise, fmtMs, setState } from '/js/admin/auth.js';
+import { api, ApiError } from '/js/api.js?v=3';
+import { gate, logout, el, fmtUsd, fmtUsdPrecise, fmtMs, setState } from '/js/admin/auth.js?v=3';
 
 const POLL_MS = 2000;
 const TERMINAL = new Set(['succeeded', 'failed', 'failed_budget']);

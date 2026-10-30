@@ -2,8 +2,8 @@
 // Admin API paths used: GET /api/admin/status, GET /api/admin/segments, POST /api/admin/segments,
 // POST /api/admin/segments/{slug}/generate, GET /api/admin/runs?limit=20.
 
-import { api, ApiError } from '/js/api.js';
-import { gate, logout, el, fmtUsd, fmtMs, setState } from '/js/admin/auth.js';
+import { api, ApiError } from '/js/api.js?v=3';
+import { gate, logout, el, fmtUsd, fmtMs, setState } from '/js/admin/auth.js?v=3';
 
 const state = { status: null, segments: null, runs: null, error: null };
 window.__hero = { page: 'admin', get state() { return structuredClone(state); } };
