@@ -323,7 +323,7 @@ def test_run_page_shows_the_run_report_and_model_link(live_server: str, page: Pa
     expect(rep.locator("[data-testid=report-profile]")).to_contain_text("footpath now 'missing'")
     assert rep.locator("[data-testid=report-fidelity] .fid-seg").count() == 2
     expect(rep.locator("[data-testid=report-fidelity]")).to_contain_text("L1 → L2 over 0–100 m")
-    expect(rep.locator("[data-testid=report-cost]")).to_contain_text("$0.2700 of $1.00 run cap")
+    expect(rep.locator("[data-testid=report-cost]")).to_contain_text("$0.2700 · ")
     expect(rep.locator("[data-testid=report-cost]")).to_contain_text("22 new / 26 cached")
     expect(rep.locator("[data-testid=report-suggestions]")).to_contain_text("close-up photo")
     # Images used: new / cached badges.
@@ -349,7 +349,7 @@ def test_noop_run_says_the_model_stays_and_report_failure_is_not_blank(live_serv
     expect(rep.locator("[data-testid=report-summary]")).to_contain_text("The model stays at v2")
     expect(rep.locator("[data-testid=report-images] [data-col=new]")).to_have_text("0")
     expect(rep.locator("[data-testid=report-images] [data-col=cached]")).to_have_text("48")
-    expect(rep.locator("[data-testid=report-cost]")).to_contain_text("$0.0000 of $1.00 run cap")
+    expect(rep.locator("[data-testid=report-cost]")).to_contain_text("$0.0000 · ")
 
 
 def test_run_report_fetch_error_shows_inline_retry(live_server: str, page: Page):

@@ -656,19 +656,19 @@ def build() -> Bundle:
         run=_Run({"id": RUN_IDS[0], "started_at": t(10, 0), "finished_at": t(10, 2)}), mode="generate", base=models[0],
         result=models[1], diff=diffs[1], fid_before=fids[0], fid_after=fids[1], new_observations=new1, cached_count=0,
         costs={"anthropic_usd": 0.31, "anthropic_calls": 5, "input_tokens": 61200, "output_tokens": 8100,
-               "run_cap_usd": 1.0, "budget_remaining_usd": 49.69}, warnings=[], now=NOWS[1])
+               "global_budget_usd": 50.0, "budget_remaining_usd": 49.69}, warnings=[], now=NOWS[1])
     rep2 = build_run_report(
         run=_Run({"id": RUN_IDS[1], "started_at": t(11, 0), "finished_at": t(11, 3)}), mode="generate", base=models[1],
         result=models[2], diff=diffs[2], fid_before=fids[1], fid_after=fids[2], new_observations=new2,
         cached_count=len(new1), cached_observations=cached2,
         costs={"anthropic_usd": 0.27, "anthropic_calls": 4, "input_tokens": 51200, "output_tokens": 7400,
-               "run_cap_usd": 1.0, "budget_remaining_usd": 49.42}, warnings=[], now=NOWS[2])
+               "global_budget_usd": 50.0, "budget_remaining_usd": 49.42}, warnings=[], now=NOWS[2])
     rep3 = build_run_report(
         run=_Run({"id": RUN_IDS[2], "started_at": t(12, 0), "finished_at": t(12, 0)}), mode="generate", base=models[2],
         result=models[2], diff=None, fid_before=fids[2], fid_after=fids[2], new_observations=[],
         cached_count=len(obs_list), cached_observations=obs_list,
         costs={"anthropic_usd": 0.0, "anthropic_calls": 0, "input_tokens": 0, "output_tokens": 0,
-               "google_new_requests": 0, "google_est_usd": 0.0, "run_cap_usd": 1.0, "budget_remaining_usd": 49.42},
+               "google_new_requests": 0, "google_est_usd": 0.0, "global_budget_usd": 50.0, "budget_remaining_usd": 49.42},
         warnings=[], now=NOWS[3])
 
     first, last = models[0].reference_line.points[0], models[0].reference_line.points[-1]

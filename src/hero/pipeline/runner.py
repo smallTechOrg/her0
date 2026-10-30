@@ -52,7 +52,7 @@ def settings_snapshot(settings, segment: repo.SegmentRecord) -> dict[str, Any]:
         "models": {"vision": settings.vision_model, "review": settings.review_model},
         "zoom": settings.satellite_zoom, "samples": settings.streetview_samples,
         "max_iterations": settings.max_review_iterations,
-        "budgets": {"total_usd": settings.claude_budget_usd, "run_usd": settings.run_budget_usd},
+        "budgets": {"total_usd": settings.claude_budget_usd},
     }
 
 

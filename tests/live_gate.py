@@ -44,7 +44,6 @@ RUN1_IMAGERY = {"headings": ["forward", "back"], "sv_spacing_m": 10}
 RUN2_IMAGERY = {"headings": ["forward", "back", "left", "right"], "sv_spacing_m": 10}
 RUN_CAP_USD = 1.00
 TOTAL_CAP_USD = 2.50
-NOOP_SAFETY_CAP_USD = 0.05  # the API minimum: a mistaken LLM call in the no-op run is stopped by the budget guard
 RUN_TIMEOUT_S = 15 * 60
 
 # ----------------------------------------------------------------- the "never a third LLM run" counter
@@ -52,8 +51,7 @@ MAX_LLM_RUNS = 2
 LLM_RUNS = 0
 
 
-def start_generation(admin: httpx.Client, slug: str, imagery: dict[str, Any], *, llm_expected: bool,
-                     run_budget_usd: float | None = None) -> str:
+def start_generation(admin: httpx.Client, slug: str, imagery: dict[str, Any], *, llm_expected: bool) -> str:
     """POST generate. ``llm_expected`` runs count against ``MAX_LLM_RUNS``; the third aborts the whole pytest session."""
     global LLM_RUNS
     if llm_expected:
@@ -62,8 +60,6 @@ def start_generation(admin: httpx.Client, slug: str, imagery: dict[str, Any], *,
             pytest.exit(f"Phase-2 live gate: a {LLM_RUNS}rd LLM-calling run was attempted (max {MAX_LLM_RUNS}); "
                         "aborting the session to protect the real spend.", returncode=3)
     body: dict[str, Any] = {"imagery": imagery}
-    if run_budget_usd is not None:
-        body["run_budget_usd"] = run_budget_usd
     resp = admin.post(f"/api/admin/segments/{slug}/generate", json=body)
     assert resp.status_code == 202, f"generate failed: {resp.status_code} {resp.text}"
     return resp.json()["data"]["run_id"]
@@ -203,8 +199,7 @@ def gate(admin: httpx.Client, demo_street: dict[str, Any], server_log: Path):
     print(f"[gate] run 1 done: ${snap1['anthropic_usd']:.4f}; run 2: {RUN2_IMAGERY}", flush=True)
     snap2 = snapshot(admin, slug, start_generation(admin, slug, RUN2_IMAGERY, llm_expected=True), "run2")
     print(f"[gate] run 2 done: ${snap2['anthropic_usd']:.4f}; run 3 (no-op)", flush=True)
-    snap3 = snapshot(admin, slug, start_generation(admin, slug, RUN2_IMAGERY, llm_expected=False,
-                                                   run_budget_usd=NOOP_SAFETY_CAP_USD), "run3")
+    snap3 = snapshot(admin, slug, start_generation(admin, slug, RUN2_IMAGERY, llm_expected=False), "run3")
     status = data(admin.get("/api/admin/status"))
     total = snap1["anthropic_usd"] + snap2["anthropic_usd"] + snap3["anthropic_usd"]
     out = {

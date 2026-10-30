@@ -1,7 +1,7 @@
 """Admin JSON API: /api/admin/* (password header via ``require_admin``), spec/api.md -> ## Admin.
 
 Status (login + spend + limits + demo street), segments list/create/resolve/from-address, ``generate`` (a fusion run
-with optional ``{imagery, run_budget_usd}`` overrides; single-flight, budget-refused), run detail (polled by the
+with optional ``{imagery}`` overrides; single-flight, budget-refused), run detail (polled by the
 pipeline view; Phase-1 keys unchanged, Phase-2 keys additive) and the recent-runs list. The model, imagery and report
 endpoints live in ``admin_model`` / ``admin_imagery``; seed and corrections are Phase 3 (UI stubs).
 """
@@ -183,8 +183,7 @@ def _run_detail(run: repo.PipelineRunRecord) -> dict[str, Any]:
         },
         "google": {"requests": google.requests, "cache_hits": google.cache_hits, "est_cost_usd": google.est_cost_usd},
         "error": run.error,
-        "budget": {"spent_total_usd": spend.spent_usd, "budget_usd": spend.budget_usd,
-                   "run_budget_usd": (run.inputs or {}).get("run_budget_usd") or settings.run_budget_usd},
+        "budget": {"spent_total_usd": spend.spent_usd, "budget_usd": spend.budget_usd},
     }
     if fusion:
         detail.update({
@@ -213,7 +212,6 @@ def status():
     active = registry.active_run()
     return ok({
         "budget_usd": spend.budget_usd, "spent_usd": spend.spent_usd, "remaining_usd": spend.remaining_usd,
-        "run_budget_usd": settings.run_budget_usd,
         "runs": stats.model_dump(),
         "google": {"requests": google.requests, "cache_hits": google.cache_hits, "est_cost_usd": google.est_cost_usd},
         "models": {"vision": settings.vision_model, "review": settings.review_model},
@@ -221,7 +219,7 @@ def status():
         "active_run_id": active.id if active else None,
         "seed_segment": SEED_SEGMENT,
         "demo_street": DEMO_STREET,
-        "limits": {"run_budget_usd": settings.run_budget_usd, "max_images_per_run": settings.max_images_per_run,
+        "limits": {"max_images_per_run": settings.max_images_per_run,
                    "sv_spacing_m": settings.sv_spacing_m, "headings": settings.sv_headings_list,
                    "sat_crop_zoom": settings.sat_crop_zoom, "sat_crop_spacing_m": settings.sat_crop_spacing_m,
                    "batch_images": settings.perception_batch_images, "structured_mode": settings.structured_mode},
@@ -305,7 +303,6 @@ class GenerateBody(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     imagery: ImageryOverrides | None = None
-    run_budget_usd: float | None = Field(default=None, ge=0.05, le=5)
 
 
 def _validation_error(exc: ValidationError) -> ApiError:  # the shared 422 handler cannot serialise validator ``ctx``
@@ -329,7 +326,7 @@ def generate(slug: str, raw: dict[str, Any] | None = Body(default=None)):
     except ValueError as exc:
         raise ApiError("validation_error", f"Invalid imagery plan: {exc}", {"field": "imagery"}) from None
     try:
-        run = registry.start_run(slug, mode="generate", plan_overrides=overrides, run_budget_usd=body.run_budget_usd)
+        run = registry.start_run(slug, mode="generate", plan_overrides=overrides)
     except NotFoundError as exc:
         raise ApiError("not_found", str(exc))
     except registry.PlanError as exc:

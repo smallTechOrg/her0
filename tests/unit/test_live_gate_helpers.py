@@ -24,11 +24,11 @@ def test_third_llm_calling_run_aborts_the_session(monkeypatch):
         assert lc.start_generation(admin, "s", lc.RUN1_IMAGERY, llm_expected=True) == "run-1"
         assert lc.start_generation(admin, "s", lc.RUN2_IMAGERY, llm_expected=True) == "run-2"
         # the free no-op run does not count against the limit
-        assert lc.start_generation(admin, "s", lc.RUN2_IMAGERY, llm_expected=False, run_budget_usd=0.05) == "run-3"
+        assert lc.start_generation(admin, "s", lc.RUN2_IMAGERY, llm_expected=False) == "run-3"
         with pytest.raises(Exit):
             lc.start_generation(admin, "s", lc.RUN2_IMAGERY, llm_expected=True)
     assert len(calls) == 3, "the aborted third run must never reach the API"
-    assert b'"run_budget_usd":0.05' in calls[2]["body"].replace(b" ", b"")
+    assert b"run_budget_usd" not in calls[2]["body"]
 
 
 def test_mean_bearing_and_angle_from_north():

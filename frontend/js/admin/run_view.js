@@ -25,7 +25,7 @@ function elapsedText(run) {
 }
 
 const ADVICE = {
-  budget_exhausted: 'Raise HERO_CLAUDE_BUDGET_USD / HERO_RUN_BUDGET_USD in .env and generate again.',
+  budget_exhausted: 'Raise HERO_CLAUDE_BUDGET_USD in .env and generate again.',
   upstream_error: 'Check the Google / Anthropic keys in .env and that the APIs are enabled, then generate again.',
   validation_error: 'The model output did not match the schema twice. Try generating again; if it persists, adjust the segment endpoints.',
 };

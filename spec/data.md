@@ -534,7 +534,7 @@ Defaults come from settings (`HERO_SV_SPACING_M`, `HERO_SV_HEADINGS`, `HERO_SAT_
   "confidence_changes": [{"entity_id": "ent-…", "type": "parked_vehicle", "before": 0.74, "after": 0.86, "reason": "2 more supporting frames"}],
   "cost": { "anthropic_usd": 0.27, "anthropic_calls": 4, "input_tokens": 51200, "output_tokens": 7400,
             "google_new_requests": 22, "google_cached": 26, "google_est_usd": 0.154,
-            "total_usd": 0.424, "run_cap_usd": 1.0, "budget_remaining_usd": 49.2 },
+            "total_usd": 0.424, "global_budget_usd": 50.0, "budget_remaining_usd": 49.2, "share_of_global_budget": 0.0085 },
   "warnings": [], "degraded": false,
   "summary": "Run added 22 new Street View photos (26 of 48 images were already cached) …",   // deterministic template, no LLM
   "suggestions": ["Metres 60–75 are the least certain (L2, 3 low-confidence objects): a close-up photo there would raise them to L3."] }

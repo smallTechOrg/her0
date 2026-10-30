@@ -1,10 +1,10 @@
 """Single-flight background worker: one run at a time, in one daemon thread. Dispatches to ``hero.fusion``.
 
-Phase 2: ``start_run(slug, mode="generate"|"acquire", plan_overrides=..., run_budget_usd=...)`` queues a fusion
+Phase 2: ``start_run(slug, mode="generate"|"acquire", plan_overrides=...)`` queues a fusion
 run (the Phase-1 pipeline in ``hero.pipeline.{runner,steps}`` is kept in the tree but no longer reachable from here).
 It refuses with ``RunInProgress`` while any run is queued/running; a ``generate`` run also with ``BudgetExhausted``
-when nothing remains of ``HERO_CLAUDE_BUDGET_USD``, and an ``acquire`` run (no Claude call) with
-``GoogleBudgetExceeded`` (a ``BudgetExhausted``) when the Google estimate for the NEW images exceeds the run cap.
+when nothing remains of ``HERO_CLAUDE_BUDGET_USD``. There is no per-run dollar cap; the Google cost estimate
+of an imagery plan is informational only.
 A queued/running row with no live worker thread in this process (left behind by a crashed/restarted server) can
 never progress in this single-process design, so ``active_run`` retires it immediately as ``failed`` and the admin is
 never locked out (``spec/api.md``: single-process, retired immediately).
@@ -72,17 +72,6 @@ def _retire_orphan(run: repo.PipelineRunRecord) -> None:
         error={"code": "internal_error", "step": "unknown", "message": message},
     ))
     log.warning("pipeline.orphan_run_retired", run_id=run.id, previous_status=run.status.value)
-
-
-class GoogleBudgetExceeded(BudgetExhausted):
-    """The estimated Google cost of the NEW images of an acquire-only run exceeds the run cap."""
-
-    def __init__(self, estimate_usd: float, cap_usd: float):
-        Exception.__init__(
-            self, f"Fetching the planned imagery would cost about ${estimate_usd:.2f} in Google requests, above the "
-                  f"per-run cap of ${cap_usd:.2f}. Lower max_images or raise HERO_RUN_BUDGET_USD in .env.")
-        self.spent_usd = estimate_usd
-        self.budget_usd = cap_usd
 
 
 MODES = ("generate", "acquire")
@@ -167,8 +156,8 @@ def _new_paid_cost(segment: repo.SegmentRecord, settings, items) -> float:
     return round(total, 4)
 
 
-def start_run(slug: str, *, mode: str = "generate", plan_overrides: dict[str, Any] | None = None,
-              run_budget_usd: float | None = None) -> repo.PipelineRunRecord:
+def start_run(slug: str, *, mode: str = "generate",
+              plan_overrides: dict[str, Any] | None = None) -> repo.PipelineRunRecord:
     if mode not in MODES:
         raise ValueError(f"mode must be one of {MODES} (got {mode!r})")
     settings = get_settings()
@@ -183,16 +172,10 @@ def start_run(slug: str, *, mode: str = "generate", plan_overrides: dict[str, An
         if current is not None:
             raise RunInProgress(current)
         if mode == "generate":
-            guard = BudgetGuard(settings, run_budget_usd=run_budget_usd)
+            guard = BudgetGuard(settings)
             if guard.remaining_usd() <= 0:
                 raise BudgetExhausted(spent_usd=repo.total_llm_cost_usd(), budget_usd=guard.budget_total_usd)
-        else:
-            cap = run_budget_usd if run_budget_usd is not None else settings.run_budget_usd
-            estimate = _google_estimate_usd(segment, settings, plan_overrides)
-            if estimate > cap:
-                raise GoogleBudgetExceeded(estimate, cap)
         run = repo.create_run(segment.id, run_inputs(settings, segment, mode=mode, plan_overrides=plan_overrides,
-                                                     run_budget_usd=run_budget_usd,
                                                      base_version=model_repo.head_version(segment.id)))
         thread = threading.Thread(target=_worker, args=(run.id,), name=f"hero-run-{run.id[:8]}", daemon=True)
         _threads[run.id] = thread

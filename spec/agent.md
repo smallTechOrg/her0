@@ -46,8 +46,8 @@ code over a persistent canonical model, so a second run *adds* knowledge instead
   not published**; nothing new → explicit no-op.
 - **#16 Resource-aware optimisation** — images content-addressed and deduped by `(pano_id, heading)`
   before paying; fused observations never re-sent; ≤ 8 frames per call; per-run image cap
-  (`HERO_MAX_IMAGES_PER_RUN`), per-run Claude cap (`HERO_RUN_BUDGET_USD`), global hard stop
-  (`HERO_CLAUDE_BUDGET_USD`); the batch planner estimates cost before sending and drops the
+  (`HERO_MAX_IMAGES_PER_RUN`), global Claude hard stop
+  (`HERO_CLAUDE_BUDGET_USD`; no per-run dollar cap — run cost is reported, with a warning above 25 % of the global budget); the batch planner estimates cost before sending and drops the
   lowest-priority batches (far-from-centre stations first) with a report line instead of failing.
 - **#18 Guardrails** — every model output validated against a Pydantic schema; one re-ask quoting the
   error; coordinates clamped to the window; ranges > 30 m rejected; critique ops bounded
@@ -139,7 +139,7 @@ steps: list[StepRecord]; cost: CostLedger; warnings: list[str]; degraded: bool; 
 | 4 | `plan_imagery` | `merge_plan(default, body overrides)` → `plan_images` → mark planned images already stored as cached | no | invalid plan → 422 before the run starts |
 | 5 | `acquire_imagery` | metadata (free) → dedupe → image fetch → `upsert_observation`; stops at `max_images` NEW images | no | per-frame failures → `skipped[]`; overview tile failing = run fails (`upstream_error`) unless an overview observation already exists. **mode=acquire ends here** with a report |
 | 6 | `select_unfused` | `unfused = observations − base.fused_observation_ids` (overview counts as an overhead observation until fused); `replayable` = the unfused ones whose extraction is already stored in `observation_extractions` (an earlier run paid for it but ended before `publish`) — they skip 8–9 and re-enter at step 10 | no | **both empty ⇒ `fusion.noop`: skip 7–14, write the no-op report, run `succeeded`** |
-| 7 | `prepare_views` | rectify overhead windows (50 m of `s` × `t∈[−14,14]` at 0.1 m/px, with s/t ticks), build street batches (contiguous station windows, ≤ `HERO_PERCEPTION_BATCH_IMAGES`, frame geometry in each caption), estimate cost, trim to the run cap | no | budget plan trims batches; none left ⇒ fail `failed_budget` |
+| 7 | `prepare_views` | rectify overhead windows (50 m of `s` × `t∈[−14,14]` at 0.1 m/px, with s/t ticks), build street batches (contiguous station windows, ≤ `HERO_PERCEPTION_BATCH_IMAGES`, frame geometry in each caption), estimate cost, trim to 80 % of the remaining global budget | no | budget plan trims batches; none left ⇒ fail `failed_budget` |
 | 8 | `perceive_overhead` | **one** call, ≤ 4 windows → `OverheadExtraction`; project polylines/runs/objects to `(s,t)` | A (vision) | invalid twice → skip overhead, warning, profile stays prior (L0) |
 | 9 | `perceive_streetlevel` | `ceil(n/8)` calls → `StreetExtraction`; sequential, resumable per batch | B (vision) | a batch invalid twice or failing upstream → skipped, its observations stay **unfused** (retried next run), warning |
 | 10 | `project_detections` | `project_street_detection` per detection; `street_to_batch`/`overhead_to_batch` → `ProjectedBatch` (+ `visible_regions`) | no | detection that can't be projected is dropped and counted |
@@ -150,9 +150,9 @@ steps: list[StepRecord]; cost: CostLedger; warnings: list[str]; degraded: bool; 
 | 15 | `report` | `build_run_report` → `run_reports`; `pipeline_runs` finalised | no | report failure is logged, run still `succeeded` |
 
 Budget guard wraps every LLM step exactly as in Phase 1 (`check_before_call` before each request,
-`record` after); the per-run cap is `HERO_RUN_BUDGET_USD` (default **1.00**). The batch planner in
+`record` after); there is no per-run dollar cap (the global `HERO_CLAUDE_BUDGET_USD` is the only stop; a run above 25 % of it gets a `high_run_cost` report warning). The batch planner in
 step 7 prevents the typical failure: it sums the per-batch estimates and, if the total would exceed
-80 % of the remaining run cap, drops batches farthest from the segment centre first and records
+80 % of the remaining global budget, drops batches farthest from the segment centre first and records
 `budget_trimmed: n batches` in the report. A hard `BudgetExceeded` mid-run ends `failed_budget`
 **without publishing** (observations acquired so far remain, extractions already paid for remain in
 `observation_extractions` and are re-used on the next run: `select_unfused` skips observations whose

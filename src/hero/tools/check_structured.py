@@ -58,8 +58,9 @@ class _ProbeGuard(BudgetGuard):
 
     def __init__(self, settings, cap_usd: float):
         self.spent = 0.0
-        super().__init__(settings, run_budget_usd=cap_usd, total_spent_fn=lambda: self.spent,
+        super().__init__(settings, total_spent_fn=lambda: self.spent,
                          run_spent_fn=lambda _run_id: self.spent)
+        self.budget_total_usd = float(cap_usd)  # the probe's own tiny hard stop (its spend is in memory only)
 
     def record(self, call):  # type: ignore[override]
         self.spent += call.cost_usd

@@ -18,7 +18,7 @@ function chip(text) {
 function renderStatus(s) {
   state.status = s;
   $('spend').textContent = `${fmtUsd(s.spent_usd)} / ${fmtUsd(s.budget_usd)}`;
-  $('remaining').textContent = `${fmtUsd(s.remaining_usd)} remaining · per-run cap ${fmtUsd(s.run_budget_usd)}`;
+  $('remaining').textContent = `${fmtUsd(s.remaining_usd)} remaining · global cap ${fmtUsd(s.budget_usd)}`;
   const pct = s.budget_usd > 0 ? Math.min(100, (100 * s.spent_usd) / s.budget_usd) : 0;
   const bar = $('spend-bar');
   bar.style.width = `${pct}%`;

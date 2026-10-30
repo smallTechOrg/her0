@@ -91,17 +91,15 @@ def test_budget_guard_blocks_call_that_would_exceed_total_before_any_request(run
     assert repo.list_llm_calls(run_id) == []
 
 
-def test_budget_guard_blocks_call_that_would_exceed_per_run_budget(run_id):
+def test_budget_guard_does_not_stop_a_run_for_its_own_spend(run_id):
+    """No per-run cap: a run that already spent more than the old $1.00 default passes the pre-call check;
+    only the global budget (remaining <= 0) refuses (covered above)."""
     settings = get_settings()
-    guard = BudgetGuard(settings, run_spent_fn=lambda _rid: settings.run_budget_usd)
-    client = AnthropicClient(settings, guard, load_price_table(settings))
+    guard = BudgetGuard(settings, run_spent_fn=lambda _rid: 5.0, total_spent_fn=lambda: 5.0)
 
-    with pytest.raises(BudgetExceeded) as exc:
-        client.vision_json(run_id=run_id, step="blocked", images=[], prompt="hi", schema=ColourReport,
-                           model=settings.vision_model, prompt_name="test")
+    decision = guard.check_before_call(run_id, 0.50)
 
-    assert exc.value.scope == "run"
-    assert repo.list_llm_calls(run_id) == []
+    assert decision.spent_run_usd == 5.0 and decision.remaining_total_usd == settings.claude_budget_usd - 5.0
 
 
 def test_unknown_model_slug_is_refused_before_the_request(run_id):

@@ -34,7 +34,7 @@ class Report(BaseModel):
 
 def _settings(**kw) -> Settings:
     base = dict(anthropic_api_key="sk-test", anthropic_workspace_id="wrkspc_test", google_maps_api_key="g",
-                admin_password="p", claude_budget_usd=50.0, run_budget_usd=1.0)
+                admin_password="p", claude_budget_usd=50.0)
     base.update(kw)
     return Settings(**base)
 
@@ -303,33 +303,39 @@ def test_global_budget_blocks_before_any_request(run_id):
     assert exc.value.scope == "total" and t.requests == [] and repo.list_llm_calls(run_id) == []
 
 
-def test_run_budget_override_blocks_without_touching_global_guard(run_id):
-    settings = _settings(run_budget_usd=1.0)
-    guard = BudgetGuard(settings, run_budget_usd=0.05, run_spent_fn=lambda _r: 0.05)
+def test_global_stop_refuses_once_nothing_remains(run_id):
+    settings = _settings()
     t = Transport(_tool_reply(GOOD))
+    guard = BudgetGuard(settings, total_spent_fn=lambda: settings.claude_budget_usd)
+    assert guard.remaining_usd() == 0.0
     with pytest.raises(BudgetExceeded) as exc:
         _call(_make(t, settings, guard), run_id, mode="forced_tool")
 
-    assert exc.value.scope == "run" and t.requests == []
-    assert guard.budget_run_usd == 0.05 and guard.budget_total_usd == 50.0
-    assert BudgetGuard(settings).budget_run_usd == 1.0
+    assert exc.value.scope == "total" and t.requests == []
 
 
-def test_run_budget_override_must_be_positive():
-    with pytest.raises(ValueError):
-        BudgetGuard(_settings(), run_budget_usd=0)
+def test_a_run_is_not_stopped_by_its_own_spend_even_above_the_old_one_dollar_cap(run_id):
+    settings = _settings()
+    guard = BudgetGuard(settings, run_spent_fn=lambda _r: 7.50, total_spent_fn=lambda: 7.50)
+    t = Transport(_tool_reply(GOOD))
+    obj, _usage = _call(_make(t, settings, guard), run_id, mode="forced_tool")
+
+    assert obj.colour == "blue" and len(t.requests) == 1
+    assert not hasattr(guard, "budget_run_usd") and not hasattr(settings, "run_budget_usd")
+    with pytest.raises(TypeError):
+        BudgetGuard(settings, run_budget_usd=0.05)  # type: ignore[call-arg]
 
 
 def test_budget_is_rechecked_before_the_reask_request(run_id):
     settings = _settings()
-    spent = {"run": 0.0}
-    guard = BudgetGuard(settings, run_spent_fn=lambda _r: spent["run"])
+    spent = {"total": 0.0}
+    guard = BudgetGuard(settings, total_spent_fn=lambda: spent["total"])
     t = Transport(_tool_reply({"colour": "x"}), _tool_reply(GOOD))
     client = _make(t, settings, guard)
     original_record = guard.record
 
     def record_and_exhaust(call):
-        spent["run"] = settings.run_budget_usd
+        spent["total"] = settings.claude_budget_usd
         return original_record(call)
 
     guard.record = record_and_exhaust  # type: ignore[method-assign]

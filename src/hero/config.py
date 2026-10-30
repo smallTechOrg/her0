@@ -63,7 +63,6 @@ class Settings(BaseSettings):
     admin_password: SecretStr = SecretStr("")
 
     claude_budget_usd: float = 50.0
-    run_budget_usd: float = 1.00  # Phase 2 lowers the Phase-1 default (2.00)
 
     host: str = "0.0.0.0"
     port: int = 8711

@@ -57,17 +57,16 @@ class World:
     fake: FakeGoogle
     tmp: Path
 
-    def llm(self, run_budget: float | None = None, **kw) -> PricedReplay:
-        return PricedReplay(BudgetGuard(get_settings(), run_budget_usd=run_budget), **kw)
+    def llm(self, **kw) -> PricedReplay:
+        return PricedReplay(BudgetGuard(get_settings()), **kw)
 
-    def run(self, *, mode="generate", overrides=None, run_budget=None, llm=None, fake=None, http=None):
+    def run(self, *, mode="generate", overrides=None, llm=None, fake=None, http=None):
         fake = fake or self.fake
         settings = get_settings()
         run = repo.create_run(self.seg.id, run_inputs(settings, self.seg, mode=mode, plan_overrides=overrides or {},
-                                                      run_budget_usd=run_budget,
                                                       base_version=model_repo.head_version(self.seg.id)))
         _s, google = make_imagery(self.tmp, fake, run.id)
-        llm = llm if llm is not None else self.llm(run_budget)
+        llm = llm if llm is not None else self.llm()
         return run_fusion(run.id, llm=llm, google=google, http=http or fake.client())
 
     def segment(self) -> repo.SegmentRecord:
@@ -116,7 +115,7 @@ def out_of_budget(scope="total"):
     which a keyword-only exception cannot survive, so a callable is used)."""
     def raise_it(images, prompt):
         raise BudgetExceeded("Generation budget would be exceeded (test).", spent_total_usd=49.9, spent_run_usd=0.5,
-                             estimate_usd=0.2, budget_total_usd=50.0, budget_run_usd=1.0, scope=scope)
+                             estimate_usd=0.2, budget_total_usd=50.0, scope=scope)
     return raise_it
 
 
@@ -165,7 +164,8 @@ def test_first_run_publishes_v1_with_evidence_report_and_costs(world):
     rep = report_of(run)
     calls = repo.list_llm_calls(run.id)
     assert rep.cost.anthropic_usd == pytest.approx(sum(c.cost_usd for c in calls)) == pytest.approx(run.cost_usd)
-    assert rep.cost.anthropic_calls == len(calls) and 0 < rep.cost.anthropic_usd < get_settings().run_budget_usd
+    assert rep.cost.anthropic_calls == len(calls) and 0 < rep.cost.anthropic_usd < get_settings().claude_budget_usd
+    assert not any(w.startswith("high_run_cost") for w in rep.warnings) and rep.cost.share_of_global_budget < 0.25
     assert rep.images.new + rep.images.cached == rep.images.used_total == rep.images.planned - len(rep.images.skipped)
     assert rep.images.new == len(rep.images.new_observation_ids) > 10 and rep.images.cached == 0
     assert rep.summary.strip() and rep.suggestions and rep.version_created and rep.result_version == 1
@@ -259,7 +259,7 @@ def test_second_run_with_left_and_right_views_creates_v2_and_keeps_every_v1_enti
     assert rep.images.cached >= run1_new, "everything run 1 stored is a cache hit"
     assert rep.cost.google_new_requests <= rep.images.planned - run1_new
     assert rep.base_version == 1 and rep.result_version == 2 and rep.version_created
-    assert rep.fidelity.improved_intervals and rep.cost.anthropic_usd <= get_settings().run_budget_usd
+    assert rep.fidelity.improved_intervals and rep.cost.anthropic_usd <= get_settings().claude_budget_usd
     assert llm.calls_for("overhead") == [], "the satellite images were fused in run 1 and are never re-sent"
     assert observation_count(world) > new_obs_total
     assert world.segment().scene.model.version == 2
@@ -268,14 +268,17 @@ def test_second_run_with_left_and_right_views_creates_v2_and_keeps_every_v1_enti
 # ------------------------------------------------------------------ budget guards
 
 
-def test_run_cap_too_small_for_any_call_fails_budget_before_the_first_request_and_publishes_nothing(world):
+def test_global_budget_too_small_for_any_call_fails_budget_before_the_first_request_and_publishes_nothing(
+        world, monkeypatch):
     world.run(overrides=FORWARD_BACK)
     before = world.segment()
     versions = len(model_repo.list_versions(world.seg.id))
     obs_before = observation_count(world)
+    monkeypatch.setenv("HERO_CLAUDE_BUDGET_USD", str(round(repo.total_llm_cost_usd() + 0.05, 4)))
+    reset_settings()
     llm = world.llm()
 
-    run = world.run(overrides=ALL_FOUR, run_budget=0.05, llm=llm)
+    run = world.run(overrides=ALL_FOUR, llm=llm)
 
     assert run.status is RunStatus.failed_budget and run.error["code"] == "budget_exhausted"
     assert run.error["step"] == "prepare_views" and llm.call_count == 0
@@ -289,10 +292,13 @@ def test_run_cap_too_small_for_any_call_fails_budget_before_the_first_request_an
     assert rep.degraded and rep.version_created is False and "did not produce a model" in rep.summary
 
 
-def test_cap_that_fits_part_of_the_batches_trims_the_rest_and_says_so(world):
+def test_global_budget_that_fits_part_of_the_batches_trims_the_rest_and_says_so(world, monkeypatch):
+    budget = round(repo.total_llm_cost_usd() + 0.30, 4)  # the test database carries earlier tests' spend
+    monkeypatch.setenv("HERO_CLAUDE_BUDGET_USD", str(budget))
+    reset_settings()
     llm = world.llm()
 
-    run = world.run(overrides=ALL_FOUR, run_budget=0.30, llm=llm)
+    run = world.run(overrides=ALL_FOUR, llm=llm)
 
     assert run.status is RunStatus.succeeded
     rep = report_of(run)
@@ -300,6 +306,8 @@ def test_cap_that_fits_part_of_the_batches_trims_the_rest_and_says_so(world):
     street_calls = len(llm.calls_for("streetlevel"))
     assert 1 <= street_calls < 4, "some, not all, of the four street batches were sent"
     assert run.cost_usd <= 0.30
+    assert rep.cost.global_budget_usd == budget and rep.cost.share_of_global_budget == pytest.approx(
+        rep.cost.anthropic_usd / budget, abs=1e-4)
     head = world.head()
     assert len(head.model.fused_observation_ids) < observation_count(world), "dropped batches stay unfused"
 
@@ -532,3 +540,17 @@ def test_phase1_segment_gets_a_legacy_v0_and_a_fresh_lineage(test_db, tmp_path, 
         assert run.inputs["base_version"] is None
     finally:
         reset_settings()
+
+
+def test_a_run_above_the_share_threshold_is_warned_about_in_the_report_but_never_stopped(world, monkeypatch):
+    from hero.fusion import steps
+
+    assert steps.RUN_SHARE_WARN_FRACTION == 0.25
+    monkeypatch.setattr(steps, "RUN_SHARE_WARN_FRACTION", 0.0001)  # any spend now counts as "a large share"
+
+    run = world.run(overrides=FORWARD_BACK)
+
+    assert run.status is RunStatus.succeeded and run.cost_usd > 1e-4 * get_settings().claude_budget_usd
+    rep = report_of(run)
+    warning = next(w for w in rep.warnings if w.startswith("high_run_cost"))
+    assert "HERO_CLAUDE_BUDGET_USD" in warning and rep.cost.share_of_global_budget > 0.0001

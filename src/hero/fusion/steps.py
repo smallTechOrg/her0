@@ -79,6 +79,7 @@ OBS_LIMIT = 5000
 OVERHEAD_MAX_TOKENS = 5000
 STREET_MAX_TOKENS = 6000
 BUDGET_TRIM_FRACTION = 0.8
+RUN_SHARE_WARN_FRACTION = 0.25  # a single run above this share of the global budget gets a report warning
 CRITIQUE_CROPS = 2
 CRITIQUE_FRAMES = 2
 CRITIQUE_IMAGE_PX = 1024
@@ -393,7 +394,7 @@ def prepare_views(state: FusionState, ctx: FusionContext) -> str:
     state.est_calls_usd = round(sum(j[2] for j in jobs), 4)
     keep: list[tuple[str, object, float]] = []
     if jobs:
-        remaining = min(ctx.guard.budget_run_usd - repo.run_spend_usd(ctx.run_id), ctx.guard.remaining_usd())
+        remaining = ctx.guard.remaining_usd()  # only the global budget bounds a run
         allowed = BUDGET_TRIM_FRACTION * max(0.0, remaining)
         total = 0.0
         for job in jobs:
@@ -408,7 +409,7 @@ def prepare_views(state: FusionState, ctx: FusionContext) -> str:
             state.budget_trimmed = dropped
             state.degraded = True
             state.warn(f"budget_trimmed: {dropped} perception batch(es) dropped to stay within "
-                       f"{int(BUDGET_TRIM_FRACTION * 100)} % of the remaining run budget (${allowed:.2f} of "
+                       f"{int(BUDGET_TRIM_FRACTION * 100)} % of the remaining global budget (${allowed:.2f} of "
                        f"${remaining:.2f}); their photos stay unfused for the next run.")
     kept_batches = {id(j[1]) for j in keep if j[0] == "street"}
     state.street_batches = [*replay_batches, *(b for b in batches if id(b) in kept_batches)]
@@ -722,15 +723,21 @@ def build_report(state: FusionState, ctx: FusionContext, *, failed: bool = False
         anthropic_usd=anthropic, anthropic_calls=len(totals.calls), input_tokens=totals.input_tokens,
         output_tokens=totals.output_tokens, google_new_requests=res.paid_requests if res else 0,
         google_cached=res.cached if res else 0, google_est_usd=google_est, total_usd=round(anthropic + google_est, 4),
-        run_cap_usd=ctx.guard.budget_run_usd, budget_remaining_usd=round(ctx.guard.remaining_usd(), 4))
+        global_budget_usd=ctx.guard.budget_total_usd, budget_remaining_usd=round(ctx.guard.remaining_usd(), 4),
+        share_of_global_budget=round(anthropic / ctx.guard.budget_total_usd, 4) if ctx.guard.budget_total_usd > 0 else 0.0)
     skipped = [ReportSkipped(station_s=s.get("station_s"), view=s.get("view"), reason=str(s.get("reason", "")))
                for s in (res.skipped if res else [])]
     result = None if failed else (state.published or base)
     fid_before = state.fidelity_before or compute_fidelity(base, state.observations)
+    warnings = list(state.warnings)
+    if costs.share_of_global_budget > RUN_SHARE_WARN_FRACTION:  # informational only: never blocks anything
+        warnings.append(
+            f"high_run_cost: this run spent ${anthropic:.2f} on Claude, {costs.share_of_global_budget:.0%} of the "
+            f"global ${ctx.guard.budget_total_usd:.2f} budget (HERO_CLAUDE_BUDGET_USD).")
     return build_run_report(
         run=_RunView(ctx.run_id, state.started_at, now), mode=state.mode, base=base, result=result,
         diff=state.diff if state.version_created else None, fid_before=fid_before,
         fid_after=state.fidelity_after, new_observations=state.new_observations,
-        cached_count=len(state.cached_observations), costs=costs, warnings=list(state.warnings), now=now,
+        cached_count=len(state.cached_observations), costs=costs, warnings=warnings, now=now,
         cached_observations=state.cached_observations, skipped=skipped,
         degraded=state.degraded or failed or state.error is not None)

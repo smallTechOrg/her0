@@ -56,8 +56,8 @@ Open `http://localhost:8711/admin/` and enter the password (`HERO_ADMIN_PASSWORD
    obstacles -> assemble -> review 1 -> review 2 -> finalize), the satellite tile and
    Street View frames, per-pass JSON, each review iteration's top-down preview + critique,
    the final scene JSON, and tokens / USD / Google requests.
-4. Expected: `succeeded` in roughly 2-4 minutes, under ~$0.20 per run (hard stop
-   `HERO_RUN_BUDGET_USD=2.00`), Google requests <= 6.
+4. Expected: `succeeded` in roughly 2-4 minutes, under ~$0.20 per run (no per-run cap; the
+   global stop `HERO_CLAUDE_BUDGET_USD` applies), Google requests <= 6.
 
 Cost and budget notes:
 
@@ -90,8 +90,8 @@ the not-yet-fused ones to Claude (batched), merges the result into the model, an
    default: the configured `HERO_DATABASE_URL`), exit code 2 = the line is not verified against OSM road geometry. The Phase-1 street stays as a *legacy* segment ("placement unverified").
 2. **Generate** (segment page or run list). The imagery plan comes from the env defaults (below) and can be overridden per run on the
    segment page ("Add more imagery"): spacing, headings (`forward back left right`), close-up crop zoom, an `s` range.
-   Costs per run: Street View ≈ $0.007/frame (cached frames are free), one Claude call per ≤ 8 frames, hard stop `HERO_RUN_BUDGET_USD`
-   (default `1.00`) and `HERO_CLAUDE_BUDGET_USD`.
+   Costs per run: Street View ≈ $0.007/frame (cached frames are free), one Claude call per ≤ 8 frames, reported per run (no per-run cap; a run above 25 % of
+   the global budget gets a warning in its report); the only hard stop is `HERO_CLAUDE_BUDGET_USD`.
 3. **Inspect** on the segment page: version history, the fidelity/coverage map (click a stretch for the photos and "what would improve it"),
    entities with evidence, version diffs; the run page shows the run report (images new vs cached, what changed, fidelity before → after, cost).
 4. **Add more imagery** and Generate again: the new version keeps every entity id, raises confidence/fidelity where new images arrived, and the
@@ -133,7 +133,6 @@ Copy `.env.example` to `.env`; every variable is documented inline there. Prefix
 | `HERO_GOOGLE_MAPS_API_KEY` | yes | - | Google Maps Platform key (Static Maps + Street View Static enabled) |
 | `HERO_ADMIN_PASSWORD` | yes | - | Admin area password (`X-Hero-Admin-Password` header) |
 | `HERO_CLAUDE_BUDGET_USD` | no | `50` | Hard stop for cumulative generation spend |
-| `HERO_RUN_BUDGET_USD` | no | `1.00` | Per-run Claude hard stop (Phase 2 default; was `2.00`) |
 | `HERO_HOST` | no | `0.0.0.0` | Bind address |
 | `HERO_PORT` | no | `8711` | Bind port |
 | `HERO_DATABASE_URL` | no | `sqlite:///data/hero.db` | Production DB (relative paths resolve against the repo root) |
@@ -188,7 +187,7 @@ Admin (header `X-Hero-Admin-Password`):
 | GET | `/api/admin/runs/{run_id}` | full run for the pipeline view |
 
 Phase 2 additions (admin; full contract in `spec/api.md`): `POST /api/admin/segments/{slug}/generate` (optional body
-`{imagery: {...}, run_budget_usd}`), `POST …/imagery` (fetch only), `POST …/observations/upload`, `GET …/observations`,
+`{imagery: {...}}`), `POST …/imagery` (fetch only), `POST …/observations/upload`, `GET …/observations`,
 `POST …/placement-preview`, `GET …/model`, `GET …/model/versions/{n}`, `GET …/model/diff?from=&to=`, `GET …/model/coverage`,
 `GET …/model/entities[/{id}]`, `GET /api/admin/runs/{id}/report`. `GET /api/segments/{slug}/scene` returns Scene v1 or v2
 (`schema_version`); the gallery list gains an additive `model` block.

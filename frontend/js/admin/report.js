@@ -66,7 +66,7 @@ export function renderReport(root, r, { slug } = {}) {
       : el('p', { class: 'muted', text: 'No confidence changes.' }),
     el('h3', { text: 'Cost' }),
     el('dl', { class: 'kv', 'data-testid': 'report-cost' }, [
-      el('dt', { text: 'Anthropic' }), el('dd', { text: `${fmtUsdPrecise(cost.anthropic_usd)} of ${fmtUsd(cost.run_cap_usd)} run cap · ${cost.anthropic_calls ?? 0} calls` }),
+      el('dt', { text: 'Anthropic' }), el('dd', { text: `${fmtUsdPrecise(cost.anthropic_usd)} · ${cost.anthropic_calls ?? 0} calls` }),
       el('dt', { text: 'Google' }), el('dd', { text: `${cost.google_new_requests ?? 0} new / ${cost.google_cached ?? 0} cached · est. ${fmtUsdPrecise(cost.google_est_usd)}` }),
       el('dt', { text: 'Total' }), el('dd', { text: `${fmtUsdPrecise(cost.total_usd)} · budget remaining ${fmtUsd(cost.budget_remaining_usd)}` }),
     ]),

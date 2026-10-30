@@ -30,7 +30,7 @@ the pending ones serially, watching the running spend, with a hard stop at the b
   chosen for Street View coverage; exact endpoints are recorded in the seed file by the
   Phase 3 builder after checking Street View metadata for each start point. Seed segments are created through the address flow
   (centre + road heading, 50 m either way) so each gets a real-road reference line, and are generated with the Phase-2 cumulative
-  pipeline (≈ $0.3–0.5 each at the default dense plan; "Generate all pending" respects the per-run and global budgets).
+  pipeline (≈ $0.3–0.5 each at the default dense plan; "Generate all pending" respects the global budget).
 
 ## Success Criteria
 - [ ] `POST /api/admin/seed` twice returns `created = 8` then `created = 0, existing = 8`.

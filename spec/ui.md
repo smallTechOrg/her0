@@ -113,7 +113,7 @@ Error state if posting the run fails: results still show from local data with a 
 
 - Password gate: single password field + "Enter"; stored in `sessionStorage` for the tab;
   wrong → "Wrong password" inline. Validated via `GET /api/admin/status`.
-- Status bar: spent / budget with a progress bar, remaining, runs succeeded/failed, Google
+- Status bar: spent / budget with a progress bar, remaining · "global cap $50.00" (no per-run cap), runs succeeded/failed, Google
   requests + cache hits, models in use, "Street View last check: available/unavailable".
 - Segment table: name, city, length, status chip, quality, **model** (`v2 · L2`, "legacy" tag for imported
   Phase-1 streets), latest run (status, cost, link), an **Open** link to the segment page
@@ -155,7 +155,7 @@ Polls every 2 s until terminal; shows "Live" indicator while running.
   (total / new / cached; by source; by heading `forward back left right`); **What changed**: new / changed / removed /
   contradicted entities (each with its description and confidence, link to its evidence on the segment page);
   profile changes; **Fidelity before → after** as two stacked bars with the improved intervals listed; confidence
-  changes table; cost box (Anthropic USD vs run cap, Google new/cached, total); warnings; `suggestions`.
+  changes table; cost box (Anthropic USD and call count, no cap shown; Google new/cached, total); warnings; `suggestions`.
 - **Images used**: thumbnail grid (`imagery.observations`), badge `new` / `cached`, caption "forward · 20 m · 2023-04".
 - Steps timeline, cost panel, critique iterations (preview + critique + ops), error panel: as Phase 1.
 
@@ -218,7 +218,7 @@ After the fidelity bar and "Least certain": **"Filled in from neighbouring stret
 Header row: current model badge + `scene v3`/`scene v2 (stale — Regenerate to upgrade)`. Then, top to bottom:
 1. **Where it is weakest** (`data-testid="improve-weakest"`): the coverage bar (same component as Coverage, compact, `data-level` cells) with the ≤ 5 weakest intervals listed underneath ("40–60 m · L1 · single viewpoint, no right-facing photo → *Add a Street View frame facing right, or upload one*", each with two buttons **Fill this stretch** (pre-sets `s_range` in the plan preview) and **Upload here** (pre-sets `s` in the upload form)). Empty state: "Every stretch is at the target level."
 2. **Four actions** as cards (`data-testid="improve-action-<id>"`), each with a one-line "what it does / what it costs":
-   - **Fill gaps** — *"Plans the photos that would help most. Shows a preview first."* Button **Preview plan** → inline table (kind, view, station, "new/cached", reason), totals "n new · m cached · ≈ $0.19 Google · ≈ $0.31 Claude (estimate)", a warning chip when `will_exceed_budget`/`trimmed`, then **Fetch + Generate** and **Fetch images only** (disabled with the reason until a preview exists and when a run is active).
+   - **Fill gaps** — *"Plans the photos that would help most. Shows a preview first."* Button **Preview plan** → inline table (kind, view, station, "new/cached", reason), totals "n new · m cached · ≈ $0.19 Google · ≈ $0.31 Claude (estimate)", a warning chip when `will_exceed_budget` (estimate above the remaining global budget)/`trimmed`; the estimate itself never blocks, then **Fetch + Generate** and **Fetch images only** (disabled with the reason until a preview exists and when a run is active).
    - **Add more imagery** — the existing form (spacing, headings, crop zoom, optional range with live estimate) moved into this card.
    - **Upload photos** — the real upload form (below).
    - **Regenerate with what we have** — *"Rebuilds the street from photos and detections already stored. Costs $0: no Google, no Claude."* Radio `Rebuild scene only (default)` / `Also re-merge stored detections` with a hint when `missing_extractions > 0`; button **Regenerate** → inline result "Done — scene v3, 0 Google requests, 0 Claude calls, $0.00; 25 m interpolated; 41 objects now spawn dynamically" (or "Nothing changed").

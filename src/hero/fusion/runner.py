@@ -55,7 +55,7 @@ def _now() -> datetime:
 
 
 def run_inputs(settings, segment: repo.SegmentRecord, *, mode: str, plan_overrides: dict[str, Any] | None,
-               run_budget_usd: float | None, base_version: int | None) -> dict[str, Any]:
+               base_version: int | None) -> dict[str, Any]:
     from hero.imagery.plan import default_plan, merge_plan
 
     plan = merge_plan(default_plan(settings), dict(plan_overrides or {}))
@@ -65,9 +65,7 @@ def run_inputs(settings, segment: repo.SegmentRecord, *, mode: str, plan_overrid
         "start": segment.start.model_dump(), "end": segment.end.model_dump(), "footpath_side": segment.footpath_side.value,
         "models": {"vision": settings.vision_model, "review": settings.review_model},
         "max_iterations": settings.max_review_iterations, "batch_images": settings.perception_batch_images,
-        "budgets": {"total_usd": settings.claude_budget_usd,
-                    "run_usd": run_budget_usd if run_budget_usd is not None else settings.run_budget_usd},
-        "run_budget_usd": run_budget_usd,
+        "budgets": {"total_usd": settings.claude_budget_usd},
     }
 
 
@@ -215,13 +213,12 @@ def succeed(state: FusionState) -> repo.PipelineRunRecord:
 # ------------------------------------------------------------------ entry point
 
 
-def build_context(run_id: str, settings=None, *, llm=None, google=None, http: httpx.Client | None = None,
-                  run_budget_usd: float | None = None) -> S.FusionContext:
+def build_context(run_id: str, settings=None, *, llm=None, google=None, http: httpx.Client | None = None) -> S.FusionContext:
     settings = settings or get_settings()
     prices = load_price_table(settings)
     prices.require(settings.vision_model)
     prices.require(settings.review_model)
-    guard = BudgetGuard(settings, run_budget_usd=run_budget_usd)
+    guard = BudgetGuard(settings)
     data_dir = settings.data_dir_abs
     return S.FusionContext(
         settings=settings, run_id=run_id, llm=llm or AnthropicClient(settings, guard, prices),
@@ -244,8 +241,7 @@ def run_fusion(run_id: str, *, llm=None, google=None, http: httpx.Client | None 
     if segment.status is not SegmentStatus.ready:  # a ready street stays playable while it is regenerated
         repo.update_segment(segment.id, SegmentUpdate(status=SegmentStatus.generating))
     try:
-        ctx = build_context(run_id, settings, llm=llm, google=google, http=http,
-                            run_budget_usd=inputs.get("run_budget_usd"))
+        ctx = build_context(run_id, settings, llm=llm, google=google, http=http)
     except Exception as exc:  # noqa: BLE001 - config errors are reported on the run, never raised
         state.error = PipelineError(code="upstream_error", message=str(exc), step="build_context")
         return fail(state)

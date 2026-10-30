@@ -2,8 +2,8 @@
 
 > **Phase 2 status.** The one-shot pipeline described below is the **Phase 1 (legacy) behaviour**. For every segment, `POST …/generate`
 > now runs the cumulative fusion pipeline: see `street-model.md`, `imagery-acquisition.md`, `model-fusion.md`, `model-inspection.md`,
-> `street-description.md`. What carries over unchanged: admin-only generation, password auth, single-flight (409), global + per-run budget
-> guard (402 / `failed_budget`, per-run default now $1.00), imagery cache with "N new / M cached" counting, low-confidence detections kept and
+> `street-description.md`. What carries over unchanged: admin-only generation, password auth, single-flight (409), global-only budget
+> guard (402 / `failed_budget`; the per-run cap was removed, run cost is only reported), imagery cache with "N new / M cached" counting, low-confidence detections kept and
 > labelled, every intermediate artefact visible, and the segment-length rule (30–200 m; address-created 100–200 m). What changes: the previous
 > scene is no longer "replaced" — a new model *version* is published on top of the old one, and a run with nothing new is a free no-op.
 > The Phase 1 success criteria below remain true for the legacy pipeline's unit/integration tests (`hero.pipeline.*`) and for the
@@ -48,7 +48,7 @@ scene, under a hard spend limit.
 - Re-generating a segment whose imagery is cached makes **zero** new Google requests; every
   attempt (hit or miss) is counted and shown as "N new / M cached".
 - Budget: before every model call the guard checks `spent_total + estimate ≤ HERO_CLAUDE_BUDGET_USD`
-  and `spent_run + estimate ≤ HERO_RUN_BUDGET_USD`; otherwise the run ends `failed_budget`
+  (no per-run cap); otherwise the run ends `failed_budget`
   without making the call. Starting a run with no remaining budget is refused.
 - Cost per call = tokens × configured price table; unknown model → run refuses to start.
 - Only one run at a time; a second request is refused with "a run is in progress".

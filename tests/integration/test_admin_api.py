@@ -60,7 +60,7 @@ def test_status_reports_spend_runs_google_models_limits_seed_and_demo_street(cli
     settings = get_settings()
     assert data["budget_usd"] == settings.claude_budget_usd
     assert data["spent_usd"] >= 0 and data["remaining_usd"] == pytest.approx(max(0.0, data["budget_usd"] - data["spent_usd"]))
-    assert data["run_budget_usd"] == settings.run_budget_usd
+    assert "run_budget_usd" not in data
     assert data["runs"]["total"] >= 3 and data["runs"]["succeeded"] >= 3
     assert set(data["runs"]) == {"total", "succeeded", "failed", "failed_budget"}
     assert set(data["google"]) == {"requests", "cache_hits", "est_cost_usd"}
@@ -68,7 +68,7 @@ def test_status_reports_spend_runs_google_models_limits_seed_and_demo_street(cli
     assert data["streetview_available_last"] in (True, False, None)
     assert data["seed_segment"]["name"] == SEED["name"]
     assert data["limits"] == {
-        "run_budget_usd": settings.run_budget_usd, "max_images_per_run": settings.max_images_per_run,
+        "max_images_per_run": settings.max_images_per_run,
         "sv_spacing_m": settings.sv_spacing_m, "headings": settings.sv_headings_list,
         "sat_crop_zoom": settings.sat_crop_zoom, "sat_crop_spacing_m": settings.sat_crop_spacing_m,
         "batch_images": settings.perception_batch_images, "structured_mode": settings.structured_mode}
@@ -241,8 +241,8 @@ def _capture_start(monkeypatch):
 
     seen: dict = {}
 
-    def fake_start(slug, *, mode="generate", plan_overrides=None, run_budget_usd=None):
-        seen.update(slug=slug, mode=mode, overrides=plan_overrides, run_budget_usd=run_budget_usd)
+    def fake_start(slug, *, mode="generate", plan_overrides=None):
+        seen.update(slug=slug, mode=mode, overrides=plan_overrides)
         return _Run()
 
     monkeypatch.setattr(registry, "start_run", fake_start)
@@ -256,20 +256,19 @@ def test_generate_without_a_body_starts_a_generate_run_with_all_defaults(client,
 
     assert resp.status_code == 202
     assert resp.json()["data"] == {"run_id": "run-123", "status": "queued", "mode": "generate"}
-    assert seen == {"slug": seeded_fixture_segment, "mode": "generate", "overrides": {}, "run_budget_usd": None}
+    assert seen == {"slug": seeded_fixture_segment, "mode": "generate", "overrides": {}}
 
 
-def test_generate_forwards_the_imagery_overrides_and_the_run_budget(client, auth, seeded_fixture_segment, monkeypatch):
+def test_generate_forwards_the_imagery_overrides(client, auth, seeded_fixture_segment, monkeypatch):
     seen = _capture_start(monkeypatch)
     body = {"imagery": {"sv_spacing_m": 20, "headings": ["left", "right"], "sat_crop_zoom": 19, "max_images": 30,
-                        "s_range": {"s_from": 10, "s_to": 60}}, "run_budget_usd": 0.5}
+                        "s_range": {"s_from": 10, "s_to": 60}}}
 
     resp = client.post(f"/api/admin/segments/{seeded_fixture_segment}/generate", json=body, headers=auth)
 
     assert resp.status_code == 202
     assert seen["overrides"] == {"sv_spacing_m": 20.0, "headings": ["left", "right"], "sat_crop_zoom": 19,
                                  "max_images": 30, "s_range": {"s_from": 10.0, "s_to": 60.0}}
-    assert seen["run_budget_usd"] == 0.5
 
 
 @pytest.mark.parametrize("body", [
@@ -277,7 +276,7 @@ def test_generate_forwards_the_imagery_overrides_and_the_run_budget(client, auth
     {"imagery": {"headings": ["up"]}}, {"imagery": {"sat_crop_zoom": 17}}, {"imagery": {"sat_crop_zoom": 22}},
     {"imagery": {"max_images": 0}}, {"imagery": {"max_images": 201}}, {"imagery": {"sat_crop_spacing_m": 0}},
     {"imagery": {"s_range": {"s_from": 50, "s_to": 10}}}, {"imagery": {"surprise": 1}},
-    {"run_budget_usd": 0.01}, {"run_budget_usd": 5.5}, {"run_budget_usd": "lots"}, {"mystery": True}])
+    {"run_budget_usd": 0.5}, {"mystery": True}])
 def test_generate_rejects_out_of_range_bodies_with_422_and_starts_nothing(client, auth, seeded_fixture_segment,
                                                                           monkeypatch, body):
     from hero.pipeline import registry
@@ -296,20 +295,14 @@ def test_generate_unknown_segment_with_a_bad_body_is_404_not_422(client, auth):
     assert resp.status_code == 404
 
 
-def test_imagery_acquire_run_over_the_google_estimate_is_402_and_creates_no_run(client, auth, seeded_fixture_segment,
-                                                                               monkeypatch):
-    monkeypatch.setenv("HERO_RUN_BUDGET_USD", "0.05")
-    reset_settings()
-    runs_before = repo.run_stats().total
-    try:
-        resp = client.post(f"/api/admin/segments/{seeded_fixture_segment}/imagery", headers=auth,
-                           json={"max_images": 200, "sv_spacing_m": 4})
-    finally:
-        monkeypatch.delenv("HERO_RUN_BUDGET_USD", raising=False)
-        reset_settings()
+def test_imagery_acquire_run_is_not_refused_on_the_google_dollar_estimate(client, auth, seeded_fixture_segment,
+                                                                         monkeypatch):
+    seen = _capture_start(monkeypatch)
 
-    assert resp.status_code == 402 and resp.json()["error"]["code"] == "budget_exhausted"
-    assert "Google" in resp.json()["error"]["message"] and repo.run_stats().total == runs_before
+    resp = client.post(f"/api/admin/segments/{seeded_fixture_segment}/imagery", headers=auth,
+                       json={"max_images": 200, "sv_spacing_m": 4})
+
+    assert resp.status_code == 202 and seen["mode"] == "acquire"
 
 
 # ---------------------------------------------------------------- generate: the whole flow over HTTP (replayed model)
@@ -425,13 +418,15 @@ def test_a_second_identical_generate_over_http_is_a_free_noop_and_the_run_list_s
     assert top["mode"] == "generate" and top["version_created"] is False and top["segment"]["slug"] == slug
 
 
-def test_generate_with_a_tiny_run_budget_over_http_ends_failed_budget_without_a_model_call(world, client, auth,
-                                                                                          replay_worker):
-    run_id, run = _post_generate(client, auth, world.seg.slug, {"imagery": FORWARD_BACK, "run_budget_usd": 0.05})
+def test_generate_with_a_tiny_global_budget_over_http_ends_failed_budget_without_a_model_call(
+        world, client, auth, replay_worker, monkeypatch):
+    monkeypatch.setenv("HERO_CLAUDE_BUDGET_USD", str(round(repo.total_llm_cost_usd() + 0.05, 4)))
+    reset_settings()
+    run_id, run = _post_generate(client, auth, world.seg.slug, {"imagery": FORWARD_BACK})
 
     assert run["status"] == "failed_budget" and run["error"]["code"] == "budget_exhausted"
-    assert run["error"]["step"] == "prepare_views" and run["inputs"]["budgets"]["run_usd"] == 0.05
-    assert run["budget"]["run_budget_usd"] == 0.05 and run["cost"]["cost_usd"] == 0
+    assert run["error"]["step"] == "prepare_views" and "run_usd" not in run["inputs"]["budgets"]
+    assert "run_budget_usd" not in run["budget"] and run["cost"]["cost_usd"] == 0
     assert all(len(w.calls) == 0 for w in replay_worker)
     assert run["imagery"]["observations"], "the images fetched before the stop stay stored and visible"
     assert client.get(f"/api/admin/runs/{run_id}/report", headers=auth).json()["data"]["degraded"] is True

@@ -100,9 +100,11 @@ def test_cost_defaults_come_from_the_observations_and_explicit_values_win(v0, v1
     assert r.cost.google_new_requests == 2  # the uploaded photo is not a Google request
     assert r.cost.google_est_usd == pytest.approx(0.021)
     assert r.cost.total_usd == pytest.approx(0.291)
-    explicit = report(v0, v1, costs=ReportCost(anthropic_usd=0.5, total_usd=0.6, run_cap_usd=1.0, google_new_requests=9,
+    explicit = report(v0, v1, costs=ReportCost(anthropic_usd=0.5, total_usd=0.6, global_budget_usd=50.0, google_new_requests=9,
                                                google_cached=1, google_est_usd=0.1))
-    assert explicit.cost.total_usd == 0.6 and explicit.cost.google_new_requests == 9 and explicit.cost.run_cap_usd == 1.0
+    assert explicit.cost.total_usd == 0.6 and explicit.cost.google_new_requests == 9 and explicit.cost.global_budget_usd == 50.0
+    # reports stored before the per-run cap was removed still validate (the legacy key is dropped)
+    assert "run_cap_usd" not in ReportCost.model_validate({"anthropic_usd": 0.1, "run_cap_usd": 1.0}).model_dump()
 
 
 def test_changed_entities_and_confidence_changes(v0, v1):

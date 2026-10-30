@@ -111,7 +111,7 @@ Environment variables (`.env.example` must list all; secrets never printed):
 | `HERO_ANTHROPIC_WORKSPACE_ID` | — (required) | sent as `anthropic-workspace-id` on every Anthropic request |
 | `HERO_GOOGLE_MAPS_API_KEY` | — (required) | Static Maps + Street View Static |
 | `HERO_CLAUDE_BUDGET_USD` | `50` | cumulative hard stop (all runs, all time, from `llm_calls`) |
-| `HERO_RUN_BUDGET_USD` | `1.00` | per-run Claude hard stop, checked before every call (Phase 2 lowers the Phase-1 default `2.00`; a typical dense run is $0.25–0.50) |
+| ~~`HERO_RUN_BUDGET_USD`~~ | removed | there is no per-run cost cap; only `HERO_CLAUDE_BUDGET_USD` (global hard stop, checked before every call) refuses a call. Per-run cost is reported, with a non-blocking report warning above 25 % of the global budget. A stale value in `.env` is ignored (`Settings` uses `extra="ignore"`). |
 | `HERO_ADMIN_PASSWORD` | — (required) | admin area password, header `X-Hero-Admin-Password` |
 | `HERO_HOST` / `HERO_PORT` | `0.0.0.0` / `8711` | bind |
 | `HERO_DATABASE_URL` | `sqlite:///data/hero.db` | production DB |
@@ -460,7 +460,7 @@ def rectify_window(tile_path: Path, georef: TileGeoref, ref: ReferenceLine, grid
 def looks_like_no_imagery(img: Image.Image) -> bool        # low-variance light-grey tile (Google's "we don't have imagery at this zoom" placeholder)
 ```
 
-**`hero.llm`** *(S3a)* — `LLMClient.vision_json(...)` keeps its Phase-1 signature; adds keyword `structured_mode: str | None = None` (default from settings) and returns the same `(obj, LLMUsage)`; `AnthropicClient.supported_modes(model) -> list[str]`; `BudgetGuard(settings, *, run_budget_usd: float | None = None, …)` lets a request override the per-run cap (0.05–5) without touching the global guard; `LlmCallCreate` gains `structured_mode: str | None` (logged on `llm.call`, not stored in a new column — it is part of `request_summary`).
+**`hero.llm`** *(S3a)* — `LLMClient.vision_json(...)` keeps its Phase-1 signature; adds keyword `structured_mode: str | None = None` (default from settings) and returns the same `(obj, LLMUsage)`; `AnthropicClient.supported_modes(model) -> list[str]`; `BudgetGuard(settings, *, total_spent_fn, run_spent_fn)` enforces only the global cap (no per-run cap or override; `BudgetExceeded.scope` is always `"total"`); `LlmCallCreate` gains `structured_mode: str | None` (logged on `llm.call`, not stored in a new column — it is part of `request_summary`).
 
 **`hero.fusion.views`** *(S3b)* — `build_street_batches(observations: Sequence[Observation], ref: ReferenceLine, *, data_dir: Path, max_images: int) -> list[StreetBatch]` (batches = contiguous station windows, ≤ `max_images` images, deterministic order; each `StreetBatch(batch_id, observations, images: list[LLMImage], captions)` caption states observation id, view, station_s, heading, and "forward = direction of travel"); `build_overhead_windows(...)`; `hero.fusion.convert.street_to_batch(batch, extraction, ref) -> ProjectedBatch`, `overhead_to_batch(windows, extraction, ref) -> ProjectedBatch`.
 

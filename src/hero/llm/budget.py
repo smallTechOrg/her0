@@ -1,8 +1,9 @@
-"""BudgetGuard: hard stop BEFORE every model call (global + per-run), USD accounting after.
+"""BudgetGuard: global hard stop BEFORE every model call, USD accounting after.
 
 ``check_before_call`` reads the real spend from ``llm_calls`` (never a cached counter, so a
 restart cannot under-count) and raises ``BudgetExceeded`` when
-``spent_total + estimate > HERO_CLAUDE_BUDGET_USD`` or ``spent_run + estimate > HERO_RUN_BUDGET_USD``.
+``spent_total + estimate > HERO_CLAUDE_BUDGET_USD``. There is no per-run dollar cap: a run's own spend is
+reported (``spent_run_usd``) but never stops it.
 ``record`` persists the priced call and emits the ``llm.call`` log line.
 """
 
@@ -25,7 +26,6 @@ class BudgetDecision:
     spent_run_usd: float
     estimate_usd: float
     budget_total_usd: float
-    budget_run_usd: float
 
     @property
     def remaining_total_usd(self) -> float:
@@ -33,14 +33,10 @@ class BudgetDecision:
 
 
 class BudgetGuard:
-    def __init__(self, settings: Settings, *, run_budget_usd: float | None = None,
+    def __init__(self, settings: Settings, *,
                  total_spent_fn: Callable[[], float] = repo.total_llm_cost_usd,
                  run_spent_fn: Callable[[str], float] = repo.run_spend_usd):
         self.budget_total_usd = float(settings.claude_budget_usd)
-        if run_budget_usd is not None and not run_budget_usd > 0:
-            raise ValueError(f"run_budget_usd override must be positive (got {run_budget_usd!r})")
-        # A per-request override only changes the per-run cap; the global cap is never touched.
-        self.budget_run_usd = float(settings.run_budget_usd if run_budget_usd is None else run_budget_usd)
         self._total_spent = total_spent_fn
         self._run_spent = run_spent_fn
 
@@ -50,20 +46,13 @@ class BudgetGuard:
     def check_before_call(self, run_id: str, estimate_usd: float) -> BudgetDecision:
         spent_total = self._total_spent()
         spent_run = self._run_spent(run_id)
-        decision = BudgetDecision(spent_total, spent_run, estimate_usd, self.budget_total_usd, self.budget_run_usd)
+        decision = BudgetDecision(spent_total, spent_run, estimate_usd, self.budget_total_usd)
         if spent_total + estimate_usd > self.budget_total_usd:
             raise BudgetExceeded(
                 f"Generation budget of ${self.budget_total_usd:.2f} would be exceeded: ${spent_total:.4f} spent "
                 f"+ ${estimate_usd:.4f} estimated for the next call. Raise HERO_CLAUDE_BUDGET_USD in .env to continue.",
                 spent_total_usd=spent_total, spent_run_usd=spent_run, estimate_usd=estimate_usd,
-                budget_total_usd=self.budget_total_usd, budget_run_usd=self.budget_run_usd, scope="total",
-            )
-        if spent_run + estimate_usd > self.budget_run_usd:
-            raise BudgetExceeded(
-                f"Per-run budget of ${self.budget_run_usd:.2f} would be exceeded: ${spent_run:.4f} spent on this run "
-                f"+ ${estimate_usd:.4f} estimated for the next call. Raise HERO_RUN_BUDGET_USD in .env to allow it.",
-                spent_total_usd=spent_total, spent_run_usd=spent_run, estimate_usd=estimate_usd,
-                budget_total_usd=self.budget_total_usd, budget_run_usd=self.budget_run_usd, scope="run",
+                budget_total_usd=self.budget_total_usd, scope="total",
             )
         return decision
 

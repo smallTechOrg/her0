@@ -22,7 +22,7 @@ def _clear(monkeypatch, *names):
 
 def test_phase2_defaults_when_no_overrides(monkeypatch):
     _clear(monkeypatch, "SV_SPACING_M", "SV_HEADINGS", "SAT_CROP_ZOOM", "SAT_CROP_SPACING_M", "MAX_IMAGES_PER_RUN",
-           "PERCEPTION_BATCH_IMAGES", "STRUCTURED_MODE", "UPLOAD_MAX_MB", "RUN_BUDGET_USD", "MAX_REVIEW_ITERATIONS",
+           "PERCEPTION_BATCH_IMAGES", "STRUCTURED_MODE", "UPLOAD_MAX_MB", "MAX_REVIEW_ITERATIONS",
            "VISION_MODEL", "REVIEW_MODEL")
     s = Settings(_env_file=None, anthropic_api_key="k", anthropic_workspace_id="w", google_maps_api_key="g",
                  admin_password="p")
@@ -32,7 +32,7 @@ def test_phase2_defaults_when_no_overrides(monkeypatch):
     assert s.max_images_per_run == 60 and s.perception_batch_images == 8
     assert s.structured_mode == "auto"
     assert s.upload_max_mb == 10.0 and s.upload_max_bytes == 10 * 1024 * 1024
-    assert s.run_budget_usd == 1.00 and s.max_review_iterations == 1
+    assert s.max_review_iterations == 1 and not hasattr(s, "run_budget_usd")
     assert s.vision_model == defaults.DEFAULT_VISION_MODEL and s.review_model == defaults.DEFAULT_REVIEW_MODEL
 
 
@@ -82,8 +82,16 @@ def test_env_example_lists_every_phase2_variable():
     text = (PROJECT_ROOT / ".env.example").read_text(encoding="utf-8")
     for var in ("HERO_SV_SPACING_M", "HERO_SV_HEADINGS", "HERO_SAT_CROP_ZOOM", "HERO_SAT_CROP_SPACING_M",
                 "HERO_MAX_IMAGES_PER_RUN", "HERO_PERCEPTION_BATCH_IMAGES", "HERO_STRUCTURED_MODE",
-                "HERO_UPLOAD_MAX_MB", "HERO_RUN_BUDGET_USD=1.00", "HERO_MAX_REVIEW_ITERATIONS=1"):
+                "HERO_UPLOAD_MAX_MB", "HERO_MAX_REVIEW_ITERATIONS=1"):
         assert var in text, var
+    assert "HERO_RUN_BUDGET_USD" not in text
+
+
+def test_stale_run_budget_env_var_does_not_break_startup(monkeypatch):
+    monkeypatch.setenv("HERO_RUN_BUDGET_USD", "1.00")
+    s = Settings(_env_file=None, anthropic_api_key="k", anthropic_workspace_id="w", google_maps_api_key="g",
+                 admin_password="p")
+    assert s.claude_budget_usd == 50.0 and not hasattr(s, "run_budget_usd")
 
 
 # ---------------------------------------------------------------- router auto-discovery (hero.api.__init__)

@@ -183,7 +183,7 @@ def build_report(run_id=RUN_ID, noop=False):
         "confidence_changes": [] if noop else [{"entity_id": "ent-0000000000", "type": "parked_vehicle", "before": 0.74, "after": 0.86, "reason": "2 more supporting frames"}],
         "cost": {"anthropic_usd": 0.0 if noop else 0.27, "anthropic_calls": 0 if noop else 4, "input_tokens": 51200, "output_tokens": 7400,
                  "google_new_requests": new, "google_cached": 48 - new, "google_est_usd": 0.154 if not noop else 0.0,
-                 "total_usd": 0.0 if noop else 0.424, "run_cap_usd": 1.0, "budget_remaining_usd": 49.2},
+                 "total_usd": 0.0 if noop else 0.424, "budget_remaining_usd": 49.2},
         "warnings": [], "degraded": False,
         "summary": ("Nothing new to fuse: all 48 images were already cached and fused. The model stays at v2." if noop
                     else "Run added 22 new Street View photos (26 of 48 images were already cached) and published model v2."),
@@ -192,12 +192,12 @@ def build_report(run_id=RUN_ID, noop=False):
 
 
 STATUS = {
-    "budget_usd": 50.0, "spent_usd": 0.7, "remaining_usd": 49.3, "run_budget_usd": 1.0,
+    "budget_usd": 50.0, "spent_usd": 0.7, "remaining_usd": 49.3,
     "runs": {"total": 2, "succeeded": 2, "failed": 0, "failed_budget": 0}, "google": {"requests": 70, "cache_hits": 26, "est_cost_usd": 0.4},
     "models": {"vision": "claude-sonnet-5-5", "review": "claude-sonnet-5-5"}, "streetview_available_last": True,
     "seed_segment": {"name": "Seed", "city": "Bengaluru", "start": {"lat": 12.97, "lon": 77.64}, "end": {"lat": 12.971, "lon": 77.641}, "footpath_side": "left"},
     "active_run_id": None,
-    "limits": {"run_budget_usd": 1.0, "max_images_per_run": 60, "sv_spacing_m": 10, "headings": ["forward", "back", "left", "right"],
+    "limits": {"max_images_per_run": 60, "sv_spacing_m": 10, "headings": ["forward", "back", "left", "right"],
                "sat_crop_zoom": 20, "sat_crop_spacing_m": 40, "batch_images": 8, "structured_mode": "json"},
 }
 

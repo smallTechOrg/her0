@@ -2,6 +2,7 @@
  "run_id": "fx-run-2",
  "segment_slug": "fixture-curved-street",
  "mode": "generate",
+ "model": null,
  "base_version": 1,
  "result_version": 2,
  "version_created": true,
@@ -149,8 +150,9 @@
   "google_cached": 26,
   "google_est_usd": 0.154,
   "total_usd": 0.424,
-  "run_cap_usd": 1.0,
-  "budget_remaining_usd": 49.42
+  "global_budget_usd": 50.0,
+  "budget_remaining_usd": 49.42,
+  "share_of_global_budget": 0.0
  },
  "warnings": [],
  "degraded": false,

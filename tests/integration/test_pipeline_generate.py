@@ -55,13 +55,13 @@ def idle_worker(monkeypatch):
 def test_run_inputs_snapshot_the_mode_plan_models_and_budgets(test_db):
     seg = new_segment()
     inputs = run_inputs(get_settings(), seg, mode="acquire", plan_overrides={"headings": ["left"], "sv_spacing_m": 20},
-                        run_budget_usd=0.4, base_version=3)
+                        base_version=3)
 
     assert inputs["mode"] == "acquire" and inputs["base_version"] == 3
     assert inputs["imagery_plan"]["headings"] == ["left"] and inputs["imagery_plan"]["sv_spacing_m"] == 20
     assert inputs["imagery_plan"]["max_images"] == get_settings().max_images_per_run
     assert inputs["plan_overrides"] == {"headings": ["left"], "sv_spacing_m": 20}
-    assert inputs["budgets"] == {"total_usd": get_settings().claude_budget_usd, "run_usd": 0.4}
+    assert inputs["budgets"] == {"total_usd": get_settings().claude_budget_usd}
     assert inputs["models"]["vision"] == get_settings().vision_model and inputs["structured_mode"]
     json.dumps(inputs)  # JSON-serialisable (it is stored in pipeline_runs.inputs_json)
 
@@ -69,7 +69,7 @@ def test_run_inputs_snapshot_the_mode_plan_models_and_budgets(test_db):
 def test_run_inputs_reject_an_invalid_plan(test_db):
     with pytest.raises(ValueError, match="sv_spacing_m"):
         run_inputs(get_settings(), new_segment(), mode="generate", plan_overrides={"sv_spacing_m": 2},
-                   run_budget_usd=None, base_version=None)
+                   base_version=None)
 
 
 # ---------------------------------------------------------------- registry
@@ -78,11 +78,11 @@ def test_run_inputs_reject_an_invalid_plan(test_db):
 def test_start_run_queues_a_fusion_run_with_inputs_and_runs_the_worker_thread(test_db, idle_worker):
     seg = new_segment()
 
-    run = registry.start_run(seg.slug, mode="generate", plan_overrides={"headings": ["forward"]}, run_budget_usd=0.7)
+    run = registry.start_run(seg.slug, mode="generate", plan_overrides={"headings": ["forward"]})
     registry.wait_for(run.id, 10)
 
     assert run.status is RunStatus.queued and run.inputs["mode"] == "generate"
-    assert run.inputs["plan_overrides"] == {"headings": ["forward"]} and run.inputs["budgets"]["run_usd"] == 0.7
+    assert run.inputs["plan_overrides"] == {"headings": ["forward"]} and "run_usd" not in run.inputs["budgets"]
     assert run.inputs["base_version"] is None
     assert idle_worker == [run.id] and repo.require_run(run.id).status is RunStatus.succeeded
     assert registry.active_run() is None
@@ -130,23 +130,14 @@ def test_start_run_refuses_unknown_mode_unknown_segment_and_a_spent_budget(test_
         reset_settings()
 
 
-def test_acquire_run_is_refused_when_the_google_estimate_exceeds_the_run_cap_and_only_counts_new_images(
-        test_db, tmp_path, monkeypatch, idle_worker):
+def test_acquire_run_is_never_refused_on_the_google_dollar_estimate(test_db, tmp_path, monkeypatch, idle_worker):
     w = new_world(tmp_path, monkeypatch, pano_spacing_m=15.0)
     try:
-        with pytest.raises(registry.GoogleBudgetExceeded) as err:
-            registry.start_run(w.seg.slug, mode="acquire", run_budget_usd=0.05)
-        assert isinstance(err.value, registry.BudgetExhausted) and err.value.budget_usd == 0.05
-        assert err.value.spent_usd > 0.05 and "Google" in str(err.value)
-        assert idle_worker == []
-
-        full = w.run(overrides=FORWARD_BACK)  # stores the whole plan
-        assert full.status is RunStatus.succeeded
-        stored = sum(model_repo.observation_counts(w.seg.id).values())
-        again = registry.start_run(w.seg.slug, mode="acquire", plan_overrides=FORWARD_BACK, run_budget_usd=0.05)
-        registry.wait_for(again.id, 10)
-        assert again.id in idle_worker, "a fully stored plan costs ~nothing, so the tiny cap does not refuse it"
-        assert stored > 10
+        assert registry._google_estimate_usd(w.seg, get_settings(), None) > 0.05  # informational estimate stays
+        run = registry.start_run(w.seg.slug, mode="acquire")
+        registry.wait_for(run.id, 10)
+        assert run.id in idle_worker, "no per-run dollar cap: the acquire run is queued however dear the plan"
+        assert not hasattr(registry, "GoogleBudgetExceeded")
     finally:
         reset_settings()
 

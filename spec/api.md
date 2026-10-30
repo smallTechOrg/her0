@@ -53,7 +53,7 @@ Top runs by score: `data: [{score, distance_m, tokens_collected, created_at}]`.
 ## Admin
 
 ### `GET /api/admin/status`
-`data: {budget_usd, spent_usd, remaining_usd, run_budget_usd, runs: {total, succeeded, failed, failed_budget}, google: {requests, cache_hits, est_cost_usd}, models: {vision, review}, streetview_available_last: bool|null, seed_segment: {name, city, start, end, footpath_side}, active_run_id: uuid|null}`.
+`data: {budget_usd, spent_usd, remaining_usd, runs: {total, succeeded, failed, failed_budget}, google: {requests, cache_hits, est_cost_usd}, models: {vision, review}, streetview_available_last: bool|null, seed_segment: {name, city, start, end, footpath_side}, active_run_id: uuid|null}`.
 `seed_segment` prefills the "New segment" form (the seed is not pre-inserted in the DB — see `spec/roadmap.md`).
 Also serves as login check (401 on bad password).
 
@@ -79,8 +79,8 @@ Length outside 30–200 m → 422. Slug generated from name + side (suffix `-2` 
 
 ### `POST /api/admin/segments/{slug}/generate`
 Starts a **fusion** run (ingest the imagery plan → perceive anything not yet fused → merge → publish a new model version).
-Optional JSON body (an empty body = all defaults): `{imagery?: {sv_spacing_m?, headings?: ["forward"|"back"|"left"|"right"], sat_crop_zoom?, sat_crop_spacing_m?, max_images?, s_range?: {s_from, s_to}}, run_budget_usd?: number}`;
-fields override the env defaults for this run only and are echoed in `run.inputs.imagery_plan`. Out-of-range values → 422 (`sv_spacing_m` 4–40, `max_images` 1–200, `sat_crop_zoom` 18–21, ≥ 1 heading, `run_budget_usd` 0.05–5).
+Optional JSON body (an empty body = all defaults): `{imagery?: {sv_spacing_m?, headings?: ["forward"|"back"|"left"|"right"], sat_crop_zoom?, sat_crop_spacing_m?, max_images?, s_range?: {s_from, s_to}}}`;
+fields override the env defaults for this run only and are echoed in `run.inputs.imagery_plan`. Out-of-range values → 422 (`sv_spacing_m` 4–40, `max_images` 1–200, `sat_crop_zoom` 18–21, ≥ 1 heading).  There is **no per-run budget field**: a body containing `run_budget_usd` is rejected as an unknown field (422).
 202 `data: {run_id, status: "queued", mode: "generate"}`.
 409 `run_in_progress` if any run is queued/running; 402 `budget_exhausted` if `remaining_usd <= 0`.
 Stale-run self-heal: single-process: a queued/running row with no live worker thread is retired immediately (marked `failed` before the 409 check).
@@ -89,7 +89,7 @@ A run with nothing new to fuse succeeds as a **no-op** (`version_created: false`
 ### `POST /api/admin/segments/{slug}/imagery`
 "Add more imagery": same body as `generate.imagery` (required, at least one field) → starts an **acquire-only** run (no Claude call;
 cost = new Google images only) and returns 202 `data: {run_id, status: "queued", mode: "acquire"}`. New observations
-are stored unfused; the next Generate fuses them. Same 409/402/422 rules (402 only when the Google estimate for the *new* images would exceed the run cap).
+are stored unfused; the next Generate fuses them. Same 409/402/422 rules (no dollar-based refusal: the Google estimate is informational; the acquire-only run makes no Claude call).
 
 ### `POST /api/admin/segments/{slug}/observations/upload` *(multipart/form-data)*
 Fields: `file` (jpeg/png, ≤ `HERO_UPLOAD_MAX_MB`), `lat`, `lon`, `heading_deg`, optional `pitch_deg`, `fov_deg` (default 70), `note`. 201 `data: Observation` (kind `user_photo`, source `upload`, `view`/`station_s`/`offset_t` computed from the segment's reference line; 422 if the camera is more than 60 m from the reference line, or no reference line exists yet — run Generate/placement preview first).
@@ -134,12 +134,12 @@ Full run for the pipeline view (polled every 2 s while `queued|running`):
 Recent runs summary list (adds `mode`, `version_created`).
 
 ### `GET /api/admin/status` — Phase-2 additions
-`limits: {run_budget_usd, max_images_per_run, sv_spacing_m, headings, sat_crop_zoom, sat_crop_spacing_m, batch_images, structured_mode}`, `models` unchanged, `demo_street: {query: "100 Feet Road, Indiranagar", city: "Bengaluru", name: "100 Feet Road, Indiranagar, canonical demo (west footpath)", hint: {lat: 12.9711, lon: 77.6413}, half_length_m: 50, footpath_side: "left"}`. `seed_segment` (legacy coordinates) is retained for the Phase-1 tests/import.
+`limits: {max_images_per_run, sv_spacing_m, headings, sat_crop_zoom, sat_crop_spacing_m, batch_images, structured_mode}`, `models` unchanged, `demo_street: {query: "100 Feet Road, Indiranagar", city: "Bengaluru", name: "100 Feet Road, Indiranagar, canonical demo (west footpath)", hint: {lat: 12.9711, lon: 77.6413}, half_length_m: 50, footpath_side: "left"}`. `seed_segment` (legacy coordinates) is retained for the Phase-1 tests/import.
 
 ## Phase 2.1 — add-to-model endpoints *(additive; all admin, all in `hero.api.admin_improve` unless noted)*
 
 Cost constants (one place, `hero.model.improve`): Street View image `$0.007`, satellite crop `$0.002`; Claude **r2: token-based, priced with the run's model** — per new image `1 500` input + `100` output tokens, per run `8 000` input + `400` output tokens, × `price_for(model)` (at 3 / 15 USD per Mtok this equals the r1 `≈ $0.006` per image + `$0.03` per run) (> **Assumed:** from the Phase-2 gate: 48 images ≈ $0.27–0.42;
-shown as an *estimate*, the real figure comes from `llm_calls`). An estimate that exceeds `HERO_RUN_BUDGET_USD` or the remaining budget sets `will_exceed_budget: true` and the start endpoints answer 402 `budget_exhausted`.
+shown as an *estimate*, the real figure comes from `llm_calls`). The estimate is **informational only** and never blocks a run: only the global hard stop applies (`HERO_CLAUDE_BUDGET_USD`, checked before every call; a generate start is refused 402 `budget_exhausted` only when nothing remains of it). `will_exceed_budget` is `true` only when the Claude estimate exceeds the remaining global budget, and is shown as a warning chip. A run's own cost is reported (`run_reports.cost`, `llm_calls`), never capped; a run whose Claude spend exceeds 25 % of the global budget gets a non-blocking `high_run_cost` line in the report `warnings`.
 
 ### `GET /api/admin/segments/{slug}/improve-plan`
 The data behind the "How to improve this model" panel. No spend, no network.

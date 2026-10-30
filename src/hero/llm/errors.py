@@ -22,18 +22,17 @@ class UpstreamError(Exception):
 
 
 class BudgetExceeded(Exception):
-    """Raised BEFORE an LLM request when the estimate would exceed the global or per-run budget."""
+    """Raised BEFORE an LLM request when the estimate would exceed the global budget."""
 
     def __init__(self, message: str, *, spent_total_usd: float, spent_run_usd: float, estimate_usd: float,
-                 budget_total_usd: float, budget_run_usd: float, scope: str):
+                 budget_total_usd: float, scope: str = "total"):
         super().__init__(message)
         self.message = message
         self.spent_total_usd = spent_total_usd
         self.spent_run_usd = spent_run_usd
         self.estimate_usd = estimate_usd
         self.budget_total_usd = budget_total_usd
-        self.budget_run_usd = budget_run_usd
-        self.scope = scope  # "total" | "run"
+        self.scope = scope  # always "total": only the global budget stops a call
 
     def as_detail(self) -> dict[str, float | str]:
         return {
@@ -42,7 +41,6 @@ class BudgetExceeded(Exception):
             "spent_run_usd": round(self.spent_run_usd, 6),
             "estimate_usd": round(self.estimate_usd, 6),
             "budget_total_usd": self.budget_total_usd,
-            "budget_run_usd": self.budget_run_usd,
         }
 
 

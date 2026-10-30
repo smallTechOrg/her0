@@ -12,7 +12,7 @@ Lets the admin pick, per run, which configured Claude model performs the vision 
 |---|---|---|
 | option list with enabled/disabled reason + prices | JSON | `GET /api/admin/models` → dropdown |
 | `run.inputs.models`, `RunReport.model`, `llm_calls.model`, `model.chosen` log | records | run page, report, logs |
-| cost estimate priced with the model | USD | fill-gaps preview, run cap guard |
+| cost estimate priced with the model | USD | fill-gaps preview (informational) |
 ## External Calls
 | System | Operation | On Failure |
 |---|---|---|
@@ -22,7 +22,7 @@ Lets the admin pick, per run, which configured Claude model performs the vision 
 - The default is `settings.vision_model`; the API and UI never change it silently; the UI never persists a non-default choice.
 - A request for an unknown/disabled/unpriced model is rejected with 422 before any spend; absent `model` ⇒ default.
 - One choice applies to both vision and review nodes of that run (> **Assumed**).
-- `prices.json` rows added in Phase 2.1 carry `source_url` and `verified_on`; the budget guard (per-run and global) prices each call with the model actually used.
+- `prices.json` rows added in Phase 2.1 carry `source_url` and `verified_on`; the budget guard (global stop; the run's own cost is reported) prices each call with the model actually used.
 ## Success Criteria
 - [ ] The verification evidence file exists with `ok` true/false, the model, structured mode, tokens and USD from the app's own cost record; exactly one call was made (counter asserted by the tool).
 - [ ] `GET /api/admin/models`: default selected and equal to `HERO_VISION_MODEL`; `claude-opus-5-5` present, `enabled` equals the evidence's `ok`, with `price_source_url`.
