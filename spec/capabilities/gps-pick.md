@@ -1,4 +1,4 @@
-# Capability: GPS Pick *(Phase 2)*
+# Capability: GPS Pick *(Phase 3)*
 
 ## What It Does
 A player taps "Use my location" and is taken to the nearest already-generated street within

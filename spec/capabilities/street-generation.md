@@ -1,5 +1,14 @@
 # Capability: Street Generation
 
+> **Phase 2 status.** The one-shot pipeline described below is the **Phase 1 (legacy) behaviour**. For every segment, `POST …/generate`
+> now runs the cumulative fusion pipeline: see `street-model.md`, `imagery-acquisition.md`, `model-fusion.md`, `model-inspection.md`,
+> `street-description.md`. What carries over unchanged: admin-only generation, password auth, single-flight (409), global + per-run budget
+> guard (402 / `failed_budget`, per-run default now $1.00), imagery cache with "N new / M cached" counting, low-confidence detections kept and
+> labelled, every intermediate artefact visible, and the segment-length rule (30–200 m; address-created 100–200 m). What changes: the previous
+> scene is no longer "replaced" — a new model *version* is published on top of the old one, and a run with nothing new is a free no-op.
+> The Phase 1 success criteria below remain true for the legacy pipeline's unit/integration tests (`hero.pipeline.*`) and for the
+> imported legacy segment; the Phase-2 equivalents are in the new capability files.
+
 ## What It Does
 An admin turns a real 50–100 m street segment (two endpoints + footpath side) into a
 playable scene by fetching real satellite, street-level and map geometry, running the vision

@@ -10,7 +10,7 @@ of what was detected; the run is logged and the per-street best score is persist
 |---|---|---|---|
 | Run outcome | record (`spec/api.md` POST runs body) | `street-run` | yes |
 | Scene walkability block, objects, tokens, ground tile + `tile_px` | document | scene already loaded | yes |
-| Street run history (Phase 2) | list | public API | no |
+| Street run history (Phase 3) | list | public API | no |
 
 ## Outputs
 | Output | Type | Destination |
@@ -22,7 +22,7 @@ of what was detected; the run is logged and the per-street best score is persist
 ## External Calls
 | System | Operation | On Failure |
 |---|---|---|
-| Public API | post run; (Phase 2) fetch top runs | results still render from local scene data with "Score couldn't be saved" notice |
+| Public API | post run; (Phase 3) fetch top runs | results still render from local scene data with "Score couldn't be saved" notice |
 
 ## Business Rules
 - Walkability is computed deterministically from the scene (`spec/data.md` → walkability);
@@ -35,7 +35,11 @@ of what was detected; the run is logged and the per-street best score is persist
 - Best score per street = max score over its logged runs; no accounts, no names.
 - Run validation (`spec/data.md`) rejects impossible scores; rejection is logged and the
   client shows the notice but still displays the local result.
-- Phase 2: results also list the street's top 5 runs.
+- Phase 2 (scene v2): the same formula runs on the compiled scene — only `intact` footpath counts as covered (`broken`, `blocked`,
+  `encroached`, `missing`, `unknown` do not) — and the card adds the model line (fidelity level, photo count, last update), an
+  "About this street" button, and a note "based on a single-viewpoint (L1) model; treat as indicative" when the overall fidelity is below L2.
+  The hazard map draws the curved `path` polyline (from `path.samples[].tile_px`) instead of a straight segment line.
+- Phase 3: results also list the street's top 5 runs.
 
 ## Success Criteria
 - [ ] `compute_walkability` on the canonical example scene returns `footpath_coverage_pct = 29.5`, `hazard_count = 4`, `crossing_present = true`, `score = 50`; on a scene with full intact coverage, a crossing and zero hazards returns `score = 100`; with no footpath, no crossing and 10+ hazards returns `0`.
