@@ -10,7 +10,8 @@ Interpretation notes
 * ``plan_street`` also accepts the optional keywords ``tile`` (the overview observation; only used for ``tile_px``
   values), ``name`` and ``city`` (default: the reference-line name / slug and ``""``) - the contract signature is a
   subset.
-* ``objects`` holds only non-scenery fixed objects (scenery is drawn from furniture/frontage and is never a collider).
+* ``objects`` holds only non-scenery fixed objects (scenery is drawn from furniture/frontage and is never a collider);
+  frontage kinds (gate, wall, building) never collide: they are drawn in the building line, off the walkway.
 * ``kerb.lat`` is the carriageway edge nearest the footpath after strip overlap resolution (the footpath's ``lo`` when
   no carriageway strip is listed, the station edge when there is no footpath); its height is the footpath strip height
   (0.15 m prior, at most 0.4 m), 0.0 where the footpath is missing or a fixed ``kerb_cut`` / ``ramp`` / ``crossing``
@@ -45,6 +46,8 @@ from hero.model.texture_types import TextureRefs
 from hero.model.types import CanonicalModel, EntityState, FidelityMap, Observation
 from hero.scene.geo import LocalFrame
 from hero.scene.schema import FootpathSide
+
+FRONTAGE_TYPES = frozenset({"gate", "wall", "building"})  # drawn in the frontage, never colliders
 
 MAX_KERB_M = 0.4
 KERB_WIDTH_M = 0.2
@@ -187,7 +190,10 @@ def plan_from_core(c: _Core, *, fidelity: FidelityMap, gaps: GapReport, textures
         sides.append(FrontageSidePlan(side=side, texture=(textures.frontage.get(side) if textures else None),  # type: ignore[arg-type]
                                       segments=segs))
 
-    objects = [o.model_copy(update={"tile_px": None}) if c.tile is None else o for o in c.objects if not o.scenery]
+    # gates / walls / buildings are drawn in the frontage, which is always placed beyond the walkway: a collider for
+    # them on a lane would be an invisible hit, so they never collide
+    objects = [o.model_copy(update={"tile_px": None}) if c.tile is None else o for o in c.objects
+               if not o.scenery and o.type not in FRONTAGE_TYPES]
     fur = furniture.plan_furniture(model, sign=c.sign, dynamic_ids=dyn_ids, objects=c.objects, fidelity=fidelity,
                                    tints=textures.tints if textures else None)
     _, dyn_ctx = dynamic.dynamic_context(c.dynamic, length, gameplay)

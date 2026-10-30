@@ -4260,59 +4260,6 @@
  ],
  "objects": [
   {
-   "id": "ent-be2156dc1b",
-   "entity_id": "ent-be2156dc1b",
-   "type": "wall",
-   "label": "wall",
-   "x_m": 0.0,
-   "length_m": 1.0,
-   "lanes": [
-    0
-   ],
-   "action": "dodge",
-   "lateral_m": 6.398,
-   "yaw_deg": 0.0,
-   "size_m": {
-    "w": 0.3,
-    "h": 2.0,
-    "d": 1.0
-   },
-   "confidence": 0.417,
-   "scenery": false,
-   "description": "Yellowish compound wall running along the footpath.",
-   "evidence": {
-    "observation_count": 1,
-    "sources": {
-     "street_view": 1,
-     "satellite": 0,
-     "upload": 0
-    },
-    "summary": "Seen in 1 Street View frame; not visible in 1 later view; disputed.",
-    "observation_ids": [
-     "d869a66a-7f15-4efd-a124-b4adf4abbe51"
-    ],
-    "state": "disputed"
-   },
-   "source": {
-    "image_url": "/media/imagery/1698adeb95257238be74d392f8aa606d6fb101bba8459f0794b6652d0b44d151.jpg",
-    "crop_px": [
-     340,
-     305,
-     300,
-     100
-    ]
-   },
-   "billboard_url": null,
-   "latlon": {
-    "lat": 12.922968,
-    "lon": 77.672548
-   },
-   "tile_px": [
-    286.81,
-    603.52
-   ]
-  },
-  {
    "id": "ent-c51b3372ff",
    "entity_id": "ent-c51b3372ff",
    "type": "pole",
@@ -4475,60 +4422,6 @@
    ]
   },
   {
-   "id": "ent-069234d624",
-   "entity_id": "ent-069234d624",
-   "type": "gate",
-   "label": "gate",
-   "x_m": 54.429,
-   "length_m": 0.2,
-   "lanes": [
-    0
-   ],
-   "action": "dodge",
-   "lateral_m": 7.802,
-   "yaw_deg": 0.0,
-   "size_m": {
-    "w": 3.0,
-    "h": 2.0,
-    "d": 0.2
-   },
-   "confidence": 0.5,
-   "scenery": false,
-   "description": "Black ornate metal gate and brick pillars of a compound on the left, set behind the footpath.",
-   "evidence": {
-    "observation_count": 2,
-    "sources": {
-     "street_view": 2,
-     "satellite": 0,
-     "upload": 0
-    },
-    "summary": "Seen in 2 Street View frames; not visible in 2 later views.",
-    "observation_ids": [
-     "3bdc43e1-dc1b-486a-9cec-eeb264a610af",
-     "3e9d570c-942d-44b9-abbb-cd373a4fef04"
-    ],
-    "state": "present"
-   },
-   "source": {
-    "image_url": "/media/imagery/b01a0edc6747a9e4dd183f2a32ec4e3d8d3ceb2a8093aa21be61cb3d046e3576.jpg",
-    "crop_px": [
-     86,
-     312,
-     336,
-     170
-    ]
-   },
-   "billboard_url": null,
-   "latlon": {
-    "lat": 12.922988,
-    "lon": 77.673069
-   },
-   "tile_px": [
-    675.41,
-    587.95
-   ]
-  },
-  {
    "id": "ent-375c60ed5c",
    "entity_id": "ent-375c60ed5c",
    "type": "signboard",
@@ -4579,60 +4472,6 @@
    "tile_px": [
     689.87,
     596.8
-   ]
-  },
-  {
-   "id": "ent-7fe8bf5348",
-   "entity_id": "ent-7fe8bf5348",
-   "type": "gate",
-   "label": "gate",
-   "x_m": 63.02,
-   "length_m": 0.2,
-   "lanes": [
-    0
-   ],
-   "action": "dodge",
-   "lateral_m": 7.471,
-   "yaw_deg": 0.0,
-   "size_m": {
-    "w": 3.0,
-    "h": 2.0,
-    "d": 0.2
-   },
-   "confidence": 0.648,
-   "scenery": false,
-   "description": "Dark metal gate with wooden slats at an apartment entrance, adjacent to the footpath.",
-   "evidence": {
-    "observation_count": 2,
-    "sources": {
-     "street_view": 2,
-     "satellite": 0,
-     "upload": 0
-    },
-    "summary": "Seen in 2 Street View frames; not visible in 2 later views.",
-    "observation_ids": [
-     "0748bd3a-421e-4a4a-b674-8d86f49ac775",
-     "4c0923a4-f550-4746-a367-da1c712838ad"
-    ],
-    "state": "present"
-   },
-   "source": {
-    "image_url": "/media/imagery/4807ba402438a53db15784ab605b3d5365eee6fd62715aa738ce1a2c363ff519.jpg",
-    "crop_px": [
-     103,
-     325,
-     88,
-     105
-    ]
-   },
-   "billboard_url": null,
-   "latlon": {
-    "lat": 12.922978,
-    "lon": 77.673148
-   },
-   "tile_px": [
-    734.05,
-    595.71
    ]
   },
   {
@@ -4688,59 +4527,6 @@
    "tile_px": [
     782.71,
     611.51
-   ]
-  },
-  {
-   "id": "ent-8df10d5a93",
-   "entity_id": "ent-8df10d5a93",
-   "type": "gate",
-   "label": "gate",
-   "x_m": 72.674,
-   "length_m": 0.2,
-   "lanes": [
-    0
-   ],
-   "action": "dodge",
-   "lateral_m": 8.251,
-   "yaw_deg": 0.0,
-   "size_m": {
-    "w": 3.0,
-    "h": 2.0,
-    "d": 0.2
-   },
-   "confidence": 0.339,
-   "scenery": false,
-   "description": "Black ornamental iron gate in the compound wall at the left footpath.",
-   "evidence": {
-    "observation_count": 1,
-    "sources": {
-     "street_view": 1,
-     "satellite": 0,
-     "upload": 0
-    },
-    "summary": "Seen in 1 Street View frame; not visible in 3 later views; disputed.",
-    "observation_ids": [
-     "25af53ce-04a5-4e22-a49d-f7e3dfff7c81"
-    ],
-    "state": "disputed"
-   },
-   "source": {
-    "image_url": "/media/imagery/be2b1eb99eddef24131eb47e5c112bd56d44b7ddd5f954120c0c5f3a8204a3a2.jpg",
-    "crop_px": [
-     25,
-     230,
-     90,
-     210
-    ]
-   },
-   "billboard_url": null,
-   "latlon": {
-    "lat": 12.922977,
-    "lon": 77.673237
-   },
-   "tile_px": [
-    800.68,
-    596.54
    ]
   },
   {

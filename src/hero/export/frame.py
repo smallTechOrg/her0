@@ -214,9 +214,10 @@ class Builder:
         for f in faces:
             self.quad(*[pts[k] for k in f], col=col, outward=c3)
 
-    def frustum(self, cx: float, cz: float, r0: float, r1: float, h: float, y0: float, col: Colour, sides: int = 6) -> None:
-        ring0 = [(cx + r0 * math.cos(2 * math.pi * k / sides), y0, cz + r0 * math.sin(2 * math.pi * k / sides)) for k in range(sides)]
-        ring1 = [(cx + r1 * math.cos(2 * math.pi * k / sides), y0 + h, cz + r1 * math.sin(2 * math.pi * k / sides)) for k in range(sides)]
+    def frustum(self, cx: float, cz: float, r0: float, r1: float, h: float, y0: float, col: Colour, sides: int = 6,
+                phase: float = 0.0) -> None:
+        ring0 = [(cx + r0 * math.cos(2 * math.pi * k / sides + phase), y0, cz + r0 * math.sin(2 * math.pi * k / sides + phase)) for k in range(sides)]
+        ring1 = [(cx + r1 * math.cos(2 * math.pi * k / sides + phase), y0 + h, cz + r1 * math.sin(2 * math.pi * k / sides + phase)) for k in range(sides)]
         c3 = (cx, y0 + h / 2, cz)
         for k in range(sides):
             k2 = (k + 1) % sides
@@ -237,6 +238,31 @@ class Builder:
             self.tri(ring_eq[k], ring_lo[k], ring_eq[(k - 1) % sides], col=col, outward=c)
             self.tri(ring_lo[k], ring_lo[k2], ring_eq[k], col=col, outward=c)
             self.tri(bot, ring_lo[k2], ring_lo[k], col=col, outward=c)
+
+    def limb(self, p0: Vec3, p1: Vec3, r0: float, r1: float, col: Colour, sides: int = 5) -> None:
+        """Tapered prism from ``p0`` (radius r0) to ``p1`` (radius r1), any direction; capped at ``p1``."""
+        ax = sub(p1, p0)
+        ln = math.sqrt(dot(ax, ax))
+        if ln < 1e-6:
+            return
+        a = (ax[0] / ln, ax[1] / ln, ax[2] / ln)
+        ref = (1.0, 0.0, 0.0) if abs(a[1]) > 0.9 else (0.0, 1.0, 0.0)
+        u = cross(a, ref)
+        lu = math.sqrt(dot(u, u))
+        u = (u[0] / lu, u[1] / lu, u[2] / lu)
+        v = cross(a, u)
+        def ring(c: Vec3, r: float) -> list[Vec3]:
+            return [(c[0] + r * (u[0] * math.cos(2 * math.pi * k / sides) + v[0] * math.sin(2 * math.pi * k / sides)),
+                     c[1] + r * (u[1] * math.cos(2 * math.pi * k / sides) + v[1] * math.sin(2 * math.pi * k / sides)),
+                     c[2] + r * (u[2] * math.cos(2 * math.pi * k / sides) + v[2] * math.sin(2 * math.pi * k / sides)))
+                    for k in range(sides)]
+        r_0, r_1 = ring(p0, r0), ring(p1, r1)
+        for k in range(sides):
+            k2 = (k + 1) % sides
+            mid = ((p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2, (p0[2] + p1[2]) / 2)
+            ctr = mid if r0 > 0 else p0
+            self.quad(r_0[k], r_0[k2], r_1[k2], r_1[k], col=col, outward=ctr)
+            self.tri(p1, r_1[k], r_1[k2], want=a, col=col)
 
     def node(self, extras: dict[str, Any]) -> MeshNode | None:
         if not self.idx:

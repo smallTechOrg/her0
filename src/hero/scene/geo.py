@@ -146,10 +146,13 @@ def compute_frame_to_px(frame: LocalFrame, georef: TileGeoref) -> FrameToPx:
     across_end = frame.to_latlon(0.0, 1.0)
     ax, ay = latlon_to_tile_px(along_end.lat, along_end.lon, georef)
     cx, cy = latlon_to_tile_px(across_end.lat, across_end.lon, georef)
+    # rounded to 1e-6 px: the raw differences carry ~1e-8 libm noise that differs between macOS and Linux, which made
+    # committed fixtures platform-specific
+    r6 = lambda v: round(v, 6) + 0.0  # noqa: E731
     return FrameToPx(
-        origin_px=(origin[0], origin[1]),
-        along_px_per_m=(ax - origin[0], ay - origin[1]),
-        across_px_per_m=(cx - origin[0], cy - origin[1]),
+        origin_px=(r6(origin[0]), r6(origin[1])),
+        along_px_per_m=(r6(ax - origin[0]), r6(ay - origin[1])),
+        across_px_per_m=(r6(cx - origin[0]), r6(cy - origin[1])),
     )
 
 

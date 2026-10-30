@@ -1,8 +1,10 @@
 """Fixed furniture merged per category (poles, trees, boxes, railings, decals) - small low-poly meshes.
 
 Sizes come from the entity but are capped per type (``MAX_SIZE_M``) so no data error can produce a screen-filling
-object. Poles are tapered 6-sided cylinders (+ cross-arm for ``variant == "utility"``); trees are trunk + 2 canopy
-blobs; bins / bollards / bus stops / signboards are boxes; railings are two rails + posts; drains, manholes, kerb cuts,
+object. Poles are Bengaluru spun-concrete poles: square, tapered, a grimy base, a painted black/white band, a
+cross-arm with insulators for ``variant == "utility"``; streetlights are a steel tube with an outreach arm and a lamp
+head. Trees are a tapered trunk that forks into 2-3 limbs under a wide canopy of 7-9 clustered blobs with per-tree
+(deterministic, id-hashed) placement and leaf tones; bins / bollards / bus stops / signboards are boxes; railings are two rails + posts; drains, manholes, kerb cuts,
 ramps and crossings are flat decals 10 mm above the surface. Vehicles and other dynamic entities never appear here
 (``FurniturePlan`` only admits fixed types).
 """
@@ -10,6 +12,7 @@ ramps and crossings are flat decals 10 mm above the surface. Vehicles and other 
 from __future__ import annotations
 
 import math
+import zlib
 from typing import Any
 
 from hero.export.frame import UP, Builder, Colour, Frame, hex_rgb, r3, shade
@@ -64,17 +67,13 @@ def build_furniture(plan: StreetPlan, frame: Frame, prof: StreetProfile) -> tupl
         if f.type == "pole":
             w, h = _cap(w, cw), _cap(h, ch)
             r = max(0.04, min(w, POLE_MAX_DIAMETER_M) / 2)
-            b.frustum(cx, cz, r, r * 0.7, h, surf, col)
-            if f.variant == "utility":
-                b.box(cx, cz, axf, axn, min(1.6, 0.4 + w * 3), 0.12, 0.12, surf + h - 0.5, col)
-            elif f.variant == "streetlight":
-                b.box(cx + axn[0] * 0.5, cz + axn[1] * 0.5, axf, axn, 1.0, 0.1, 0.12, surf + h - 0.1, col)
+            if f.variant == "streetlight":
+                _streetlight(b, cx, cz, axn, r, h, surf, col)
+            else:
+                _concrete_pole(b, cx, cz, axf, axn, r, h, surf, col, utility=f.variant == "utility")
         elif f.type == "tree":
             w, h = _cap(w, cw), _cap(h, ch)
-            b.frustum(cx, cz, min(0.2, w * 0.08), min(0.14, w * 0.05), h * 0.45, surf, (*hex_rgb("#6b4f3a"), 255))
-            canopy = hex_rgb(f.canopy_hex or "#4f7d3a")
-            b.blob(cx, surf + h * 0.62, cz, w / 2, (*canopy, 255))
-            b.blob(cx + axf[0] * 0.5, surf + h * 0.82, cz + axf[1] * 0.5, w / 3.2, (*shade(canopy, 0.85), 255))
+            _tree(b, f.id, cx, cz, w, h, surf, hex_rgb(f.canopy_hex or "#4f7d3a"))
         elif f.type == "railing":
             w = _cap(w, cw)
             h = _cap(h, ch)
@@ -126,3 +125,95 @@ def _railing(b: Builder, cx: float, cz: float, axf, axn, w: float, h: float, len
     for k in range(n):
         off = -length / 2 + length * k / (n - 1)
         b.box(cx + axf[0] * off, cz + axf[1] * off, axf, axn, rail, h, rail, y0, col)
+
+
+def _rng(key: str):
+    """Deterministic 0..1 stream from an entity id (no global random state; same id -> same tree)."""
+    state = [zlib.crc32(key.encode("utf-8")) or 1]
+
+    def nxt() -> float:
+        x = state[0]
+        x ^= (x << 13) & 0xFFFFFFFF
+        x ^= x >> 17
+        x ^= (x << 5) & 0xFFFFFFFF
+        state[0] = x & 0xFFFFFFFF
+        return state[0] / 4294967296.0
+    return nxt
+
+
+CONCRETE = hex_rgb("#a29d92")
+GRIME = hex_rgb("#5f5a52")
+STEEL = hex_rgb("#7d838a")
+
+
+def _concrete_pole(b: Builder, cx: float, cz: float, axf, axn, r: float, h: float, y0: float, col: Colour,
+                   *, utility: bool) -> None:
+    """Square spun-concrete pole (45 deg phase -> faces along the street), tapering to 60 %; grimy base, a painted
+    black / white band at eye height, cross-arm(s) with three insulators on utility poles."""
+    base = col if col[:3] != hex_rgb(DEFAULT_COLOUR["pole"]) else (*CONCRETE, 255)
+    ph = math.atan2(axf[1], axf[0]) + math.pi / 4
+    taper = lambda y: r * (1.0 - 0.4 * y / h)  # noqa: E731
+    bands = [(0.0, 0.9, (*GRIME, 255)), (0.9, 1.35, (*shade(GRIME[:3], 1.25), 255)), (1.35, 1.6, (235, 235, 230, 255)),
+             (1.6, 1.85, (25, 25, 25, 255)), (1.85, 2.1, (235, 235, 230, 255)), (2.1, h, base)]
+    for a, z, c in bands:
+        if a >= h:
+            break
+        z = min(z, h)
+        b.frustum(cx, cz, taper(a), taper(z), z - a, y0 + a, c, sides=4, phase=ph)
+    if utility:
+        arm = min(1.6, 0.6 + r * 4)
+        for k, dy in enumerate((0.45, 1.15)):
+            y = y0 + h - dy
+            b.box(cx, cz, axf, axn, arm * (1.0 - 0.25 * k), 0.09, 0.09, y, (*STEEL, 255))
+            if k == 0:
+                for off in (-arm * 0.42, 0.0, arm * 0.42):
+                    ix, iz = cx + axn[0] * off, cz + axn[1] * off
+                    b.frustum(ix, iz, 0.045, 0.03, 0.14, y + 0.09, (226, 226, 220, 255), sides=6)
+
+
+def _streetlight(b: Builder, cx: float, cz: float, axn, r: float, h: float, y0: float, col: Colour) -> None:
+    """Steel tube pole, an outreach arm towards the road (-axn is away from the footpath edge either way: the arm
+    reaches 1.2 m along +axn like the old model) and a flat LED lamp head."""
+    steel = (*STEEL, 255) if col[:3] == hex_rgb(DEFAULT_COLOUR["pole"]) else col
+    rr = min(r, 0.09)
+    b.frustum(cx, cz, rr * 1.4, rr * 1.4, 0.5, y0, (*shade(STEEL, 0.8), 255), sides=8)
+    b.frustum(cx, cz, rr, rr * 0.65, h - 0.5, y0 + 0.5, steel, sides=8)
+    top = (cx, y0 + h - 0.05, cz)
+    end = (cx + axn[0] * 1.2, y0 + h + 0.25, cz + axn[1] * 1.2)
+    b.limb(top, end, rr * 0.6, rr * 0.5, steel, sides=6)
+    b.box(end[0] + axn[0] * 0.25, end[2] + axn[1] * 0.25, (axn[1], -axn[0]), axn, 0.6, 0.08, 0.25, end[1] - 0.06,
+          (60, 63, 66, 255))
+    b.box(end[0] + axn[0] * 0.25, end[2] + axn[1] * 0.25, (axn[1], -axn[0]), axn, 0.5, 0.02, 0.18, end[1] - 0.075,
+          (240, 238, 220, 255))
+
+
+def _tree(b: Builder, key: str, cx: float, cz: float, w: float, h: float, y0: float, canopy: tuple[int, int, int]) -> None:
+    rnd = _rng(key)
+    bark = (*hex_rgb("#5a4636"), 255)
+    # entity w is often the trunk footprint (0.8 m default), not the crown: size the crown from the height too
+    rt = max(0.12, min(0.3, h * 0.035))
+    w = max(w, min(MAX_SIZE_M["tree"][0], h * 0.75))
+    fork = h * (0.38 + 0.08 * rnd())
+    b.frustum(cx, cz, rt * 1.25, rt, 0.35, y0, bark, sides=7)                 # root flare
+    b.frustum(cx, cz, rt, rt * 0.8, fork - 0.35, y0 + 0.35, bark, sides=7)
+    top = (cx, y0 + fork, cz)
+    n_limbs = 2 + int(rnd() * 2)
+    crown_y = y0 + h * 0.66
+    tips = []
+    for k in range(n_limbs):
+        a = 2 * math.pi * (k / n_limbs + rnd() * 0.25)
+        reach = w * (0.18 + 0.12 * rnd())
+        tip = (cx + math.cos(a) * reach, crown_y + h * 0.08 * rnd(), cz + math.sin(a) * reach)
+        b.limb(top, tip, rt * 0.75, rt * 0.3, bark, sides=5)
+        tips.append(tip)
+    # canopy: a wide dome of clustered blobs, darker underneath, lighter and smaller on top
+    n = 7 + int(rnd() * 3)
+    rad = w / 2
+    for k in range(n):
+        a = 2 * math.pi * (k / n) + rnd() * 0.6
+        d = rad * (0.35 + 0.4 * rnd()) if k else 0.0
+        y = crown_y + h * (0.04 + 0.12 * rnd()) + (0.0 if k else h * 0.1)
+        r = rad * (0.42 + 0.18 * rnd())
+        tone = 0.78 + 0.32 * rnd()
+        c = (*shade(canopy, tone * (0.9 if y < crown_y + h * 0.08 else 1.05)), 255)
+        b.blob(cx + math.cos(a) * d, y, cz + math.sin(a) * d, r, c, y_scale=0.62, sides=7)

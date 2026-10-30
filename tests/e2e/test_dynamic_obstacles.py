@@ -55,7 +55,7 @@ def test_layer_budget_draw_calls_and_triangles_in_a_real_render(hpage):  # noqa:
       instanced = layer.group.children.filter((c) => c.isInstancedMesh).length;
       return { maxCalls, maxTris, maxVisible, kinds: [...kinds].sort(), instanced, children: layer.group.children.length, isGroup: layer.group.isGroup };
     }""")
-    assert res["isGroup"] and res["children"] <= 8 and res["instanced"] == res["children"]
+    assert res["isGroup"] and res["children"] <= 16 and res["instanced"] == res["children"]
     # one InstancedMesh per type, up to 3 material groups each (matte, gloss, contact shadow)
     assert 1 <= res["maxCalls"] <= 3 * res["children"], res
     # detailed models (~0.4-4.6k triangles each); the whole frame stays inside test_render_budget's 60k
@@ -71,11 +71,11 @@ def test_instances_match_active_obstacles_and_sit_in_their_lane(hpage):  # noqa:
       layer.update();
       const obs = runner.activeObstacles();
       const counts = {};
-      for (const m of layer.group.children) counts[m.name.slice(4)] = m.visible ? m.count : 0;
+      for (const m of layer.group.children) if (m.name.startsWith('dyn_')) counts[m.name.slice(4)] = m.visible ? m.count : 0;
       const want = {};
       for (const o of obs) want[o.type] = (want[o.type] || 0) + 1;
       // first instance of the first visible type: compare against track.world of the obstacle centre
-      const o = obs.find((q) => q.type === layer.group.children.find((m) => m.visible).name.slice(4));
+      const o = obs.find((q) => q.type === layer.group.children.find((m) => m.visible && m.name.startsWith('dyn_')).name.slice(4));
       const mesh = layer.group.children.find((m) => m.name === 'dyn_' + o.type);
       const mat = new THREE.Matrix4(); mesh.getMatrixAt(0, mat);
       const p = new THREE.Vector3().setFromMatrixPosition(mat);
@@ -138,3 +138,25 @@ def test_error_path_layer_needs_a_runner_with_gameplay(hpage):  # noqa: F811
       try { createDynamicLayer(THREE, { scene: null, track: null, runner: {} }); return null; } catch (e) { return String(e.message); }
     }""")
     assert err and "runner.gp" in err and "required" in err
+
+
+def test_every_static_hazard_without_glb_geometry_gets_a_visible_model(hpage):  # noqa: F811
+    """A fixed hazard the glb does not draw where it collides (low branch, debris, pothole, ...) is drawn by the layer,
+    so the runner never takes damage from something invisible."""
+    _setup(hpage, seed=3, loop=0, ahead=0.0)
+    res = hpage.evaluate("""async () => {
+      const { THREE, runner, scene3 } = window.__t;
+      const { createDynamicLayer, STATIC_HAZARD_MODELS } = await import('/js/game/dynamic_obstacles.js');
+      runner.hazards = [
+        { id: 'h-lb', type: 'low_branch', x_m: 20, length_m: 1, lanes: [0, 1], action: 'slide', size_m: { w: 1.8, h: 0.6, d: 1 } },
+        { id: 'h-db', type: 'debris', x_m: 30, length_m: 1, lanes: [0], action: 'jump', size_m: { w: 1, h: 0.4, d: 1 } },
+        { id: 'h-pl', type: 'pole', x_m: 25, length_m: 0.3, lanes: [0], action: 'dodge', size_m: { w: 0.3, h: 7, d: 0.3 } },
+      ];
+      const layer = createDynamicLayer(THREE, { scene: scene3, track: runner.track, runner });
+      runner.reset(); runner.startRun(); runner.x = 5;
+      layer.update();
+      const names = layer.group.children.filter((m) => m.name.startsWith('static_') && m.visible).map((m) => m.name).sort();
+      return { names, ids: layer.visibleStaticIds.sort(), mapped: Object.keys(STATIC_HAZARD_MODELS) };
+    }""")
+    assert res["names"] == ["static_debris", "static_low_branch"], res
+    assert res["ids"] == ["h-db", "h-lb"], res  # the pole is drawn by the glb itself

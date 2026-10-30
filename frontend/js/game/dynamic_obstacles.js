@@ -411,7 +411,35 @@ function lowBranch(k, s) {
   k.shadow(W * 1.1, 1.1, 0.22, 0.5);
 }
 
-const MODELS = { parked_car: parkedCar, two_wheeler: twoWheeler, cone, barricade, pothole, stall, low_branch: lowBranch };
+function debris(k, s) {
+  // construction / shop debris on the footpath: a sand-and-rubble mound, broken bricks, concrete lumps, a sack
+  const W = s.w, D = s.d, H = s.h, rnd = mulberry32(19);
+  k.blob(W * 0.42, 0, H * 0.18, 0, 0x8f7a5c, 1.0, H / (W * 0.42) * 0.55, D / W, { ao: false });
+  k.blob(W * 0.3, W * 0.12, H * 0.3, -D * 0.08, 0x7a6a52, 1.0, H / (W * 0.3) * 0.5, 1.0, { ao: false });
+  const bricks = [0xa4472c, 0x8e3d27, 0xb5583a];
+  for (let i = 0; i < 16; i++) {
+    const a = rnd() * Math.PI * 2, r = rnd() * W * 0.48;
+    const g = new k.THREE.BoxGeometry(0.19, 0.075, 0.09);
+    g.rotateY(rnd() * 3); g.rotateX((rnd() - 0.5) * 0.9); g.rotateZ((rnd() - 0.5) * 0.9);
+    g.translate(Math.cos(a) * r, 0.04 + Math.max(0, H * 0.55 - r * 0.8) * rnd(), Math.sin(a) * r * (D / W));
+    k.add(g, bricks[i % 3]);
+  }
+  for (let i = 0; i < 6; i++) {
+    const a = rnd() * Math.PI * 2, r = W * (0.2 + rnd() * 0.3);
+    const g = new k.THREE.DodecahedronGeometry(0.06 + rnd() * 0.07, 0);
+    g.scale(1, 0.6, 1.2); g.translate(Math.cos(a) * r, 0.05, Math.sin(a) * r * (D / W));
+    k.add(g, rnd() > 0.5 ? 0x9a978f : 0x75736d);
+  }
+  k.rbox(0.32, 0.22, 0.5, 0.08, -W * 0.32, 0.11, D * 0.28, 0xd8d2bf);   // cement / sand sack
+  k.shadow(W * 0.95, D * 0.95, 0.5, 0.3);
+}
+
+function genericObstacle(k, s) {
+  k.rbox(s.w, s.h, s.d, 0.06, 0, s.h / 2, 0, 0x7d7a74);
+  k.shadow(s.w, s.d);
+}
+
+const MODELS = { debris, generic: genericObstacle, parked_car: parkedCar, two_wheeler: twoWheeler, cone, barricade, pothole, stall, low_branch: lowBranch };
 
 function genericModel(k, s) { k.rbox(s.w, s.h, s.d, 0.05, 0, s.h / 2, 0, 0x8a8f96); k.shadow(s.w, s.d); }
 
@@ -479,6 +507,16 @@ export function createObstacleMaterials(THREE) {
   ];
 }
 
+// Fixed hazards from the street model (runner.hazards) that the glb does NOT draw where they collide get a model here,
+// so nothing ever hurts without being visible. Furniture types (pole, tree, bin, bollard, signboard, railing, bus stop,
+// manhole) are drawn by the glb at their own position and are skipped.
+const STATIC_MODEL = {
+  low_branch: 'low_branch', debris: 'debris', pothole: 'pothole', drain: 'pothole', vendor_stall: 'stall',
+  parked_vehicle: 'parked_car', two_wheeler: 'two_wheeler', speed_breaker: 'generic', other: 'generic',
+};
+const STATIC_BASE_SIZE = { debris: { w: 1.0, h: 0.4, d: 1.0 }, generic: { w: 1.0, h: 1.0, d: 1.0 } };
+export const STATIC_HAZARD_MODELS = STATIC_MODEL;
+
 /** createDynamicLayer(THREE, { scene, track, runner }) -> { group, update, reset, dispose } */
 export function createDynamicLayer(THREE, { scene, track, runner }) {
   const gp = runner && runner.gp;
@@ -502,6 +540,28 @@ export function createDynamicLayer(THREE, { scene, track, runner }) {
     meshes[t] = mesh;
     palettes[t] = (PALETTES[t] || [0xffffff]).map((h) => new THREE.Color(h));
     group.add(mesh);
+  }
+  // static hazards: one extra InstancedMesh per model key, named static_<model>
+  const statics = [];
+  const staticMeshes = {};
+  for (const h of (runner.hazards || [])) {
+    let key = STATIC_MODEL[h.type];
+    if (h.type === 'parked_vehicle' && /two|bike|scooter/i.test(`${h.label || ''}`)) key = 'two_wheeler';
+    if (!key) continue;
+    const base = (gp.obstacle_types[key] && gp.obstacle_types[key].size_m) || STATIC_BASE_SIZE[key] || STATIC_BASE_SIZE.generic;
+    if (!staticMeshes[key]) {
+      const geo = buildObstacleGeometry(THREE, key, base);
+      geometries.push(geo);
+      const mesh = new THREE.InstancedMesh(geo, materials, CAPACITY);
+      mesh.name = `static_${key}`;
+      mesh.count = 0; mesh.visible = false; mesh.frustumCulled = false;
+      mesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(CAPACITY * 3).fill(1), 3);
+      staticMeshes[key] = mesh;
+      group.add(mesh);
+    }
+    const sz = h.size_m || base;
+    const clamp = (v) => Math.max(0.5, Math.min(2.0, v));
+    statics.push({ h, key, scale: new THREE.Vector3(clamp(sz.w / base.w), clamp(sz.h / base.h), clamp(sz.d / base.d)) });
   }
   if (scene && scene.add) scene.add(group);
 
@@ -551,11 +611,54 @@ export function createDynamicLayer(THREE, { scene, track, runner }) {
       mesh.instanceMatrix.needsUpdate = true;
       mesh.instanceColor.needsUpdate = true;
     }
+    updateStatics();
+  }
+
+  let lastStatic = [];
+  function updateStatics() {
+    const sc = {};
+    lastStatic = [];
+    const L = runner.lengthM, x = runner.x || 0, sp = gp.spawner || {};
+    const behind = sp.window_behind_m ?? 10, ahead = sp.window_ahead_m ?? 80;
+    if (runner.seed !== null && runner.seed !== undefined && L > 0) {
+      const loop = Math.floor(x / L);
+      for (const st of statics) {
+        const { h } = st;
+        for (const lp of [loop - 1, loop, loop + 1]) {
+          if (lp < 0) continue;
+          const xa = lp * L + h.x_m;
+          if (xa + h.length_m < x - behind || xa > x + ahead) continue;
+          const mesh = staticMeshes[st.key];
+          const i = sc[st.key] || 0;
+          if (i >= CAPACITY) continue;
+          const xs = h.x_m + h.length_m / 2;
+          const lanes = h.lanes && h.lanes.length ? h.lanes : [0];
+          const lat = lanes.reduce((a, l) => a + track.laneLat(xs, l), 0) / lanes.length;
+          const w = track.world(xa + h.length_m / 2, lat);
+          const fy = lanes.includes(0) && lanes.length === 1 ? groundY({ lane: 0, x_m: h.x_m, length_m: h.length_m }) : 0;
+          pos.set(w.x, fy, w.z);
+          quat.setFromAxisAngle(up, -w.theta);
+          mat.compose(pos, quat, st.scale);
+          mesh.setMatrixAt(i, mat);
+          const pal = PALETTES[st.key] || [0xffffff], c = new THREE.Color(pal[(h.id || '').length % pal.length]);
+          mesh.instanceColor.setXYZ(i, c.r, c.g, c.b);
+          sc[st.key] = i + 1;
+          lastStatic.push(h.id);
+        }
+      }
+    }
+    for (const [key, mesh] of Object.entries(staticMeshes)) {
+      mesh.count = sc[key] || 0;
+      mesh.visible = mesh.count > 0;
+      mesh.instanceMatrix.needsUpdate = true;
+      mesh.instanceColor.needsUpdate = true;
+    }
   }
 
   function reset() {
     for (const t of types) { counts[t] = 0; meshes[t].count = 0; meshes[t].visible = false; }
-    lastIds = [];
+    for (const m of Object.values(staticMeshes)) { m.count = 0; m.visible = false; }
+    lastIds = []; lastStatic = [];
   }
 
   function dispose() {
@@ -563,11 +666,15 @@ export function createDynamicLayer(THREE, { scene, track, runner }) {
     for (const g of geometries) g.dispose();
     for (const m of materials) m.dispose();
     for (const t of types) meshes[t].dispose();
+    for (const m of Object.values(staticMeshes)) m.dispose();
   }
 
   return {
     group, update, reset, dispose,
     get visibleIds() { return lastIds.slice(); },
-    get drawCalls() { return types.reduce((n, t) => n + (meshes[t].visible ? meshes[t].geometry.groups.length : 0), 0); },
+    get visibleStaticIds() { return lastStatic.slice(); },
+    get drawCalls() {
+      return group.children.reduce((n, m) => n + (m.visible ? m.geometry.groups.length : 0), 0);
+    },
   };
 }
