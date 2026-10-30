@@ -307,6 +307,37 @@ def _affects(seg: repo.SegmentRecord, obs: Observation, ref: ReferenceLine) -> d
         return {"s_from": None, "s_to": None, "can_reach_level": 2, "message": "The effect of this photo could not be estimated."}
 
 
+def _streetview_keys(stored: list[Observation]):
+    """``planned item -> (dedupe key, already stored)`` for the estimate, mirroring ``acquire``: a planned station
+    within ``PANO_SNAP_M`` of a stored panorama is that panorama, and a frame is identified by (pano, quantised heading,
+    pitch, fov). Stations near no known panorama count as new (an upper bound)."""
+    from hero.imagery.acquire import quantize_heading
+    from hero.model import improve
+
+    panos: list[tuple[float, str]] = []
+    have: set[tuple] = set()
+    for o in stored:
+        if o.kind is ObservationKind.streetview and o.pano_id and o.station_s is not None:
+            panos.append((o.station_s, o.pano_id))
+            have.add((o.pano_id, quantize_heading(o.heading_deg or 0.0), int(o.pitch_deg or 0), int(o.fov_deg or 90)))
+
+    def key_of(it) -> tuple[tuple, bool]:
+        heading = quantize_heading(it.heading_deg or 0.0)
+        near = min(panos, key=lambda p: abs(p[0] - it.station_s), default=None)
+        # or, as before tilts / zoom existed: a level, wide frame of this view stored at this station
+        legacy = (int(it.pitch_deg), int(it.fov_deg)) == (0, 90) and it.view in ("forward", "back", "left", "right") \
+            and improve._stored_match(stored, PlanTarget(kind="streetview", station_s=it.station_s, view=it.view))
+        if near is not None and abs(near[0] - it.station_s) <= PANO_SNAP_M:
+            key = (near[1], heading, int(it.pitch_deg), int(it.fov_deg))
+            return key, key in have or legacy
+        return (f"s{round(it.station_s, 1)}", heading, int(it.pitch_deg), int(it.fov_deg)), legacy
+
+    return key_of
+
+
+PANO_SNAP_M = 6.0  # panoramas are ~10 m apart: a station snaps to the nearest one (acquire asks Google for it)
+
+
 # ------------------------------------------------------------------ add more imagery (acquire-only run)
 
 
@@ -317,9 +348,11 @@ class ImageryBody(BaseModel):
     headings: list[str] | None = Field(default=None, min_length=1)
     sat_crop_zoom: int | None = Field(default=None, ge=18, le=21)
     sat_crop_spacing_m: float | None = Field(default=None, gt=0)
-    max_images: int | None = Field(default=None, ge=1, le=200)
+    max_images: int | None = Field(default=None, ge=1, le=2000)
     s_range: SRange | None = None
     sat_extra_zoom: int | None = Field(default=None, ge=18, le=21)
+    pitches_deg: list[int] | None = Field(default=None, min_length=1, max_length=5)
+    fovs_deg: list[int] | None = Field(default=None, min_length=1, max_length=3)
     targets: list[PlanTarget] | None = Field(default=None, min_length=1, max_length=MAX_TARGETS)
 
     @model_validator(mode="after")
@@ -489,11 +522,17 @@ def estimate_imagery(slug: str, raw: dict[str, Any] = Body(default_factory=dict)
     except ValueError as exc:
         raise ApiError("validation_error", str(exc)) from None
     stored = model_repo.get_observations(seg.id, limit=100_000)
-    new_sv = new_sat = 0
+    new_sv = new_sat = deduped = 0
+    sv_key = _streetview_keys(stored)
+    seen: set[tuple] = set()
     for it in items:
         if it.kind == "streetview":
-            t = PlanTarget(kind="streetview", station_s=it.station_s, view=it.view)  # type: ignore[arg-type]
-            new_sv += 0 if improve._stored_match(stored, t) else 1
+            key, stored_already = sv_key(it)
+            if key in seen:  # the same panorama view as another planned station: acquire fetches it once
+                deduped += 1
+                continue
+            seen.add(key)
+            new_sv += 0 if stored_already else 1
         elif it.kind == "satellite_crop":
             t = PlanTarget(kind="satellite_crop", station_s=it.station_s, zoom=it.zoom)
             new_sat += 0 if improve._stored_match(stored, t) else 1
@@ -502,7 +541,7 @@ def estimate_imagery(slug: str, raw: dict[str, Any] = Body(default_factory=dict)
     rounds = quality.rounds(settings.max_review_iterations)
     est = improve.estimate_cost(new_sv, new_sat, model, fuse=body.fuse, passes=quality.extraction_passes,
                                 review_rounds=rounds)
-    planned = info.paid_total
+    planned = info.paid_total - deduped
     return ok({"counts": dict(info.counts), "planned": planned, "new": new_sv + new_sat, "cached": planned - new_sv - new_sat,
                "new_streetview": new_sv, "new_satellite": new_sat, "trimmed": info.trimmed, "notes": list(info.notes),
                "est": est.as_dict(), "extraction_passes": quality.extraction_passes, "review_rounds": rounds,

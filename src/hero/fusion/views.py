@@ -126,6 +126,7 @@ def street_frame_table(batch: StreetBatch, ref: ReferenceLine) -> str:
         rel = relative_heading_deg(o, ref)
         rows.append(f"- image {i}: view {_view_name(o)}, station s={o.station_s:.1f} m, "
                     f"heading {'n/a' if rel is None else f'{rel:+.0f} deg'} relative to travel, "
+                    f"pitch {o.pitch_deg or 0:+.0f} deg, fov {o.fov_deg or 90:.0f} deg, "
                     f"{o.width_px}x{o.height_px} px")
     return "\n".join(rows)
 

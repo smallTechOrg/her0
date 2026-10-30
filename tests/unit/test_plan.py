@@ -144,7 +144,7 @@ def test_merge_plan_applies_overrides_and_ignores_none():
     ({"sv_spacing_m": 3.9}, "sv_spacing_m"), ({"sv_spacing_m": 40.1}, "sv_spacing_m"),
     ({"headings": []}, "headings"), ({"headings": ["up"]}, "headings"),
     ({"sat_crop_zoom": 17}, "sat_crop_zoom"), ({"sat_crop_zoom": 22}, "sat_crop_zoom"),
-    ({"max_images": 0}, "max_images"), ({"max_images": 201}, "max_images"),
+    ({"max_images": 0}, "max_images"), ({"max_images": 2001}, "max_images"),
     ({"bogus": 1}, "unknown"), ({"s_range": {"s_from": 10, "s_to": 5}}, "s_range"),
 ])
 def test_merge_plan_rejects_out_of_range_values(overrides, needle):
@@ -156,3 +156,23 @@ def test_merge_plan_accepts_the_boundaries():
     merged = merge_plan(plan(), {"sv_spacing_m": 4, "sat_crop_zoom": 21, "max_images": 200})
     assert (merged.sv_spacing_m, merged.sat_crop_zoom, merged.max_images) == (4, 21, 200)
     assert math.isfinite(merged.sat_crop_spacing_m)
+
+
+def test_tilts_fovs_and_diagonals_multiply_the_frames_of_every_station():
+    eight = ["forward", "forward_right", "right", "back_right", "back", "back_left", "left", "forward_left"]
+    items, info = plan_images(straight_reference_line(100.0),
+                              plan(headings=eight, pitches_deg=[0, -30, 25], fovs_deg=[90, 50], max_images=2000))
+    sv = [i for i in items if i.kind == "streetview"]
+    assert info.counts["streetview"] == len(sv) == 11 * 48 and not info.trimmed
+    assert {(i.pitch_deg, i.fov_deg) for i in sv} == {(p, f) for p in (0, -30, 25) for f in (90, 50)}
+    at0 = sorted(i.heading_deg for i in sv if i.station_s == 0.0 and i.pitch_deg == 0 and i.fov_deg == 90)
+    assert len(at0) == 8 and all(b - a == pytest.approx(45.0) for a, b in zip(at0, at0[1:]))
+
+
+def test_default_plan_is_level_and_wide_and_bad_tilts_or_fovs_are_rejected():
+    items, _ = plan_images(straight_reference_line(100.0), plan())
+    assert {(i.pitch_deg, i.fov_deg) for i in items if i.kind == "streetview"} == {(0, 90)}
+    for bad, needle in (({"pitches_deg": [-60]}, "pitches_deg"), ({"fovs_deg": [150]}, "fovs_deg"),
+                        ({"pitches_deg": []}, "pitches_deg")):
+        with pytest.raises(ValueError, match=needle):
+            merge_plan(plan(), bad)

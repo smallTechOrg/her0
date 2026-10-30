@@ -274,7 +274,7 @@ def test_generate_forwards_the_imagery_overrides(client, auth, seeded_fixture_se
 @pytest.mark.parametrize("body", [
     {"imagery": {"sv_spacing_m": 3}}, {"imagery": {"sv_spacing_m": 41}}, {"imagery": {"headings": []}},
     {"imagery": {"headings": ["up"]}}, {"imagery": {"sat_crop_zoom": 17}}, {"imagery": {"sat_crop_zoom": 22}},
-    {"imagery": {"max_images": 0}}, {"imagery": {"max_images": 201}}, {"imagery": {"sat_crop_spacing_m": 0}},
+    {"imagery": {"max_images": 0}}, {"imagery": {"max_images": 2001}}, {"imagery": {"sat_crop_spacing_m": 0}},
     {"imagery": {"s_range": {"s_from": 50, "s_to": 10}}}, {"imagery": {"surprise": 1}},
     {"run_budget_usd": 0.5}, {"mystery": True}])
 def test_generate_rejects_out_of_range_bodies_with_422_and_starts_nothing(client, auth, seeded_fixture_segment,

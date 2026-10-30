@@ -269,7 +269,7 @@ def test_add_imagery_validates_then_starts_an_acquire_run_with_the_overrides(app
 
 
 @pytest.mark.parametrize("body", [{}, {"sv_spacing_m": 3}, {"sv_spacing_m": 41}, {"headings": []}, {"headings": ["up"]},
-                                  {"sat_crop_zoom": 17}, {"sat_crop_zoom": 22}, {"max_images": 0}, {"max_images": 201},
+                                  {"sat_crop_zoom": 17}, {"sat_crop_zoom": 22}, {"max_images": 0}, {"max_images": 2001},
                                   {"s_range": {"s_from": 50, "s_to": 10}}, {"surprise": 1}])
 def test_add_imagery_rejects_empty_or_out_of_range_bodies_with_422(app_client, auth, monkeypatch, body):
     from hero.pipeline import registry

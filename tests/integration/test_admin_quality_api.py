@@ -22,7 +22,7 @@ def test_preset_endpoint_serves_the_values_the_form_fills(app_client, auth):
     d = r.json()["data"]
     p = d["preset"]
     assert p["model"] == "claude-opus-5-5" and p["extraction_passes"] == 3 and p["review_rounds"] == 4
-    assert p["sat_crop_zoom"] == 21 and p["frames_per_station"] == len(p["headings"]) == 4 and 10 <= p["sv_spacing_m"] <= 15
+    assert p["sat_crop_zoom"] == 21 and p["frames_per_station"] == 48 and len(p["headings"]) == 8 and p["sv_spacing_m"] <= 6
     assert d["limits"]["extraction_passes"] == [1, 5]
     assert app_client.get("/api/admin/quality-preset").status_code == 401
 
@@ -140,10 +140,12 @@ def test_default_estimate_matches_the_documented_max_quality_numbers(app_client,
     from tests.fixtures.street_fixtures import straight_reference_line
 
     plan = merge_plan(default_plan(get_settings()), {k: PRESET[k] for k in (
-        "sv_spacing_m", "headings", "sat_crop_zoom", "sat_extra_zoom", "sat_crop_spacing_m", "max_images")})
+        "sv_spacing_m", "headings", "pitches_deg", "fovs_deg", "sat_crop_zoom", "sat_extra_zoom", "sat_crop_spacing_m",
+        "max_images")})
     _items, info = plan_images(straight_reference_line(100.0), plan)
-    assert info.counts == {"streetview": 36, "satellite_crop": 9, "satellite_overview": 1}
+    # 21 stations x 48 frames are planned; Street View has ~11 panoramas on 100 m, so acquire fetches ~11 x 48 = 528
+    assert info.counts == {"streetview": 1008, "satellite_crop": 19, "satellite_overview": 1} and not info.trimmed
     n_sat = info.counts["satellite_crop"] + info.counts["satellite_overview"]
-    opus = improve.estimate_cost(36, n_sat, "claude-opus-5-5", passes=3, review_rounds=4)
-    sonnet = improve.estimate_cost(36, n_sat, "claude-sonnet-5-5", passes=3, review_rounds=4)
+    opus = improve.estimate_cost(528, n_sat, "claude-opus-5-5", passes=3, review_rounds=4)
+    sonnet = improve.estimate_cost(528, n_sat, "claude-sonnet-5-5", passes=3, review_rounds=4)
     assert opus.google_usd == sonnet.google_usd and opus.claude_usd == pytest.approx(2 * sonnet.claude_usd, rel=1e-3)

@@ -166,7 +166,7 @@ class FillGapsBody(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     target_level: Literal[2, 3] = 2
-    max_images: int = Field(default=40, ge=1, le=200)
+    max_images: int = Field(default=40, ge=1, le=2000)
     max_usd: float = Field(default=1.0, ge=0.05, le=5.0)
     s_range: SRange | None = None
     model: str | None = Field(default=None, min_length=1, max_length=80)

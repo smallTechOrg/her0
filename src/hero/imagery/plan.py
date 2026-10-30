@@ -18,11 +18,16 @@ from hero.config import Settings
 from hero.model.refline import ReferenceLine
 from hero.scene.geo import meters_per_px
 
-Heading = Literal["forward", "back", "left", "right"]
-HEADING_OFFSET_DEG: dict[str, float] = {"forward": 0.0, "right": 90.0, "back": 180.0, "left": 270.0}
+Heading = Literal["forward", "back", "left", "right", "forward_left", "forward_right", "back_left", "back_right"]
+HEADING_OFFSET_DEG: dict[str, float] = {"forward": 0.0, "forward_right": 45.0, "right": 90.0, "back_right": 135.0,
+                                        "back": 180.0, "back_left": 225.0, "left": 270.0, "forward_left": 315.0}
 SPACING_RANGE = (4.0, 40.0)
 ZOOM_RANGE = (18, 21)
-MAX_IMAGES_RANGE = (1, 200)
+MAX_IMAGES_RANGE = (1, 2000)
+PITCH_RANGE = (-45, 45)      # camera tilt: negative looks down (road surface, kerbs, potholes), positive up (facades)
+FOV_RANGE = (20, 120)        # narrower = zoomed in: more detail per pixel from the same panorama
+DEFAULT_PITCH = 0
+DEFAULT_FOV = 90
 EST_COST_SV_USD = 0.007
 EST_COST_SAT_USD = 0.002
 OVERVIEW_SCALE = 2
@@ -82,15 +87,26 @@ class ImageryPlan(BaseModel):
     overview_zoom: int = Field(default=19, ge=14, le=21)
     sat_extra_zoom: int | None = Field(default=None, ge=ZOOM_RANGE[0], le=ZOOM_RANGE[1])  # overlapping second crop set
     targets: list[PlanTarget] | None = Field(default=None, max_length=MAX_TARGETS)
+    # Every Street View station is shot at each heading x pitch x fov (one panorama gives many distinct frames).
+    pitches_deg: list[int] = Field(default_factory=lambda: [DEFAULT_PITCH], min_length=1)
+    fovs_deg: list[int] = Field(default_factory=lambda: [DEFAULT_FOV], min_length=1)
 
     @model_validator(mode="after")
     def _dedupe_headings(self) -> "ImageryPlan":
-        seen: list[Heading] = []
-        for h in self.headings:
-            if h not in seen:
-                seen.append(h)
-        self.headings = seen
+        self.headings = list(dict.fromkeys(self.headings))
+        self.pitches_deg = list(dict.fromkeys(self.pitches_deg))
+        self.fovs_deg = list(dict.fromkeys(self.fovs_deg))
+        for p in self.pitches_deg:
+            if not PITCH_RANGE[0] <= p <= PITCH_RANGE[1]:
+                raise ValueError(f"pitches_deg: {p} is outside {PITCH_RANGE[0]}..{PITCH_RANGE[1]}")
+        for f in self.fovs_deg:
+            if not FOV_RANGE[0] <= f <= FOV_RANGE[1]:
+                raise ValueError(f"fovs_deg: {f} is outside {FOV_RANGE[0]}..{FOV_RANGE[1]}")
         return self
+
+    @property
+    def frames_per_station(self) -> int:
+        return len(self.headings) * len(self.pitches_deg) * len(self.fovs_deg)
 
 
 def default_plan(settings: Settings) -> ImageryPlan:
@@ -105,7 +121,7 @@ def default_plan(settings: Settings) -> ImageryPlan:
 def merge_plan(base: ImageryPlan, overrides: dict[str, Any]) -> ImageryPlan:
     """``base`` with the non-``None`` ``overrides`` applied and re-validated. Raises ``ValueError`` (message
     names the offending field) for unknown keys or out-of-range values (spacing 4-40, >= 1 heading, zoom 18-21,
-    max_images 1-200)."""
+    max_images 1-2000, pitch -45..45, fov 20..120)."""
     allowed = set(ImageryPlan.model_fields)
     unknown = sorted(set(overrides) - allowed)
     if unknown:
@@ -135,6 +151,8 @@ class PlannedImage:
     lon: float
     heading_deg: float | None
     zoom: int | None
+    pitch_deg: int = DEFAULT_PITCH
+    fov_deg: int = DEFAULT_FOV
 
 
 @dataclass(frozen=True)
@@ -217,7 +235,7 @@ def plan_images(ref: ReferenceLine, plan: ImageryPlan) -> tuple[list[PlannedImag
         if not hi > lo:
             raise ValueError(f"s_range [{plan.s_range.s_from}, {plan.s_range.s_to}] lies outside the line (0..{total:.1f} m)")
     span = hi - lo
-    n_head = len(plan.headings)
+    n_head = plan.frames_per_station  # frames per station (headings x pitches x fovs)
     notes: list[str] = []
 
     n_overview = 1 if plan.include_overview else 0
@@ -259,8 +277,11 @@ def plan_images(ref: ReferenceLine, plan: ImageryPlan) -> tuple[list[PlannedImag
     for s in stations:
         lat, lon = ref.point_at(s, 0.0)
         bearing = ref.bearing_deg(s)
-        for name in plan.headings:
-            items.append(PlannedImage("streetview", name, s, lat, lon, (bearing + HEADING_OFFSET_DEG[name]) % 360.0, None))
+        for fov in plan.fovs_deg:
+            for pitch in plan.pitches_deg:
+                for name in plan.headings:
+                    items.append(PlannedImage("streetview", name, s, lat, lon,
+                                              (bearing + HEADING_OFFSET_DEG[name]) % 360.0, None, pitch, fov))
     # Hard clamp: with a tiny max_images even one station x all headings may not fit; never plan more than the cap.
     sv_allowed = max(0, plan.max_images - n_crops - n_extra - n_overview)
     if len(items) > sv_allowed:

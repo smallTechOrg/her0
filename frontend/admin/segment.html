@@ -88,7 +88,18 @@
               <label class="inline"><input type="checkbox" name="heading" value="forward"> forward</label>
               <label class="inline"><input type="checkbox" name="heading" value="back"> back</label>
               <label class="inline"><input type="checkbox" name="heading" value="left"> left</label>
-              <label class="inline"><input type="checkbox" name="heading" value="right"> right</label></fieldset>
+              <label class="inline"><input type="checkbox" name="heading" value="right"> right</label>
+              <label class="inline"><input type="checkbox" name="heading" value="forward_left"> forward-left</label>
+              <label class="inline"><input type="checkbox" name="heading" value="forward_right"> forward-right</label>
+              <label class="inline"><input type="checkbox" name="heading" value="back_left"> back-left</label>
+              <label class="inline"><input type="checkbox" name="heading" value="back_right"> back-right</label></fieldset>
+            <fieldset class="field"><legend>Camera tilt (each panorama is shot at every tilt)</legend>
+              <label class="inline"><input type="checkbox" name="pitch" value="0"> level</label>
+              <label class="inline"><input type="checkbox" name="pitch" value="-30"> down (road, kerbs, potholes)</label>
+              <label class="inline"><input type="checkbox" name="pitch" value="25"> up (facades, signs, wires)</label></fieldset>
+            <fieldset class="field"><legend>Field of view</legend>
+              <label class="inline"><input type="checkbox" name="fov" value="90"> wide (90°)</label>
+              <label class="inline"><input type="checkbox" name="fov" value="50"> zoomed detail (50°)</label></fieldset>
             <fieldset class="field"><legend>Satellite crop zoom</legend>
               <label class="inline"><input type="radio" name="zoom" value="19"> 19</label>
               <label class="inline"><input type="radio" name="zoom" value="20"> 20</label>
@@ -96,7 +107,7 @@
             <fieldset class="field max-fields" data-testid="max-fields" hidden><legend>Max quality extras (editable)</legend>
               <label>Overlapping satellite set
                 <select name="extra_zoom" data-testid="extra-zoom"><option value="">none</option><option value="19">zoom 19</option><option value="20">zoom 20</option><option value="21">zoom 21</option></select></label>
-              <label>Max images <input name="max_images" type="number" min="1" max="200" step="1" data-testid="max-images"></label>
+              <label>Max images <input name="max_images" type="number" min="1" max="2000" step="1" data-testid="max-images"></label>
               <label>Frames per station <output class="frames-out" data-testid="frames-per-station"></output></label></fieldset>
             <fieldset class="field"><legend>Only this stretch (optional, metres along the street)</legend>
               <label class="inline">from <input name="s_from" type="number" inputmode="decimal" min="0" step="1" aria-label="From metre"></label>

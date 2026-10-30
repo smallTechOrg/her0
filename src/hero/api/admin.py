@@ -298,9 +298,11 @@ class ImageryOverrides(BaseModel):
     headings: list[Heading] | None = Field(default=None, min_length=1)
     sat_crop_zoom: int | None = Field(default=None, ge=18, le=21)
     sat_crop_spacing_m: float | None = Field(default=None, gt=0)
-    max_images: int | None = Field(default=None, ge=1, le=200)
+    max_images: int | None = Field(default=None, ge=1, le=2000)
     s_range: SRange | None = None
     sat_extra_zoom: int | None = Field(default=None, ge=18, le=21)
+    pitches_deg: list[int] | None = Field(default=None, min_length=1, max_length=5)
+    fovs_deg: list[int] | None = Field(default=None, min_length=1, max_length=3)
 
 
 class GenerateBody(BaseModel):

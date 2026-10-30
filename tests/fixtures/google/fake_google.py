@@ -127,7 +127,8 @@ class FakeGoogle:
         return httpx.Response(200, json=body)
 
     def _frame(self, q: dict) -> httpx.Response:
-        self.calls.append({"kind": "streetview", "pano": q.get("pano"), "heading": q.get("heading")})
+        self.calls.append({"kind": "streetview", "pano": q.get("pano"), "heading": q.get("heading"),
+                           "pitch": q.get("pitch"), "fov": q.get("fov")})
         if self.frame_status != 200:
             return httpx.Response(self.frame_status, json=fixture_json("error_403.json"))
         img = self._sv_base.copy()

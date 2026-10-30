@@ -23,7 +23,7 @@ from PIL import Image
 
 from hero.db import model_repo
 from hero.db.model_repo import ObservationCreate
-from hero.imagery.google import EST_COST_USD, FetchedImage, GoogleImagery, PANO_FOV, PANO_PITCH, SpendCapExceeded
+from hero.imagery.google import EST_COST_USD, FetchedImage, GoogleImagery, SpendCapExceeded
 from hero.imagery.noimagery import looks_like_no_imagery
 from hero.imagery.plan import ImageryPlan, PlannedImage, plan_images
 from hero.llm.errors import UpstreamError
@@ -98,8 +98,12 @@ def acquire(*, segment_id: str, run_id: str, ref: ReferenceLine, plan: ImageryPl
     for s in sorted(stations):
         state.station(s, stations[s])
 
-    if result.new == 0 and result.cached == len(items):
+    if result.new == 0 and not any(sk["reason"].startswith(("upstream", "frame", "metadata")) for sk in result.skipped):
         log.info("acquire.all_cached", run_id=run_id, planned=len(items))
+        result.warnings.append(
+            f"Nothing new to fetch: all {result.cached} images of this plan are already stored "
+            f"({result.deduped} more were the same panorama view). Street View only has a panorama about every "
+            "10 m, so add headings (diagonals), camera tilts (down / up) or zoomed views to get new images.")
     result.cost_usd = round(result.cost_usd, 4)
     return result
 
@@ -218,7 +222,8 @@ class _State:
         proj = self.ref.to_st(cam_lat, cam_lon)
         for item in group:
             heading = quantize_heading(item.heading_deg or 0.0)
-            key = (meta.pano_id, heading, PANO_PITCH, PANO_FOV)
+            pitch, fov = int(item.pitch_deg), int(item.fov_deg)
+            key = (meta.pano_id, heading, pitch, fov)
             if key in self.seen:
                 self.result.deduped += 1
                 continue
@@ -228,7 +233,7 @@ class _State:
                 continue
             try:
                 fetched = self._fetch(self.google.streetview_image_pano, meta.pano_id, heading,
-                                      fov=PANO_FOV, pitch=PANO_PITCH)
+                                      fov=fov, pitch=pitch)
             except SpendCapExceeded:
                 self._skip(item, "max_images_reached")
                 continue
@@ -243,7 +248,7 @@ class _State:
                 segment_id=self.segment_id, obs_key=fetched.cache_key, kind=ObservationKind.streetview,
                 source=ObservationSource.google_streetview, sha256=sha, file_path=fetched.rel_path, media_type=media,
                 width_px=w, height_px=h, bytes=size, lat=cam_lat, lon=cam_lon, heading_deg=heading,
-                pitch_deg=float(PANO_PITCH), fov_deg=float(PANO_FOV), pano_id=meta.pano_id,
+                pitch_deg=float(pitch), fov_deg=float(fov), pano_id=meta.pano_id,
                 capture_date=meta.date, station_s=round(proj.s, 3), offset_t=round(proj.t, 3), view=view,
                 georef={"size_px": [w, h], "request": fetched.params}, cost_usd=cost, acquired_run_id=self.run_id))
             self._done(obs, fetched.cache_hit, cost)

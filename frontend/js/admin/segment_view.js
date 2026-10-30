@@ -10,7 +10,7 @@ import { renderVersions } from '/js/admin/versions.js?v=4';
 import { renderCoverage } from '/js/admin/coverage.js?v=4';
 import { createEntities } from '/js/admin/entities.js?v=4';
 import { renderDiff } from '/js/admin/diff.js?v=4';
-import { renderObservations, createImageryForm } from '/js/admin/imagery_form.js?v=4';
+import { renderObservations, createImageryForm } from '/js/admin/imagery_form.js?v=5';
 import { placementButton, referenceLineText } from '/js/admin/placement.js?v=4';
 import { createImprove, createModels } from '/js/admin/improve.js?v=1';
 import { createUploadForm } from '/js/admin/upload_form.js?v=1';
@@ -163,7 +163,7 @@ async function loadAll() {
       aget(segPath(slug, `/model/coverage?version=${head}`)),
       aget(segPath(slug, `/model/versions/${head}`)),
       aget(segPath(slug, `/model/entities?version=${head}`)),
-      aget(segPath(slug, '/observations?limit=200')),
+      aget(segPath(slug, '/observations?limit=1000')),
     ]);
     versionDetail = vd;
     renderCoverage(sec('coverage').querySelector('.cov-body'), {
@@ -201,7 +201,7 @@ async function loadImprove() {
 }
 
 async function loadImagery() {
-  const data = await aget(segPath(slug, '/observations?limit=200'));
+  const data = await aget(segPath(slug, '/observations?limit=1000'));
   state.obsItems = data.items;
   if (uploadCtl) uploadCtl.refresh();
   state.observations = { total: data.total, loaded: data.items.length };

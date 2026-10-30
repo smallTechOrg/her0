@@ -7,7 +7,11 @@ import { createQuality } from '/js/admin/quality_fields.js?v=1';
 
 export const EST_SV_USD = 0.007;
 export const EST_SAT_USD = 0.002;
-const HEADINGS = ['forward', 'back', 'left', 'right'];
+const HEADINGS = ['forward', 'back', 'left', 'right', 'forward_left', 'forward_right', 'back_left', 'back_right'];
+const HEADING_OFFSET = { forward: 0, forward_right: 45, right: 90, back_right: 135, back: 180, back_left: 225, left: 270, forward_left: 315 };
+const PITCHES = [0, -30, 25];
+const FOVS = [90, 50];
+const PANO_SNAP_M = 6; // as the server estimate: a station snaps to the nearest stored panorama
 
 function stationsFor(lo, span, spacing) {
   const out = [];
@@ -16,13 +20,19 @@ function stationsFor(lo, span, spacing) {
   return out;
 }
 
-/** Pure estimate. observations: [{kind, view, station_s, zoom}] already stored for the segment. */
-export function estimatePlan({ length_s, spacing, headings, zoom, range, maxImages = 60, satSpacing = 40, observations = [] }) {
+const quant = (h) => ((Math.round(h / 5) * 5) % 360 + 360) % 360;
+
+/**
+ * Pure estimate. observations: [{kind, view, station_s, zoom, pano_id, heading_deg, pitch_deg, fov_deg}] already stored.
+ * Every station is shot at headings x pitches x fovs; stations that land on the same stored panorama are one image.
+ */
+export function estimatePlan({ length_s, spacing, headings, zoom, range, maxImages = 60, satSpacing = 40, observations = [],
+  pitches = [0], fovs = [90] }) {
   const lo = range ? Math.max(0, range.s_from) : 0;
   const hi = range ? Math.min(length_s, range.s_to) : length_s;
   if (!(hi > lo) || !headings.length) return { valid: false, planned: 0, cached: 0, fresh: 0, usd: 0, trimmed: false };
   const span = hi - lo;
-  const nHead = headings.length;
+  const nHead = headings.length * pitches.length * fovs.length;
   let nCrops = Math.max(1, Math.ceil(span / satSpacing - 1e-9));
   const budgetNonSv = Math.max(0, maxImages - 2 * nHead);
   if (nCrops + 1 > budgetNonSv) nCrops = Math.max(0, budgetNonSv - 1);
@@ -33,13 +43,31 @@ export function estimatePlan({ length_s, spacing, headings, zoom, range, maxImag
     const n = Math.max(1, nMax);
     stations = n >= 2 ? Array.from({ length: n }, (_, i) => lo + (i * span) / (n - 1)) : [lo + span / 2];
   }
+  const sv = observations.filter((o) => o.kind === 'streetview' && o.station_s != null);
+  const have = new Set(sv.filter((o) => o.pano_id).map((o) => `${o.pano_id}|${quant(o.heading_deg || 0)}|${o.pitch_deg || 0}|${o.fov_deg || 90}`));
+  const seen = new Set();
   let cachedSv = 0;
   for (const s of stations) {
-    for (const h of headings) {
-      if (observations.some((o) => o.kind === 'streetview' && o.view === h && o.station_s != null && Math.abs(o.station_s - s) <= 0.6)) cachedSv += 1;
+    let near = null;
+    for (const o of sv) if (o.pano_id && (!near || Math.abs(o.station_s - s) < Math.abs(near.station_s - s))) near = o;
+    const pano = near && Math.abs(near.station_s - s) <= PANO_SNAP_M ? near.pano_id : `s${s.toFixed(1)}`;
+    // relative heading: stored headings are compass, so offset from the nearest stored forward frame of that pano
+    const fwd = sv.find((o) => o.pano_id === pano && o.view === 'forward');
+    for (const f of fovs) {
+      for (const p of pitches) {
+        for (const h of headings) {
+          const head = fwd ? quant((fwd.heading_deg || 0) + HEADING_OFFSET[h]) : h;
+          const key = `${pano}|${head}|${p}|${f}`;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          // or, as before tilts / zoom existed: a level, wide frame of this view stored at this station
+          if (have.has(key) || (p === 0 && f === 90 && observations.some((o) => o.kind === 'streetview' && o.view === h
+            && o.station_s != null && Math.abs(o.station_s - s) <= 0.6 && !(o.pitch_deg || 0)))) cachedSv += 1;
+        }
+      }
     }
   }
-  const svTotal = stations.length * nHead;
+  const svTotal = seen.size;
   const crops = observations.filter((o) => o.kind === 'satellite_crop' && o.zoom === zoom).length;
   const cachedCrops = Math.min(crops, nCrops);
   const cachedOverview = observations.some((o) => o.kind === 'satellite_overview') ? 1 : 0;
@@ -84,6 +112,10 @@ export function createImageryForm({ form, slug, getLength, getObservations, limi
   const hdChecks = HEADINGS.map((h) => form.querySelector(`[name=heading][value=${h}]`));
   const defaults = new Set(lim.headings || HEADINGS);
   for (const c of hdChecks) c.checked = defaults.has(c.value);
+  const pitchChecks = PITCHES.map((v) => form.querySelector(`[name=pitch][value="${v}"]`));
+  const fovChecks = FOVS.map((v) => form.querySelector(`[name=fov][value="${v}"]`));
+  for (const c of pitchChecks) c.checked = c.value === '0';
+  for (const c of fovChecks) c.checked = c.value === '90';
   const msg = form.querySelector('.form-msg');
   const btnFetch = form.querySelector('[data-testid=fetch-only]');
   const btnGen = form.querySelector('[data-testid=fetch-generate]');
@@ -102,6 +134,10 @@ export function createImageryForm({ form, slug, getLength, getObservations, limi
         spacing.value = String(preset.sv_spacing_m);
         const have = new Set(preset.headings);
         for (const c of hdChecks) c.checked = have.has(c.value);
+        const ps = new Set((preset.pitches_deg || [0]).map(String));
+        for (const c of pitchChecks) c.checked = ps.has(c.value);
+        const fs = new Set((preset.fovs_deg || [90]).map(String));
+        for (const c of fovChecks) c.checked = fs.has(c.value);
         const z = form.querySelector(`[name=zoom][value="${preset.sat_crop_zoom}"]`);
         if (z) z.checked = true;
         extraZoom.value = preset.sat_extra_zoom == null ? '' : String(preset.sat_extra_zoom);
@@ -125,12 +161,18 @@ export function createImageryForm({ form, slug, getLength, getObservations, limi
       headings: hdChecks.filter((c) => c.checked).map((c) => c.value),
       sat_crop_zoom: Number(form.querySelector('[name=zoom]:checked').value),
     };
+    const pitches = pitchChecks.filter((c) => c.checked).map((c) => Number(c.value));
+    const fovs = fovChecks.filter((c) => c.checked).map((c) => Number(c.value));
+    // only sent when they differ from the defaults (level, wide): the request is then exactly as before
+    if (pitches.length && !(pitches.length === 1 && pitches[0] === 0)) body.pitches_deg = pitches;
+    if (fovs.length && !(fovs.length === 1 && fovs[0] === 90)) body.fovs_deg = fovs;
     const r = rangeValue();
     if (r) body.s_range = r;
     if (quality && quality.on()) { // max-quality extras are sent only while the preset is on
       const mi = Number.parseInt(maxImages.value, 10);
       if (Number.isFinite(mi)) body.max_images = mi;
       if (extraZoom.value) body.sat_extra_zoom = Number(extraZoom.value);
+      if (quality.preset && quality.preset.sat_crop_spacing_m) body.sat_crop_spacing_m = quality.preset.sat_crop_spacing_m;
     }
     return body;
   }
@@ -168,15 +210,19 @@ export function createImageryForm({ form, slug, getLength, getObservations, limi
     const p = plan();
     const est = estimatePlan({
       length_s: getLength(), spacing: p.sv_spacing_m, headings: p.headings, zoom: p.sat_crop_zoom, range: p.s_range,
-      maxImages: lim.max_images_per_run || 60, satSpacing: lim.sat_crop_spacing_m || 40, observations: getObservations(),
+      maxImages: (quality && quality.on() && p.max_images) || lim.max_images_per_run || 60,
+      satSpacing: (quality && quality.on() && p.sat_crop_spacing_m) || lim.sat_crop_spacing_m || 40, observations: getObservations(),
+      pitches: p.pitches_deg || [0], fovs: p.fovs_deg || [90],
     });
     const out = form.querySelector('[data-testid=estimate]');
-    const bad = !est.valid;
+    const noAngles = !pitchChecks.some((c) => c.checked) || !fovChecks.some((c) => c.checked);
+    const bad = !est.valid || noAngles;
     out.textContent = bad
-      ? (p.headings.length ? 'Check the stretch: "to" must be greater than "from".' : 'Pick at least one heading.')
+      ? (noAngles ? 'Pick at least one tilt and one field of view.'
+        : p.headings.length ? 'Check the stretch: "to" must be greater than "from".' : 'Pick at least one heading.')
       : `≈ ${est.fresh} new images ≈ ${fmtUsd(est.usd).replace('$', '$')} Google (${est.planned} planned, ${est.cached} already cached${est.trimmed ? '; spacing widened to fit the image cap' : ''})`;
     out.dataset.fresh = bad ? '' : String(est.fresh);
-    framesOut.textContent = String(p.headings.length);
+    framesOut.textContent = String(p.headings.length * (p.pitches_deg || [0]).length * (p.fovs_deg || [90]).length);
     if (bad) { claudeOut.textContent = ''; } else serverEstimate(p);
     const reason = activeReason();
     const off = bad || !!reason;

@@ -691,7 +691,8 @@ def _critique_inputs(state: FusionState, ctx: FusionContext) -> tuple[list[LLMIm
             crop_imgs.append(img)
             ids.append(o.id)
     pool = sorted((o for o in state.observations.values() if o.kind is ObservationKind.streetview
-                   and o.view is ViewKind.forward and o.station_s is not None), key=lambda o: (o.station_s, o.id))
+                   and o.view is ViewKind.forward and o.station_s is not None
+                   and not (o.pitch_deg or 0) and (o.fov_deg or 90) == 90), key=lambda o: (o.station_s, o.id))
     frames: list[LLMImage] = []
     for target in (length / 3.0, 2.0 * length / 3.0):
         if not pool or len(frames) >= CRITIQUE_FRAMES:

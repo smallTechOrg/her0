@@ -255,7 +255,7 @@ def test_preview_nothing_to_do_says_so(app_client, auth):
     assert d["est"]["total_usd"] == 0.0
 
 
-@pytest.mark.parametrize("body", [{"target_level": 1}, {"target_level": 4}, {"max_images": 0}, {"max_images": 201},
+@pytest.mark.parametrize("body", [{"target_level": 1}, {"target_level": 4}, {"max_images": 0}, {"max_images": 2001},
                                   {"max_usd": 0.01}, {"max_usd": 6}, {"s_range": {"s_from": 10, "s_to": 5}},
                                   {"bogus": 1}, {"model": "gpt-nope"}, {"s_range": {"s_from": 500, "s_to": 600}}])
 def test_preview_rejects_bad_input_with_422(app_client, auth, body):

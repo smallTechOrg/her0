@@ -356,7 +356,7 @@ def plan_improvements(*, fidelity: FidelityMap, gaps: GapReport | None, observat
         targeted_bins[b.index] = (b.level, need_level if b.level < need_level else b.level)
 
     plan = ImageryPlan(sv_spacing_m=10.0, headings=["forward", "back", "left", "right"], sat_crop_zoom=CROP_ZOOM,
-                       sat_crop_spacing_m=20.0, include_overview=True, max_images=max(1, min(200, len(targets) + 1)),
+                       sat_crop_spacing_m=20.0, include_overview=True, max_images=max(1, min(2000, len(targets) + 1)),
                        targets=targets or None)
     images: list[PlannedImageView] = []
     for t in sorted(targets, key=lambda t: (t.station_s, t.kind, t.view or "")):

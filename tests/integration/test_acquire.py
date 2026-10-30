@@ -240,3 +240,20 @@ def test_classify_view_and_heading_quantisation():
     assert classify_view(180, 0) == "back" and classify_view(95, 0) == "right" and classify_view(265, 0) == "left"
     assert classify_view(45, 0) == "oblique" and classify_view(1, 359) == "forward"
     assert quantize_heading(2.4) == 0.0 and quantize_heading(2.6) == 5.0 and quantize_heading(358.0) == 0.0
+
+
+def test_tilted_and_zoomed_frames_are_new_images_of_the_same_panoramas(seg_run, tmp_path):
+    ref = straight_ref(100.0)
+    fake = FakeGoogle(ref)
+    _, first, _ = run_acquire(seg_run, tmp_path, fake, ref, plan(headings=["forward"]))
+    _, again, _ = run_acquire(seg_run, tmp_path, fake, ref, plan(headings=["forward"]))
+    assert again.new == 0 and any("Nothing new to fetch" in w for w in again.warnings)
+    _, more, _ = run_acquire(seg_run, tmp_path, fake, ref, plan(headings=["forward"], pitches_deg=[0, -30],
+                                                                fovs_deg=[90, 50]))
+    sv_first = [o for o in first.observations if o.kind == "streetview"]
+    assert more.new == 3 * len(sv_first) and more.cached == len(first.observations)
+    tilts = {(o.pitch_deg, o.fov_deg) for o in more.observations if o.kind == "streetview"}
+    assert tilts == {(0.0, 90.0), (-30.0, 90.0), (0.0, 50.0), (-30.0, 50.0)}
+    assert not any("Nothing new" in w for w in more.warnings)
+    req = [c for c in fake.calls_of("streetview")]
+    assert {(c.get("pitch"), c.get("fov")) for c in req} >= {("-30", "50"), ("0", "90")}

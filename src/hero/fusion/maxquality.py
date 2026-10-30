@@ -38,18 +38,25 @@ MAX_ROUNDS = 8
 PRESET_MODEL = "claude-opus-5-5"
 PRESET = {
     "model": PRESET_MODEL,
-    "sv_spacing_m": 12.0,                                   # a frame every ~10-15 m ...
-    "headings": ["forward", "back", "left", "right"],       # ... and 4 headings per station (frames_per_station = 4)
+    # Street View has a panorama only every ~10 m, so a denser grid alone finds no new images: a station every 5 m
+    # catches every panorama (metadata is free, duplicates are de-duplicated by pano id) and each panorama is shot at
+    # 8 headings x 3 tilts (level; down at the road surface / kerbs / potholes; up at facades, signs, wires) x 2 fovs
+    # (wide + zoomed detail) = 48 frames per panorama.
+    "sv_spacing_m": 5.0,
+    "headings": ["forward", "forward_right", "right", "back_right", "back", "back_left", "left", "forward_left"],
+    "pitches_deg": [0, -30, 25],
+    "fovs_deg": [90, 50],
     "sat_crop_zoom": 21,                                    # highest zoom ...
     "sat_extra_zoom": 20,                                   # ... plus an overlapping tile set one zoom lower
-    "sat_crop_spacing_m": 20.0,
-    "max_images": 120,
+    "sat_crop_spacing_m": 10.0,
+    "max_images": 2000,
     "extraction_passes": 3,
     "review_rounds": 4,
     "review_stop_changes": 1,
 }
 LIMITS = {"extraction_passes": [1, MAX_PASSES], "review_rounds": [0, MAX_ROUNDS], "sv_spacing_m": [4, 40],
-          "sat_crop_zoom": [18, 21], "sat_extra_zoom": [18, 21], "max_images": [1, 200]}
+          "sat_crop_zoom": [18, 21], "sat_extra_zoom": [18, 21], "max_images": [1, 2000],
+          "pitches_deg": [-45, 45], "fovs_deg": [20, 120]}
 
 
 class Quality(BaseModel):
@@ -84,7 +91,8 @@ class Quality(BaseModel):
 
 
 def preset_payload() -> dict[str, Any]:
-    return {"preset": {**PRESET, "frames_per_station": len(PRESET["headings"])}, "limits": LIMITS}
+    frames = len(PRESET["headings"]) * len(PRESET["pitches_deg"]) * len(PRESET["fovs_deg"])
+    return {"preset": {**PRESET, "frames_per_station": frames}, "limits": LIMITS}
 
 
 # ------------------------------------------------------------------ provenance + cache key
