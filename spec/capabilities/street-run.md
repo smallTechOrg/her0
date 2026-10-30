@@ -45,7 +45,8 @@ change, jump and slide — collecting civic tokens and crashing on real-image-de
   crash. Overlap in a shared lane without the right action = crash.
 - Tokens are collected by passing through them in their lane (jumping through counts).
 - Score = round(distance_m) + 50 × tokens collected (consistent with server validation).
-- Every scene object is drawn: billboard image when present, otherwise a labelled box;
+- **Phase 2.1 r2 (supersedes the next bullet and the labelled-box/billboard criteria for v3 streets):** a v3 street is the loaded `street.glb` (+ manifest + `gameplay.json`); no billboard or labelled box is drawn; vehicles etc. are spawned dynamically per `gameplay-data.md`; v1/v2 streets keep the legacy rendering. See `scene-realism.md`, `street-export.md`.
+- (legacy v1/v2 only) Every scene object is drawn: billboard image when present, otherwise a labelled box;
   low-confidence objects carry a visible "?" marker so the player knows it is uncertain.
 - The gallery is real: every `ready` street appears as a card; a single street is a valid gallery.
 - Phase 1/2 stub: "Use my location" (disabled, captioned "Coming in Phase 3") — see `gps-pick`.

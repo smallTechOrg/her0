@@ -58,7 +58,7 @@ images, merged (never overwritten) run after run, and described in plain languag
 Mid-run hazard tagging; civic report export; chaining segments / A-to-B walks; dynamic
 on-demand generation by players; avatars; Mapillary; playing in the field; accounts;
 deployment; texture atlases (Phase 1 uses individual small crops — see `spec/architecture.md`).
-Phase-2 additions: full photo-upload UI (API and storage are real, the UI is a Phase-3 stub);
+Phase-2 additions: full photo-upload UI (API and storage are real, the UI is a Phase-3 stub — **made real in Phase 2.1**);
 "re-analyse everything" (re-running perception on already-fused images); rebasing a model onto a
 different reference line; dual carriageways / medians modelled as two roads; photogrammetry or
 mesh reconstruction; per-pixel textures (billboards and facade crops stay); real-time multi-user.
@@ -277,6 +277,285 @@ Plus (observability gate): during `tests/live` the captured stdout contains ≥ 
 6. **Generate** once more with nothing new → run page says "No change — model stays v2", $0.00, 0 new Google requests.
 7. Labelled stubs (not bugs): "Upload a photo" (segment page), "Use my location", "Seed city", "Correct detected lines" — all "Coming in Phase 3".
 
+### Phase 2.1 r2 — Realism + add-to-model, with a shared Python mesh builder, glTF/OpenDRIVE export and gameplay-as-data *(AUTHORITATIVE; approved change of plan, 2026-10-30)*
+
+> **Reading rule.** This section (r2) is authoritative. The r1 text that follows it under "Phase 2.1 — r1" is kept only for the parts listed in **"r1 still in force"**; every other r1 block is marked `VOID (r1)` at its heading. Where r1 and r2 disagree, r2 wins.
+
+**What changed vs r1 (user-approved).**
+1. Geometry is built **once, in Python** (`hero.export.mesh_builder.build_street_mesh`), deterministic, and shipped as `street.glb`; the browser **loads that glb** with a vendored `GLTFLoader` instead of building terrain/frontage/furniture in JS. JS keeps runtime concerns only.
+2. The same bundle is exported for engines: `street.glb` (glTF 2.0), `street.manifest.json`, best-effort `street.xodr` (OpenDRIVE 1.7), `gameplay.json` — contract in **`spec/portability.md`** (single home of node names, `extras`, manifest and gameplay fields, PRNG and test vectors).
+3. Gameplay constants and the dynamic-obstacle spawner parameters are **data** (`src/hero/export/gameplay.json`), with a **Python reference spawner** (`hero.export.gameplay_ref`) and shared test vectors asserted in both Python and JS.
+4. Per-run **model choice** (Sonnet 5.5 default, Opus 5.5 verified before enabling).
+5. Everything else from r1 (add-to-model panel, real photo upload, dynamic split, gap analysis + interpolation, recompile migration, visual before/after, one-generation cap) stands.
+
+**Decisions (each is `> Assumed:` unless the user stated it).**
+- **glTF library = `pygltflib`** (exact pin in `pyproject.toml`, resolved once with `uv add pygltflib` and frozen in `uv.lock`). Why not `trimesh`: it drags in numpy (the project is deliberately numpy-free: Pillow + plain floats), its exporter's JSON/buffer layout is not a stability contract, and we need full control of node/primitive/extras layout. `pygltflib` is pure Python, dataclass-based and writes exactly the structure we build. **Determinism is not trusted to the library:** `hero.export.glb.write_glb` builds the binary chunk itself with `struct.pack` (little-endian, 4-byte aligned, fixed buffer order), serialises the JSON chunk with `json.dumps(sort_keys=False, separators=(",", ":"), ensure_ascii=True)` from an ordered dict, pads with spaces/zeros and writes the 12-byte header itself; `pygltflib` is used to *model and re-load* the document (round-trip + structural validation), not to emit bytes. Tests: byte equality across two builds and across subprocesses.
+- **Validation:** `npx --yes gltf-validator` (Khronos validator, Node 22 is on the Mac) when reachable — `tests/integration/test_glb_khronos_validator.py` (marker `validator`, asserts 0 errors; skipped *with a visible reason* when `npx` or the network is unavailable); always-on: `pygltflib` reload + `hero.export.glb_validate` (accessor bounds/min/max, alignment, index range, UV range, material/texture refs, node-name contract) + the browser's own `GLTFLoader` parse in e2e.
+- **Scene v3 survives only as the lightweight "web scene"** (`spec/data.md` → *Scene JSON v3 (r2)*). The manifest supersedes it for everything geometric or runtime; they do not overlap (`spec/portability.md` §4 last paragraph). The r1 "v3 with `ground_tex/frontage/furniture/corridor.kerb`" shape becomes the **internal `StreetPlan`** (pure, never served, never stored) — the compile's geometry half, consumed by the mesh builder and the manifest builder.
+- **No `?schema=2` downlevel.** Stored v1/v2 scenes are served as stored and play on the legacy JS geometry path (kept, minimal, untouched except exports). A v3 street whose glb fails to load shows a retry/error screen (no silent fallback to a different look). `GET …/scene?schema=` is ignored.
+- **Browser true-frame:** the glb is in the **true, unmirrored** street frame (`spec/portability.md` §2); the glb-path `Track` adapter converts the legacy runner's `lat` to `t`; legacy scenes keep the old mirrored frame.
+- **Furniture/camera clearance without per-entity meshes:** furniture is merged per category, so "fade anything within 1.5 m of the camera path" is a shader clip (`material.onBeforeCompile`: dithered discard inside a 1.5 → 0.8 m cylinder around the camera, uniform updated per frame) plus near plane 0.3 m.
+- **Model option:** one dropdown per run applies to vision **and** review/critique; the default is whatever `HERO_VISION_MODEL` resolves to (`claude-sonnet-5-5`) and is never changed silently.
+
+**r1 still in force:** Goal text and migration promise (below); success criteria *Root cause with data*, *Dynamic split*, *Gaps closed in data*, *Add-to-model*, *Migration*, *Spend* (as amended by r2 criteria); the *Runtime classification*, *Gap analysis*, *Uploaded photo placement*, *Derived-cache columns* (amended), *Texture references* (amended) sections of `spec/data.md`; `improve-plan` / `fill-gaps` / `regenerate` / `gaps` / upload endpoints of `spec/api.md`; the admin panel/upload UI of `spec/ui.md`; the S2↔S3 integration seam (amended below).
+
+**Phase-2.1 r2 success criteria** (every one a runnable assertion)
+- [ ] **Root cause with data** — unchanged from r1 (`audit_scene` on the recorded v2 scene shows > 0 hole bins per side; on the recompiled Bellandur **glb/manifest** it shows 0 blank 5 m bins per side — `audit_scene` reads `StreetPlan`/manifest too).
+- [ ] **Dynamic split** — unchanged from r1, asserted on `manifest.colliders`/`manifest.entities`/glb `extras` (0 parked vehicles etc.; model JSON byte-identical).
+- [ ] **Gaps closed in data and in geometry** — `analyze_gaps` blank counts 0; additionally `tests/unit/test_mesh_coverage.py` samples the built mesh: for every 5 m bin and each side, `Frontage_L/R` triangles cover the bin (contiguous `s` coverage with no gap > 1 mm), and per station the ground nodes tile `t ∈ [−W_L, +W_R]` from wall to wall with no gap (> 1 mm) — on Bellandur and the curved fixture.
+- [ ] **Scene contract** — `GET …/scene` returns v3-lite validating against `SceneV3` with `assets.{glb_url, manifest_url, xodr_url, mesh_sha256}`; v1 and v2 stored scenes still load and play (legacy e2e tests unchanged).
+- [ ] **Mesh builder** — `build_street_mesh(model, scene, observations=…, data_dir=…)` returns a `StreetMesh` whose glb meets the budgets in `spec/portability.md` §3 (≤ 14 primitives, ≤ 12 000 triangles, ≤ 4 materials, ≤ 2 textures, ≤ 1.5 MB at 100 m); **same input ⇒ identical sha256** (in-process twice; subprocess with two `PYTHONHASHSEED`s); node names exactly the contract set.
+- [ ] **glb valid & faithful** — `pygltflib` re-load OK; `glb_validate` OK; Khronos validator 0 errors when available; metres (street length from `Road` bounds ≈ `length_s` ± 0.5 m on both fixtures), Y-up, `extras` present with entity ids/types/confidence/fidelity/(s,t) equal to `manifest.entities`.
+- [ ] **Manifest** validates against `ManifestV1` and its committed JSON Schema; `colliders`/`tokens` equal what the scene-level walkability counts; `gameplay_sha256` matches the file.
+- [ ] **OpenDRIVE** — `street.xodr` passes the structural checks and the parse round-trip of `spec/portability.md` §8 (best effort, labelled so in README).
+- [ ] **Serving** — `GET …/model.glb|manifest.json|street.xodr` 200 with correct content types, `ETag`, 304 on `If-None-Match`, `?v=<sha8>` URLs `immutable`; admin `export.zip` contains the four files + `IMPORT.txt` and is byte-deterministic.
+- [ ] **Browser loads the glb** — on both scenes at 0/20/40/70 m: `__hero.source === "glb"`, `__hero.perf`: `draw_calls ≤ 60`, `triangles ≤ 60 000`, `textures ≤ 8`, `texture_mb ≤ 24`; the page never imports `scene_builder.js` terrain functions for a v3 street (asserted via `__hero.legacy_geometry === false`); a corrupted glb shows the error/retry screen.
+- [ ] **Visual** — as r1, with AFTER PNGs captured from the glb-loaded game (`judge.py` also asserts `__hero.source === "glb"` for each shot).
+- [ ] **Gameplay as data** — `gameplay.json` validates (`GameplayV1`), is embedded verbatim in the manifest and served at `/api/gameplay.json`; none of the constant names `LANE_TWEEN_MS|JUMP_MS|SLIDE_MS|SPEED_START|SPEED_MAX|HIT_DAMAGE|INVULN_S|START_GRACE_S|TOKEN_VALUE|HEALTH_MAX` is *defined* in `frontend/js/game/*.js` (a grep test; they are read from `gameplay.json`); compile reads lane rules from it.
+- [ ] **Portable spawner** — `tests/unit/test_gameplay_ref.py` (Python reference == committed `spawner_vectors.json`, + fairness property tests 1 000 seeds × 10 loops × lengths 40–200 m) **and** `tests/e2e/test_spawner_vectors.py` (JS `spawner.js` == the same file and the bulk file, exact equality) pass; same `(slug, seed)` ⇒ same obstacles; different seeds ⇒ different layouts; vehicle-heavy `spawn_hints` ⇒ vehicle majority.
+- [ ] **Portability docs** — `spec/portability.md` exists; README has *Using the street in Unity / Unreal / Godot* (`tests/unit/test_readme_sections.py` asserts the three engine subsections, the words `glTFast`, `Interchange`, `Godot`, the not-ported list, and `manifest`).
+- [ ] **Model option** — see slice `SM-model`: `GET /api/admin/models` lists `claude-sonnet-5-5` (default, selected) and `claude-opus-5-5`; the verification evidence file exists; the chosen model is on `run.inputs.models`, `RunReport.model`, every `llm_calls.model` of that run, and the budget guard used its price (test with a fake client at two prices); if verification failed the option is `enabled:false` with `disabled_reason` and the API answers 422 for it.
+- [ ] **Add-to-model, Migration, Spend** — as r1 (Spend: 0 generations; exactly **one tiny** real structured-output call for the Opus verification, cost from `llm_calls`/the evidence file, ≤ $0.05 expected).
+
+**Slices r2 (disjoint owned paths; arrows = TRUE dependencies).** Edits to a file owned by another slice are forbidden; shared files are owned by exactly one slice.
+
+| Slice | Owns (disjoint paths) | Depends on |
+|---|---|---|
+| `P0` (orchestrator) | `tests/fixtures/recorded/bellandur_scene_v2.json` (read-only GET of the dev server) | running dev server |
+| `S1a-contract` | `src/hero/model/{scene_v3,gap_types,texture_types,street_plan_types}.py`; `src/hero/model/scene_v2.py` (**only** `load_scene` dispatch); `src/hero/model/types.py` (**only** adds `RunReport.model`); `src/hero/export/{__init__,mesh_types,manifest_types,gameplay_types}.py`; `src/hero/export/gameplay.json`; `src/hero/export/schemas/*.json` (generated); `pyproject.toml` + `uv.lock` (pins `pygltflib`, `Pillow`; markers `live`, `validator`); `tests/fixtures/make_contract_export.py`; `tests/fixtures/export/contract_curved/{plan.json,street.glb,street.manifest.json,street.xodr}` (a **stand-in** bundle with the real node names/extras/manifest shape built from simple boxes — what S2/S6/S7/S8/S10 code against); `tests/fixtures/scene_v3/contract_curved.json`; `tests/unit/{test_scene_v3_schema,test_manifest_schema,test_gameplay_schema,test_contract_fixture}.py` | `spec/` only |
+| `S1d-rootcause` | as r1 (`scene_audit.py`, `tools/{audit_scene,export_recorded}.py`, `tests/fixtures/recorded/**` except the P0 file, `docs/evidence/phase2_1/rootcause_v2.json`, tests) — `audit_scene` additionally accepts a `StreetPlan` JSON | `P0` |
+| `S5a-before` | as r1 (`tests/e2e/visual/{__init__,capture}.py`, `docs/evidence/phase2_1/before/*.png`, 8 files) — BEFORE uses the legacy path | `P0`; must finish before S2/S3 touch `frontend/` |
+| `S1b-compile` | `src/hero/model/{compile,street_plan,dynamic,gaps,frontage,ground,furniture,describe,catalogue,coverage}.py`; `tests/unit/{test_compile,test_street_plan,test_dynamic_split,test_gaps,test_frontage,test_ground_plan,test_furniture,test_describe,test_lanes_from_gameplay,test_compile_bellandur_no_holes}.py`; `tests/fixtures/make_model_fixtures.py`; `tests/fixtures/scene_v3/{curved,bellandur}.json` and `tests/fixtures/plan/{curved,bellandur}.plan.json` (generated, committed). `compile_scene(model, …) -> CompileResult(scene: SceneV3, plan: StreetPlan, gaps: GapReport)`; lane/kerb/tokens/walkability rules read `gameplay.json` | `S1a`; `S1d` (audit used in a test) |
+| `S1e-bake` | `src/hero/imagery/{bake,tints}.py`; `tests/unit/{test_bake,test_tints,test_bake_frame}.py`; `tests/fixtures/bake/**`. Output frame = true `(t, s)` strip (`spec/portability.md` §3); gaps are painted **into the image** (interpolated/procedural), `bin_source` reported | `S1a` |
+| `S6-mesh` | `src/hero/export/{frame,mesh_ground,mesh_frontage,mesh_furniture,atlas,mesh_builder}.py`; `tests/unit/{test_mesh_frame,test_mesh_ground,test_mesh_frontage,test_mesh_furniture,test_mesh_builder,test_mesh_budget,test_mesh_coverage}.py`. `build_street_mesh(model, scene, *, observations, data_dir, plan=None) -> StreetMesh` (calls `plan_street` when `plan` is None) | `S1a` (types + plan/stand-in fixtures); `S1b` (`plan_street`) and `S1e` (atlases) for the integration tests |
+| `S7-glb` | `src/hero/export/{glb,glb_validate}.py`; `src/hero/tools/validate_glb.py`; `tests/unit/{test_glb_write,test_glb_roundtrip,test_glb_validate}.py`; `tests/integration/test_glb_khronos_validator.py` | `S1a` (`StreetMesh`, stand-in fixture) |
+| `S8-manifest-xodr` | `src/hero/export/{manifest,xodr}.py`; `tests/unit/{test_manifest,test_xodr,test_manifest_consistency}.py` | `S1a` (`StreetPlan`, `ManifestV1`, `gameplay.json`) |
+| `S9-gameplay-ref` | `src/hero/export/{gameplay,gameplay_ref}.py`; `src/hero/tools/make_spawner_vectors.py`; `tests/fixtures/portability/{spawner_vectors,spawner_vectors_bulk}.json`; `tests/unit/{test_gameplay_ref,test_spawner_properties,test_gameplay_data}.py` | `S1a` (`gameplay.json`, `GameplayV1`) |
+| `S10-export-api` | `src/hero/export/{store,bundle,pipeline}.py` (`build_and_store_exports(...) -> ExportRecord`: mesh → glb → manifest → xodr → content-addressed files `data/exports/<slug>/street_<sha8>.{glb,manifest.json,xodr}`; `build_bundle` → deterministic zip); `src/hero/api/{public_export,admin_export}.py`; `tests/unit/{test_bundle,test_export_determinism}.py`; `tests/integration/{test_export_api,test_export_pipeline}.py`; `tests/fixtures/export/baseline_hashes.json` | `S1a`; `S6`, `S7`, `S8` (integration tests; fakes until they land) |
+| `S1c-migrate` | `src/hero/fusion/{recompile,publish,assets}.py` (publish/recompile call `build_and_store_exports` after compile); `src/hero/tools/recompile.py`; `src/hero/config.py` + `.env.example` (settings of `spec/architecture.md`); `src/hero/db/{models,repo,model_repo}.py`; `src/hero/db/migrations/versions/0003_scene_schema.py` (columns: `scene_schema, compiled_by, gaps_json, export_json`); `src/hero/api/{public,media,admin_model}.py` (scene = v3-lite, `POST …/runs` hazards from the stored manifest, `/media/textures`, `GET …/gaps`); `tests/unit/test_migration_0003.py`; `tests/integration/{test_recompile,test_public_scene_v3}.py` | `S1a`; calls `S1b.compile_scene`, `S1e.bake_textures`, `S10.build_and_store_exports` (fakes until landed) |
+| `S2-renderer` | `frontend/js/game/{main,glb_loader,track_manifest,play_data,atmosphere,camera_rig,budget,about,scene_builder,path}.js`; `frontend/play/index.html`; `frontend/css/game.css`; `src/hero/tools/vendor_three.py`; `frontend/vendor/**` (adds `three/examples/jsm/loaders/GLTFLoader.js`, `three/examples/jsm/utils/BufferGeometryUtils.js`, `VENDOR.json` with sha256s; import map in `play/index.html`); `tests/e2e/{test_play_fixture,test_play_curved,test_render_budget,test_visual_smoke,test_glb_loading}.py` | `S1a` (stand-in glb/manifest fixture); `S3` only through the integration seam |
+| `S3-gameplay` | `frontend/js/game/{gameplay,spawner,dynamic_obstacles,runner,hud,results,controls}.js`; `tests/e2e/{test_spawner_unit,test_spawner_vectors,test_dynamic_obstacles,test_play_gameplay}.py` | `S1a` (`gameplay.json`); `S9` vectors for `test_spawner_vectors` only |
+| `S4a-improve-api` | `src/hero/api/{admin_improve,admin_imagery}.py`; `src/hero/imagery/plan.py` (targets); `src/hero/model/improve.py` (`estimate_cost(new_sv, new_sat, model)` uses `price_for(model)`); tests as r1 | `S1a`; `S1c.recompile_segment` signature; `SM.price_for` signature |
+| `S4b-admin-ui` | `frontend/admin/{index,segment}.html`; `frontend/js/admin/{segments,improve,upload_form,placement_map,imagery_form,segment_view,export_button}.js`; `frontend/css/admin.css`; `tests/e2e/{test_admin_improve,test_admin_export,test_admin_model_select,admin_api_mock}.py`. Imports `model_select.js` (owned by `SM`) | `spec/api.md` (mock API) |
+| `SM-model` | `src/hero/llm/{models.json,models.py,pricing.py,prices.json,budget.py}`; `src/hero/tools/check_structured.py` (adds `--models --modes --max-calls --out`); `src/hero/api/{admin,admin_models}.py`; `src/hero/pipeline/registry.py`; `src/hero/fusion/{runner,steps,state}.py` (model plumbing only); `src/hero/model/report.py`; `frontend/js/admin/model_select.js`; `docs/evidence/phase2_1/model_check_claude-opus-5-5.json`; `tests/unit/{test_models,test_pricing_opus}.py`; `tests/integration/test_admin_models_api.py` | `S1a` (`RunReport.model`) |
+| `S5b-verify` | `tests/e2e/visual/judge.py`; `docs/evidence/phase2_1/{after/*.png,budget.json,cost.json,glb_validation.json,pr_body.md}`; `NOTES.md` (append) | everything landed |
+| `S12-docs` | `README.md` (sections *Add to an existing model* and *Using the street in Unity / Unreal / Godot*, text from `spec/ui.md` and `spec/portability.md` §9); `tests/unit/test_readme_sections.py` | `S4a`/`S4b`/`S10` endpoint names (text only) |
+
+**Producer ↔ consumer contract.** Producer = `hero.export` (`S6` geometry, `S7` bytes, `S8` manifest/xodr, `S10` storage/serving). Consumer = `frontend/js/game/glb_loader.js` (`S2`) + `spawner.js`/`runner.js` (`S3`). The full contract (node names, materials, UV rules, `extras` schema, manifest field list + example, `gameplay.json` field list + example, spawner algorithm) is `spec/portability.md` §3–§7; the stand-in bundle in `tests/fixtures/export/contract_curved/` is its executable form and is what the JS slices test against before the real builder lands. Consumer rules: look nodes up **by name**, tolerate missing optional nodes, never read geometry from `extras`, never hard-code a number from `gameplay.json`.
+
+**S2 ↔ S3 integration point (amends r1).** Unchanged ownership: `frontend/js/game/main.js` is S2's; S3 never edits it, S2 never edits S3's files. Frozen names: `loadGameplay()` (S3, `gameplay.js`; returns the object from `manifest.gameplay`, or `GET /api/gameplay.json` for legacy scenes); `new Runner(playData, { gameplay, seed = null, runNumber = null })` where `playData = { length_m, track, colliders, tokens, spawnInput, lanes }` is produced by S2's `play_data.js` (`fromManifest(manifest)` for v3, `fromLegacyScene(scene)` for v1/v2 — the only place that knows both worlds); `runner.startRun()`, `runner.activeObstacles()`, `runner.reset()`; `createDynamicLayer(THREE, { scene, track, runner })`; `window.__hero = { source: "glb"|"legacy", legacy_geometry, perf, dynamic, gameplay }`. `Track` API (S2, `track_manifest.js` / legacy `path.js`): `world(s, lat)`, `laneLat(s, lane)`, `footpathAt(s)`, `applyCopy(p, k)`, `length` (unchanged names; the glb Track maps `lat → t` internally so `runner.js` is frame-agnostic).
+
+**Waves r2.** W0: `P0`. W1 (concurrent): `S1a`, `S1d`, `S5a`. W2 (after `S1a` merged **and** the 8 BEFORE PNGs exist; all concurrent, 13 slices): `S1b S1e S1c S6 S7 S8 S9 S10 S2 S3 S4a S4b SM`. W3: `S5b`, `S12-docs`, then the gate and the human test-handoff. `SM`'s first action is the single real Opus verification call (cheap, independent of the rest); its result decides `enabled`.
+
+**Commit + push rule (every verified slice).** When a slice's own gate command passes, the orchestrator immediately `git add <that slice's owned paths>` (explicit paths, never `-A`, never `.env`), commits `phase2.1(<slice>): <summary>` and `git push` (branch `feature/hero-20261029-1915-v0.1`), then records it below. A slice that fails its gate is not committed. The final PR body (`docs/evidence/phase2_1/pr_body.md`) lists these commits.
+
+| slice | commit | pushed | gate command run |
+|---|---|---|---|
+| *(filled in by the orchestrator as each slice lands)* | | | |
+
+**Per-slice gate commands (run by the orchestrator before committing that slice; all from the repo root, `uv run`).**
+
+| Slice | Command |
+|---|---|
+| `S1a` | `uv sync && uv run pytest tests/unit/test_scene_v3_schema.py tests/unit/test_manifest_schema.py tests/unit/test_gameplay_schema.py tests/unit/test_contract_fixture.py -q` |
+| `S1d` | `uv run pytest tests/unit/test_scene_audit.py tests/unit/test_recorded_bellandur_baseline.py -q` |
+| `S5a` | `ls docs/evidence/phase2_1/before \| wc -l` = 8 |
+| `S1b` | `uv run pytest tests/unit -q -k "compile or street_plan or dynamic or gaps or frontage or ground_plan or furniture or describe or lanes_from_gameplay"` |
+| `S1e` | `uv run pytest tests/unit/test_bake.py tests/unit/test_tints.py tests/unit/test_bake_frame.py -q` |
+| `S6` | `uv run pytest tests/unit -q -k "mesh_"` |
+| `S7` | `uv run pytest tests/unit -q -k "glb_" && uv run pytest tests/integration/test_glb_khronos_validator.py -q` |
+| `S8` | `uv run pytest tests/unit -q -k "manifest or xodr"` |
+| `S9` | `uv run pytest tests/unit/test_gameplay_ref.py tests/unit/test_spawner_properties.py tests/unit/test_gameplay_data.py -q` |
+| `S10` | `uv run pytest tests/unit/test_bundle.py tests/unit/test_export_determinism.py tests/integration/test_export_api.py tests/integration/test_export_pipeline.py -q` |
+| `S1c` | `uv run pytest tests/unit/test_migration_0003.py tests/integration/test_recompile.py tests/integration/test_public_scene_v3.py -q` |
+| `S2` | `uv run pytest tests/e2e/test_play_fixture.py tests/e2e/test_play_curved.py tests/e2e/test_render_budget.py tests/e2e/test_visual_smoke.py tests/e2e/test_glb_loading.py -q` |
+| `S3` | `uv run pytest tests/e2e/test_spawner_unit.py tests/e2e/test_spawner_vectors.py tests/e2e/test_dynamic_obstacles.py tests/e2e/test_play_gameplay.py -q` |
+| `S4a` | `uv run pytest tests/unit/test_improve.py tests/unit/test_plan_targets.py tests/integration/test_admin_improve_api.py tests/integration/test_upload_placement.py -q` |
+| `S4b` | `uv run pytest tests/e2e/test_admin_improve.py tests/e2e/test_admin_export.py tests/e2e/test_admin_model_select.py -q` |
+| `SM` | `uv run python -m hero.tools.check_structured --models claude-opus-5-5 --modes auto_tool --max-calls 1 --out docs/evidence/phase2_1/model_check_claude-opus-5-5.json && uv run pytest tests/unit/test_models.py tests/unit/test_pricing_opus.py tests/integration/test_admin_models_api.py -q` |
+| `S12` | `uv run pytest tests/unit/test_readme_sections.py -q` |
+
+**Gate r2** (exact, in order; repo root; first failure stops it; `GATE` is a scratch dir, never `data/`). Replaces the r1 gate; r1's G1/G4 commands are reused unchanged where noted.
+
+```
+cd /Users/sai/Workspace/her0
+mkdir -p docs/evidence/phase2_1 && GATE=$(mktemp -d /private/tmp/claude-501/her0_gate21.XXXXXX) && echo $GATE
+uv sync
+# G1 migrations — as r1 (fresh DB → 0003 (head); upgrade of a COPY of data/hero.db twice, second a no-op)
+HERO_DATABASE_URL=sqlite:///$GATE/fresh.db uv run alembic upgrade head && HERO_DATABASE_URL=sqlite:///$GATE/fresh.db uv run alembic current
+sqlite3 data/hero.db ".backup $GATE/hero.db" && cp -R data/imagery data/crops data/uploads $GATE/ 2>/dev/null; mkdir -p $GATE/textures $GATE/exports
+HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run alembic upgrade head && HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run alembic upgrade head
+# G2 migrate + export existing models: zero spend, idempotent
+HERO_DATA_DIR=$GATE HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run python -m hero.tools.recompile --all        # per slug: scene 2->3, glb sha8, triangles, interpolated bins, dynamic excluded, cost 0.0
+HERO_DATA_DIR=$GATE HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run python -m hero.tools.recompile --all | grep -c unchanged   # == number of segments (glb bytes identical on rerun)
+HERO_DATA_DIR=$GATE HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run python -m hero.tools.audit_scene --slug bellandur-main-road-n-2 --assert-no-holes
+uv run python -m hero.tools.audit_scene tests/fixtures/plan/bellandur.plan.json --assert-no-holes
+for f in $GATE/exports/*/street_*.glb; do uv run python -m hero.tools.validate_glb "$f" || exit 1; done | tee docs/evidence/phase2_1/glb_validation.json
+# G3 deterministic tiers (live excluded by default; no Anthropic, no Google)
+uv run pytest tests/unit -q
+uv run pytest tests/integration -q          # includes the Khronos validator test (skips visibly offline)
+uv run playwright install chromium
+uv run pytest tests/e2e -q                  # glb loading, render budget on both scenes, spawner vectors (JS), fairness, admin improve/export/model-select, no upload stub
+test -f docs/evidence/phase2_1/model_check_claude-opus-5-5.json
+# G4 visual evidence (software GL flags inside capture.py; viewport 390x844) — AFTER comes from the glb-loaded game
+uv run python tests/e2e/visual/capture.py --label after --scene all --out docs/evidence/phase2_1/after
+uv run python tests/e2e/visual/judge.py docs/evidence/phase2_1/after      # also asserts __hero.source == "glb" per shot
+# (orchestrator then READS the 8 AFTER PNGs against the 8 BEFORE PNGs and iterates until the visual criterion holds)
+# G5 boot gate on a spare port against the COPY (never 8711)
+HERO_PORT=8733 HERO_DATA_DIR=$GATE HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run hero-serve      # run_in_background; note the pid
+B=http://127.0.0.1:8733/api/segments/bellandur-main-road-n-2
+curl -s http://127.0.0.1:8733/api/health
+curl -s $B/scene | grep -q '"schema_version":3'
+curl -s $B/model.glb -o $GATE/m.glb && head -c4 $GATE/m.glb | grep -q glTF
+ETAG=$(curl -sI $B/model.glb | awk 'tolower($1)=="etag:"{print $2}' | tr -d '\r'); test "$(curl -s -o /dev/null -w '%{http_code}' -H "If-None-Match: $ETAG" $B/model.glb)" = 304
+curl -s $B/manifest.json | grep -q '"schema":"hero-street-manifest/1"'
+curl -s $B/street.xodr | grep -q 'revMinor="7"'
+curl -s http://127.0.0.1:8733/api/gameplay.json | grep -q '"schema":"hero-gameplay/1"'
+curl -s -H "X-Hero-Admin-Password: $HERO_ADMIN_PASSWORD" http://127.0.0.1:8733/api/admin/models | grep -q 'claude-opus-5-5'     # password from the shell env; never printed
+curl -sI http://127.0.0.1:8733/vendor/three/examples/jsm/loaders/GLTFLoader.js | grep -q '200'
+curl -sI http://127.0.0.1:8733/js/game/spawner.js | grep -q '200'
+curl -s 'http://127.0.0.1:8733/admin/segment.html?slug=x' | grep -q 'data-hero-page="admin-segment"'
+# stop ONLY that pid; rm -rf $GATE
+```
+
+**How the user tests it (r2 additions to the r1 list below).** Phone: the street now loads as one 3D model (a second or two on LAN): footpath/road/kerb, continuous frontage both sides, sky and haze, slim poles and trees — all from the exported file; obstacles still spawn dynamically. Mac: segment page → **How to improve** panel as r1, plus a **model dropdown** next to every Generate / Fetch + Generate / Fill gaps button (default *Sonnet 5.5*; *Opus 5.5* greyed with a reason if the one-call verification failed; the run report and the run page show which model was used), and **Download for Unity / Unreal / Godot** (a zip of `street.glb`, `street.manifest.json`, `street.xodr`, `gameplay.json`, `IMPORT.txt`). Open the README section *Using the street in Unity / Unreal / Godot* to import it; nothing is stubbed except the Phase-3 items.
+
+#### Phase 2.1 — r1 (text below is VOID where marked; kept for the parts listed under "r1 still in force")
+
+**Feedback** — "How do I add to an already generated model? It's still not realistic enough and has gaps. We don't have to place
+the other objects like cars (anything not on the footpath) — they can be placed dynamically for gameplay. But we still need to make
+this more realistic." Root-verified on the real street `bellandur-main-road-n-2` (model v1, 112 entities, 35 of them parked vehicles):
+flat grey footpath slab and flat road (no kerb, no texture although zoom-20 crops exist), photo cut-out billboards that fill the screen
+and occlude the camera, floating "?" boxes and giant text labels, black sky, sparse detached side buildings, vehicles baked into the course.
+
+**Goal** — one user-testable increment, no new generation spend: (1) the admin can **add to an existing model** from one page
+(a "How to improve this model" panel: weakest stretches + what would raise them, **Fill gaps** with a priced preview, **Add more imagery**,
+**real photo upload** placed on the coverage map, **Regenerate with what we have** at $0); (2) the street **looks like a street**
+(textured footpath + road with kerb, continuous frontage on both sides, real small furniture meshes, sky + fog, readable camera,
+no gaps); (3) everything that is not fixed footpath furniture (cars, two-wheelers, stalls, carriageway debris, pedestrians) is **no
+longer baked** into the course: it stays in the model as `dynamic_context` evidence and the game **spawns generic obstacles
+dynamically, deterministically and fairly** (health, tokens, lane logic unchanged).
+Capabilities (all real): `model-improvement` (new), `dynamic-obstacles` (new), `scene-realism` (new); extended: `street-run`, `street-model`
+(compile, gap analysis, recompile), `imagery-acquisition` (upload fields, targeted plans), `model-inspection` (admin panel),
+`street-description` (About lists interpolated parts). No new Claude call anywhere in this phase; no new stubs (the Phase-2 "Upload a
+photo" stub is retired — `data-testid="upload-stub"` must not exist after this phase).
+
+**Migration promise** — compile is a pure function of a stored model version, so existing models (Bellandur v1, the canonical demo
+street, `fixture-curved-street`, legacy imports) become Scene v3 with `uv run python -m hero.tools.recompile --all`: zero Google, zero
+Claude. Alembic `0003_scene_schema` only adds derived/cache columns (`spec/data.md`); Phase 3's corrections migration is renumbered `0004`.
+
+**[r1 — VOID: replaced by "Phase-2.1 r2 success criteria" above; kept as the wording source for the criteria r2 says are unchanged]** Phase-2.1 success criteria (every one is a runnable assertion)
+- [ ] **Root cause with data (before any renderer change).** `uv run python -m hero.tools.audit_scene tests/fixtures/recorded/bellandur_scene_v2.json` prints, for the recorded real v2 scene: footpath intervals + states, ground strips with no texture, per-side building/wall lateral coverage per 5 m bin, hole bins. The committed baseline (`docs/evidence/phase2_1/rootcause_v2.json`) shows > 0 hole bins per side; the same tool on the **recompiled v3** Bellandur scene (`tests/fixtures/scene_v3/bellandur.json`) reports **0 blank 5 m bins per side** for ground and frontage, and `about.interpolated` lists exactly the bins that had no evidence.
+- [ ] **Dynamic split.** Recompiled Bellandur v3: `objects[]` and `furniture[]` contain **0** entities of type `parked_vehicle`, `vendor_stall`, carriageway `debris`/`pothole`, `speed_breaker`, `other`; `dynamic_context.excluded_count` equals the number of model entities the test independently classifies as dynamic (see the note below this list); the canonical model JSON is byte-identical before/after recompile (knowledge never deleted).
+- [ ] **Gaps closed in data.** `analyze_gaps` returns, for every 5 m bin, the evidence status of ground, both frontages, footpath state and furniture; `compile_scene` renders **0 blank bins**; every interpolated bin appears in `scene.about.interpolated` and in the admin gap report.
+- [ ] **Scene contract.** `schema_version: 3`, validates against `hero.model.scene_v3.SceneV3`; `GET /api/segments/{slug}/scene?schema=2` still returns a valid v2 scene (downlevel); v1 and v2 stored scenes keep loading.
+- [ ] **Render budget (e2e, phone viewport 390×844, software GL) on the recorded Bellandur v3 scene and the curved fixture, at 0/20/40/70 m of a run:** `__hero.perf.draw_calls ≤ 60`, `triangles ≤ 60 000`, `textures ≤ 8`, `texture_mb ≤ 24`.
+- [ ] **Visual (read by the orchestrator, `docs/evidence/phase2_1/{before,after}/*.png`):** textured footpath with kerb, road with texture, continuous frontage both sides, sky + horizon, no billboard larger than its cap, no "?" box, no in-world text label, no baked vehicle; AFTER judged against the BEFORE list above.
+- [ ] **Spawner fairness (unit + e2e):** for 1 000 seeds × 10 loops × street lengths 40–200 m, every generated row satisfies the rules below; same `(slug, run_number, loop)` ⇒ identical obstacles; different run numbers ⇒ different layouts; a street whose `dynamic_context` is vehicle-heavy spawns a majority of vehicles.
+- [ ] **Add-to-model.** Admin segment page shows the How-to-improve panel with per-stretch fidelity + hints; **Fill gaps** previews ≥ 1 planned image with a USD estimate before spending; a **real file input** uploads a photo placed at a clicked `s` and the observation row has `source=upload`, `view`, `station_s`, `capture_date`; **Regenerate with what we have** returns `cost_usd: 0.0`, makes 0 Google requests and 0 Anthropic calls (asserted by guarded fakes), and the scene's `schema_version` becomes 3; an upload on an L2 stretch makes that bin L3 after Generate (fidelity unit test with a recorded extraction).
+- [ ] **Migration.** Fresh DB `alembic upgrade head` → `0003 (head)`; upgrade of a copy of `data/hero.db` succeeds and a second `upgrade head` is a no-op; `recompile --all` on the copy is idempotent (second run reports `unchanged`).
+- [ ] **Spend.** Phase gate makes **0** real generations (hard cap for the increment: 1, only if migrated data cannot supply a needed case; it would be `tests/live/test_phase2_1_optional.py`, skipped unless `HERO_ALLOW_ONE_LIVE=1`); total Anthropic spend of the gate = $0.00 from `llm_calls`.
+
+> The excluded count is not hard-coded (it is ≥ 35 on Bellandur: the 35 parked vehicles plus any stalls/carriageway debris); the test computes the expected set from the recorded model using the table in `spec/data.md` → *Runtime classification*, re-implemented as a hand-written type list in the test (not an import of the classifier).
+
+**[r1 — VOID as a contract: the values moved to `src/hero/export/gameplay.json` → `spawner`/`obstacle_types` and the algorithm to `spec/portability.md` §7; the table below is kept only as the rationale — 14 m min gap = 12 m/s × (0.15 s + 0.35 s) × 2 lanes, guaranteed passable lane, ramp per loop]** Spawner fairness rules
+
+| rule | value |
+|---|---|
+| Lanes | `0` footpath, `1` road edge, `2` road (unchanged). Lane 0 is never used at stations where the traced footpath is `missing` (no walkable surface) |
+| Seeding | `mulberry32(fnv1a32(slug + "\|" + (seed ?? runNumber) + "\|" + loop))`; `runNumber` = per-street counter in `localStorage["hero.run.<slug>"]`, +1 on every run start (first run = 1); `?seed=<int>` in the play URL overrides it (tests, sharing) |
+| Free start | no spawns before `x = 30 m` in loop 0, `x = 12 m` in later loops; none within 8 m of the loop end (the seam) or within 6 m of a `crossing`/`ramp` |
+| Row spacing (min gap in lanes terms) | rows are placed at `gap(L) = max(14, 26 − 2.5·L) m` (+ deterministic jitter in [0, 2.5] m, never below 14 m); **14 m ≥ 12 m/s × (0.15 s tween + 0.35 s reaction) × 2 lanes**, i.e. a full 2-lane shift is always possible at top speed |
+| Max blocked lanes per row | `dodge`-type obstacles per row: loops 0–1 → **1**; loops ≥ 2 → **2**; never 3. At most one `jump`/`slide` obstacle per row, in a lane different from the dodge ones; total occupied lanes per row ≤ 2 |
+| Guaranteed gap | at every x there is ≥ 1 lane with **no dodge obstacle** (dynamic or static, within ±6 m of x); loops 0–2 additionally keep ≥ 1 fully clear lane. If static hazards already block 2 lanes in the zone, the slot is skipped (shifted once by +6 m, else dropped) |
+| Action spacing | no two obstacles requiring `jump`/`slide` (dynamic or static) within 9 m of each other in the same lane |
+| Reachability | for consecutive rows *i−1*, *i* with passable lane sets A, B: `min over a∈A, b∈B of |a−b| ≤ 1 + floor(gap_m / (speed·0.5 s))`, with `speed` = the loop's speed (a property test at 12 m/s; with the 14 m minimum gap this is always satisfiable on 3 lanes, so the check only bites when static hazards sit between rows) |
+| Ramp | per slot spawn probability `p(L) = min(0.85, 0.45 + 0.08·L) × (0.6 + 0.4·spawn_hints.density)` (loop index L from 0; density defaults to 0.5); speed ramp unchanged (6 + 0.1·L m/s, max 12) |
+| Type mix | per-lane base weights (lane 0: two_wheeler 3, cone 3, barricade 2, stall 2, low_branch 1.5; lane 1: parked_car 3, two_wheeler 2, cone 2, barricade 1.5, pothole 2; lane 2: parked_car 3, two_wheeler 2, cone 1.5, barricade 1.5, pothole 2.5) × `(1 + 3·w[type])` with `w = scene.dynamic_context.spawn_hints.type_weights` (sum 1; missing ⇒ 0) |
+| Actions | parked_car, two_wheeler, cone, barricade, stall → `dodge`; pothole → `jump`; low_branch → `slide` |
+| Window | obstacles exist for `[x − 10, x + 80] m` of the run (fog hides spawn) |
+
+**Render budget (single source, `spec/architecture.md` → *Render budget r2*; the numbers below are unchanged, the way they are met is not)**: ≤ **60 draw calls**, ≤ **60 000 triangles**, ≤ **8 textures**, ≤ **24 MB** texture memory per frame; terrain/frontage/furniture merged or instanced per material; dynamic layer ≤ 8 draw calls / ≤ 6 000 triangles.
+
+**[r1 — VOID: replaced by "Slices r2" above. Do not use this table, its owned-path lists, or its waves.]** Independent slices (r1)
+
+| Slice | Owns (disjoint paths) | Depends on |
+|---|---|---|
+| `P0` (orchestrator, 1 command) | `tests/fixtures/recorded/bellandur_scene_v2.json` = `curl -s http://127.0.0.1:8711/api/segments/bellandur-main-road-n-2/scene` → `.data` (read-only GET; never touch `data/hero.db`) | running dev server |
+| `S1a-contract` | `src/hero/model/{scene_v3,gap_types,texture_types}.py`; `src/hero/model/scene_v2.py` (**only** `load_scene` dispatch: 3 → `SceneV3`); `tests/fixtures/make_scene_v3_contract.py`; `tests/fixtures/scene_v3/contract_curved.json` (generated from `tests/e2e/fixtures/s4_scene_curved_v2.json` by upgrading it with plausible `ground_tex/frontage/furniture/dynamic_context/about.interpolated` — the fixture S2 and S3 build against); `tests/unit/{test_scene_v3_schema,test_scene_downlevel}.py` | `spec/data.md` → Scene JSON v3 (this spec) |
+| `S1d-rootcause` | `src/hero/model/scene_audit.py`; `src/hero/tools/{audit_scene,export_recorded}.py`; `tests/fixtures/recorded/**` except `bellandur_scene_v2.json` (model JSON, observations JSON, ≤ 4 MB of the images the model references, exported from a **copy** of the db); `docs/evidence/phase2_1/rootcause_v2.json`; `tests/unit/{test_scene_audit,test_recorded_bellandur_baseline}.py` | `P0` |
+| `S5a-before` | `tests/e2e/visual/{__init__,capture}.py`; `docs/evidence/phase2_1/before/*.png` (8 files: `{bellandur,curved}_{0,20,40,70}m.png`) | `P0`; **must finish before S2/S3 touch `frontend/`** (orchestrator checks `ls docs/evidence/phase2_1/before \| wc -l` = 8) |
+| `S1b-compile` | `src/hero/model/{compile,dynamic,gaps,frontage,ground,furniture,describe,catalogue,coverage}.py`; `tests/unit/{test_compile,test_dynamic_split,test_gaps,test_frontage,test_ground_plan,test_furniture,test_describe,test_compile_bellandur_no_holes}.py`; `tests/fixtures/make_model_fixtures.py` (extend: emit v3); `tests/fixtures/scene_v3/{curved,bellandur}.json` (generated, committed) | `S1a` (types); `S1d` (audit tool used in `test_compile_bellandur_no_holes`) |
+| `S1e-bake` | `src/hero/imagery/{bake,tints}.py`; `tests/unit/{test_bake,test_tints}.py`; `tests/fixtures/bake/**` | `S1a` (`TextureRefs`); reuses existing `imagery/rectify.py` read-only |
+| `S1c-migrate` | `src/hero/fusion/{recompile,publish,assets}.py`; `src/hero/tools/recompile.py`; `src/hero/config.py` + `.env.example` (3 new settings, `spec/architecture.md`); `src/hero/db/{models,repo,model_repo}.py`; `src/hero/db/migrations/versions/0003_scene_schema.py`; `src/hero/api/{public,media,admin_model}.py` (scene `?schema=2`, `/media/textures`, `GET …/gaps`); `tests/unit/test_migration_0003.py`; `tests/integration/{test_recompile,test_public_scene_v3}.py` | `S1a`; calls `S1b.compile_scene`, `S1e.bake_textures` (signatures in `spec/architecture.md` → Contracts 2.1; fakes until they land) |
+| `S2-renderer` | `frontend/js/game/{scene_builder,main,about,path}.js`; **new** `frontend/js/game/{terrain,frontage,furniture,atmosphere,tex,budget,camera_rig}.js`; `frontend/play/index.html`; `frontend/css/game.css`; `tests/e2e/{test_play_fixture,test_play_curved,test_render_budget,test_visual_smoke}.py` | `S1a` fixture; `S3` only through the integration contract below (stubbed until it lands) |
+| `S3-gameplay` | `frontend/js/game/{spawner,dynamic_obstacles,runner,hud,results,controls}.js`; `tests/e2e/{test_spawner_unit,test_dynamic_obstacles,test_play_gameplay}.py` | `S1a` fixture (reads `dynamic_context`); `S2` only through the integration contract |
+| `S4a-improve-api` | `src/hero/api/{admin_improve,admin_imagery}.py` (new + upload/targets extension); `src/hero/imagery/plan.py` (adds `targets`); `src/hero/model/improve.py`; `tests/unit/{test_improve,test_plan_targets}.py`; `tests/integration/{test_admin_improve_api,test_upload_placement}.py` | `S1a` (`GapReport`); `S1c.recompile_segment` signature |
+| `S4b-admin-ui` | `frontend/admin/segment.html`; `frontend/js/admin/{improve,upload_form,placement_map,imagery_form,segment_view}.js`; `frontend/css/admin.css`; `README.md` (new section *Add to an existing model*); `tests/e2e/{test_admin_improve,admin_api_mock}.py` | `spec/api.md` only (mock API); live check needs `S4a` |
+| `S5b-verify` | `tests/e2e/visual/judge.py` (assertions on PNG stats: non-black sky, textured ground variance), `docs/evidence/phase2_1/after/*.png`, `docs/evidence/phase2_1/{budget.json,cost.json}`, `NOTES.md` (append lessons), PR body text file `docs/evidence/phase2_1/pr_body.md` | everything landed |
+
+**[r1 — amended by "S2 ↔ S3 integration point (amends r1)" above: `Runner` now takes `playData` + `gameplay`; the layer/event/`__hero.dynamic` shapes below still hold]** Integration point (the only place S2 and S3 meet) — `frontend/js/game/main.js`, owned by S2. S2 and S3 own disjoint new modules; S3 never edits `main.js`/`scene_builder.js`, S2 never edits `runner.js`/`hud.js`/`results.js`/`spawner.js`/`dynamic_obstacles.js`. The contract S2 codes against and S3 provides (names are fixed; bodies are S3's):
+
+```js
+// S3 — frontend/js/game/runner.js (extended; old call sites keep working)
+new Runner(scene, { seed = null, runNumber = null } = {})  // runNumber null ⇒ read+increment localStorage inside runner.startRun()
+runner.startRun()                 // main.js calls it once on tap-to-start and on Run again; fixes seed/runNumber, generates loop 0
+runner.activeObstacles()          // Obstacle[] for [x-10, x+80] m of the run, absolute: x_abs = loop*length + x_m
+runner.reset()                    // unchanged semantic (health 100, tokens cleared); dynamic obstacles dropped
+// S3 — frontend/js/game/dynamic_obstacles.js
+export function createDynamicLayer(THREE, { scene, track, runner }) -> { group, update(), reset(), dispose() }
+// group: ONE THREE.Group, ≤ 8 InstancedMesh (one per obstacle model), added once to the three.Scene by main.js; update() is called each frame after runner.update()
+// Obstacle (also what `events.hit.object` carries): { id: "dyn-<loop>-<row>-<lane>", type: SPAWN_TYPES[i], dynamic: true, lane, x_m, length_m, action,
+//                                                      size_m: {w,h,d}, label, loop }
+// S2 — main.js wires: layer = createDynamicLayer(THREE, {scene, track: runner.track, runner}); three.add(layer.group);
+//      per frame: layer.update(); Run again: runner.reset(); runner.startRun(); layer.reset();
+```
+`Runner` stays backwards compatible (the existing `new Runner(scene)` call and every existing `snapshot()` key/event keep their meaning), because `S2` owns the pre-existing `test_play_fixture.py`/`test_play_curved.py` and `S3` must not break them; new gameplay assertions live only in `S3`'s own test files.
+Events (`token`, `loop`, `hit`, `crash`) and `snapshot()` keys are unchanged; `hit.object.dynamic === true` for spawned obstacles. `window.__hero.dynamic` (read-only, set by `main.js` from `runner`) = `{run_number, seed, obstacles: Obstacle[], rules}`.
+
+**[r1 — VOID: see "Waves r2"]** Waves. W0: `P0`. W1 (concurrent): `S1a`, `S1d`, `S5a` (S5a only needs `P0` + the unmodified frontend). W2 (after `S1a` AND the 8 BEFORE PNGs exist; all concurrent): `S1b S1e S1c S2 S3 S4a S4b` (each codes against the contracts in this spec and tests against `contract_curved.json`/mocks; cross-slice integration tests wait for the listed dependency). W3: `S5b` (needs S1b recompiled fixtures + S2 + S3 + S4), then the gate, then the human test-handoff. `src/hero/app.py` stays untouched by every slice (router auto-discovery picks up `admin_improve`).
+
+**[r1 — VOID: replaced by "Gate r2" above (G1, G4 and the copy-of-db discipline are carried over there)]** Gate (r1):
+
+```
+cd /Users/sai/Workspace/her0
+mkdir -p docs/evidence/phase2_1 && GATE=$(mktemp -d /private/tmp/claude-501/her0_gate21.XXXXXX) && echo $GATE
+uv sync
+# G1 migrations — fresh DB and an upgrade of a COPY of the dev DB (idempotent)
+HERO_DATABASE_URL=sqlite:///$GATE/fresh.db uv run alembic upgrade head && HERO_DATABASE_URL=sqlite:///$GATE/fresh.db uv run alembic current     # 0003 (head)
+sqlite3 data/hero.db ".backup $GATE/hero.db" && cp -R data/imagery data/crops data/uploads $GATE/ 2>/dev/null; mkdir -p $GATE/textures
+HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run alembic upgrade head && HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run alembic upgrade head    # second run: no-op
+# G2 migration of existing models: zero spend, idempotent, then the hole audit on the real street
+HERO_DATA_DIR=$GATE HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run python -m hero.tools.recompile --all                  # prints per slug: scene 2->3, interpolated bins, dynamic excluded, cost 0.0
+HERO_DATA_DIR=$GATE HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run python -m hero.tools.recompile --all | grep -c unchanged   # == number of segments
+HERO_DATA_DIR=$GATE HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run python -m hero.tools.audit_scene --slug bellandur-main-road-n-2 --assert-no-holes
+uv run python -m hero.tools.audit_scene tests/fixtures/scene_v3/bellandur.json --assert-no-holes
+# G3 deterministic tiers (live excluded by default; no Anthropic, no Google)
+uv run pytest tests/unit -q
+uv run pytest tests/integration -q
+uv run playwright install chromium
+uv run pytest tests/e2e -q            # render budget on both scenes, spawner fairness, admin improve panel/upload/fill-gaps preview, no upload stub
+# G4 visual evidence (software GL flags are set inside capture.py: --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader --ignore-gpu-blocklist, viewport 390x844)
+uv run python tests/e2e/visual/capture.py --label after --scene all --out docs/evidence/phase2_1/after
+uv run python tests/e2e/visual/judge.py docs/evidence/phase2_1/after
+# (orchestrator then READS the 8 AFTER PNGs against the BEFORE ones and iterates until the visual criterion holds)
+# G5 boot gate on a spare port against the COPY (never 8711)
+HERO_PORT=8733 HERO_DATA_DIR=$GATE HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run hero-serve     # run_in_background; note the pid
+curl -s http://127.0.0.1:8733/api/health
+curl -s 'http://127.0.0.1:8733/api/segments/bellandur-main-road-n-2/scene' | grep -q '"schema_version":3'
+curl -s 'http://127.0.0.1:8733/api/segments/bellandur-main-road-n-2/scene?schema=2' | grep -q '"schema_version":2'
+curl -s 'http://127.0.0.1:8733/admin/segment.html?slug=x' | grep -q 'data-hero-page="admin-segment"'
+curl -sI http://127.0.0.1:8733/js/game/spawner.js | grep -q '200'
+# stop ONLY that pid; rm -rf $GATE
+```
+
+**How the user tests it (r1; still valid, plus the r2 additions above)** (phone on the same Wi-Fi for the game; the Mac for admin; the dev server on 8711 is restarted once by the orchestrator after `uv run python -m hero.tools.recompile --all` so the existing streets are already v3)
+1. Phone: gallery → *Bellandur Main Road* → run. Expected: grey-brown textured footpath with a lighter kerb and a darker textured road bending with the street; continuous building/wall frontage on both sides with no black gaps; a pale sky and haze; poles and trees as slim/small shapes beside the path, never filling the screen; no grey "?" boxes, no big words on screen; no parked vehicles standing in the course from the data — but cars, two-wheelers, cones, barricades, potholes, stalls and low branches appear in the lanes, with a safe lane always open. Tap *Run again*: the obstacle layout differs (run number +1); open the play URL with `?seed=7` twice: identical layouts. Health, tokens and lane switching behave as before.
+2. Phone: **About this street** → new list "Filled in from neighbouring stretches" (e.g. "Right-hand frontage 40–60 m: no photo, interpolated") and "Seen on this street, spawned dynamically as obstacles: 35 parked vehicles…".
+3. Mac: `/admin/` → open the street → **How to improve this model** panel: per-stretch fidelity bar with the weakest stretches ("40–60 m · L1 · no right-facing photo → add a Street View frame facing right, or upload one"), numbered how-to steps. Press **Fill gaps** → a plan preview (n images, new vs cached, estimated Google $ and Claude $, which stretches) — do not run it unless you want to spend. Press **Regenerate with what we have** → "Done — $0.00, 0 Google requests, 0 Claude calls; scene updated to v3" (the one-click re-compile; never creates spend).
+4. Mac: same panel → **Upload photos**: choose one or more image files (real file picker), click the coverage map where each was taken (the field `s` fills), choose side + facing + optional date → **Upload**. Rows appear in the imagery grid as "uploaded · not yet fused". Press **Generate** (costs ≈ $0.05–0.15 Claude) → new model version; the stretch's coverage cell turns blue (L3) if it was already L2.
+5. Nothing in this phase is a labelled stub except Phase-3 items ("Use my location", "Seed city", "Correct detected lines" — all "Coming in Phase 3").
+
 ### Phase 3 — Seeded city, GPS pick, admin correction *(was Phase 2 before the canonical street model was inserted)*
 
 **Goal** — the one-street prototype becomes a city: 5–20 seeded segments, the player can pick
@@ -292,7 +571,7 @@ run history on the results screen (part of `walkability-report`, rule "history")
 |---|---|---|
 | `P3-seed` | `src/hero/fusion/seed.py`, `src/hero/seeds/bengaluru.json`, admin endpoints `POST /api/admin/seed*` in `src/hero/api/admin_seed.py` (new), `tests/integration/test_seed.py` | Phase 2 |
 | `P3-nearest-history` | `GET /api/segments/nearest` + `GET /api/segments/{slug}/runs` in `src/hero/api/public_nearest.py` (new), `src/hero/scene/geo.py` (extend: haversine), `tests/integration/test_nearest.py`, `tests/unit/test_haversine.py` | Phase 2 |
-| `P3-correction-api` | `src/hero/db/migrations/versions/0003_corrections.py`, `src/hero/db/models.py` (extend: `segment_corrections`), `src/hero/model/edits.py`, `PUT/GET /api/admin/segments/{slug}/corrections` in `src/hero/api/admin_corrections.py` (new), `tests/integration/test_corrections.py` | Phase 2 |
+| `P3-correction-api` | `src/hero/db/migrations/versions/0004_corrections.py` (renumbered from 0003 by Phase 2.1), `src/hero/db/models.py` (extend: `segment_corrections`), `src/hero/model/edits.py`, `PUT/GET /api/admin/segments/{slug}/corrections` in `src/hero/api/admin_corrections.py` (new), `tests/integration/test_corrections.py` | Phase 2 |
 | `P3-cleanup` | deletes `src/hero/pipeline/{runner,steps,assemble,review,state}.py`, the Phase-1 prompts, and `tests/unit/{test_assemble,test_preview}.py` + legacy-only integration tests (keeps `pipeline/registry.py`, `imagery/preview.py` if still used) | Phase 2 accepted by the human |
 | `P3-ui` | `frontend/js/gallery.js` (GPS button real), `frontend/js/game/results.js` (history), `frontend/admin/correct.html`, `frontend/js/admin/correct.js`, `frontend/js/admin/seed.js`, `tests/e2e/test_gps_live.py`, `tests/e2e/test_correction_live.py` | spec only; live tests need the three API slices |
 

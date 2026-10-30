@@ -654,3 +654,225 @@ Compile rules (`hero.model.compile.compile_scene(model, *, observations, assets,
 - **Tokens/walkability** — v1 rules, applied to the compiled objects and the modelled-side profile (`blocked/encroached/broken/unknown` do not count as intact).
 - **About** — `hero.model.describe.about_summary(...)`; contains the strings `fidelity L{n}`, `{N} photos`, `model v{version}`, the street name, and (when present) the `low_confidence_parts` list; for `legacy` models: "legacy, placement unverified"; for an L0 prior: "map-only sketch" (`degraded: true`).
 - **Determinism** — `compile_scene(m, …)` called twice, or on a model reloaded from JSON, yields byte-identical `model_dump_json()` (unit-tested). `created_at` is read from the model, never from the clock.
+
+> Phase 2.1 supersedes the compile output with **Scene JSON v3** (below). v2 stays readable/servable; the compile rules above that
+> v3 does not mention (stations, lanes, loop seam, lane assignment, tokens, walkability formula) are unchanged.
+
+---
+
+# Phase 2.1 additions *(realism + add-to-model)*
+
+## Runtime classification (dynamic vs fixed) — `hero.model.dynamic`
+
+The canonical model is **not changed** (`street-model/1`, no new field, nothing deleted). The classification is a pure function
+`runtime_of(entity, footpath_band) -> "fixed" | "dynamic_context"` evaluated at compile time; a catalogue column `runtime` in
+`hero.model.catalogue` holds the type default, the position rule refines it. `footpath_band` = the modelled-side footpath strip at the
+entity's `s` (`[lo, hi]` in game lateral, widened by 0.3 m; when the footpath is `missing`/`unknown`, the prior band `[edge+0.15, edge+1.65]`).
+
+| entity type | runtime | rule |
+|---|---|---|
+| `tree, pole, bollard, bin, railing, signboard, bus_stop, drain, manhole, kerb_cut, ramp, crossing, shopfront` | **fixed** | footpath-attached or fixed furniture/markings. `signboard` stays fixed everywhere (frontage boards) |
+| `wall, gate` | **fixed** | become frontage segments (`kind: wall|gate`), and `objects[]` hazards when inside a lane band |
+| `low_branch` | **fixed** | tree-attached (also emitted from `tree.canopy_low`) |
+| `pothole` | **fixed** if its lateral centre lies in `footpath_band` (footpath surface condition), else `dynamic_context` | |
+| `debris` | **fixed** if in `footpath_band` (obstructed footpath), else `dynamic_context` (carriageway debris) | |
+| `parked_vehicle, vendor_stall, speed_breaker` | **dynamic_context** | movable / carriageway |
+| `other` | **dynamic_context** unless `attributes.blocks_footpath` is true **and** the centre is in `footpath_band` (then fixed) | |
+| pedestrians (not in the catalogue today; any future `person`/`animal` type) | **dynamic_context** | |
+
+Footpath *state* intervals (`intact|broken|missing|blocked|encroached`), the synthetic `footpath_gap`/`blocked` objects, kerb, kerb cuts and
+ramps are always fixed. A `parked_vehicle` that makes an interval `encroached`/`blocked` still counts in the **walkability** and in the
+interval *state* (that is evidence about the footpath, kept in the model); it just is no longer drawn as a solid object. `walkability.hazard_count` counts compiled
+`objects[]` hazards only (so it can drop vs v2 on streets with many vehicles; the results card says "static hazards"; > **Assumed:** acceptable, vehicles move in reality — revisit after play-testing).
+`dynamic_context` entities appear in neither `objects[]` nor `furniture[]` nor `tokens` placement.
+
+## Gap analysis — `hero.model.gaps.analyze_gaps(model, observations, fidelity, textures) -> GapReport`
+
+Pure; types in `hero.model.gap_types` (slice `S1a`). Bin grid = fidelity bins (`bin_m = 5.0`, last bin shorter). For every bin and every
+layer it records **evidence** (what the data really supports) and **rendered** (what the compiled scene shows). The compile guarantees
+`rendered != "blank"` everywhere; whatever was not evidence-backed is **interpolated** and listed.
+
+```jsonc
+{ "gap_report": 1, "model_version": 1, "bin_m": 5.0, "length_s": 100.2,
+  "bins": [ { "index": 0, "s_from": 0.0, "s_to": 5.0, "fidelity_level": 1,
+      "ground":    {"evidence": "satellite_hires",            "rendered": "satellite_hires"},   // evidence: satellite_hires | satellite_overview | none ; rendered: satellite_hires | satellite_overview | interpolated | procedural
+      "frontage":  {"modelled": {"evidence": "osm+photo", "rendered": "osm"},                     // evidence: osm | photo | osm+photo | none ; rendered: osm | vision | interpolated | prior
+                    "opposite": {"evidence": "none",      "rendered": "interpolated"}},
+      "footpath":  {"evidence": "traced",                   "rendered": "traced"},               // evidence: traced | state_only | prior ; rendered: traced | state_only | interpolated | prior
+      "furniture": {"evidence": "street_level"},            // street_level | none  (informational: no objects are invented)
+      "hint": "No right-facing photo covers 0–5 m: add a Street View frame facing right, or upload a photo taken from the right footpath." } ],
+  "uncovered": {"ground": 0, "frontage_modelled": 2, "frontage_opposite": 5, "footpath": 1, "furniture": 3},      // bin counts with evidence == none/prior
+  "blank_after_compile": {"ground": 0, "frontage_modelled": 0, "frontage_opposite": 0, "footpath": 0},        // MUST all be 0 (asserted)
+  "interpolations": [ {"what": "frontage", "side": "opposite", "s_from": 40.0, "s_to": 60.0, "method": "neighbours",   // what: ground_texture|frontage|footpath_state|kerb|furniture_unknown ; method: neighbours|prior|osm|procedural
+                       "from_s": [35.0, 60.0], "note": "No photo or footprint covers the opposite side here; frontage blended between 35 m and 60 m."} ] }
+```
+Evidence rules: `ground` — `satellite_hires` when `compute_fidelity` marks `overhead_hires` for the bin, `satellite_overview` when the overview tile covers `(s, ±8)`, else
+`none`. `frontage` per side — `osm` when a footprint (or `wall`/`gate` entity) lies within 35 m of the reference line on that side across ≥ 2.5 m of the bin; `photo` when a street-level
+observation with `view` toward that side (left/right direct, or forward/back oblique at weight ≥ 0.5) covers the bin (`coverage.observation_cells`), `osm+photo` both. `footpath` — `traced` when a
+footpath strip with weight ≥ 0.5 exists, `state_only` when only state votes exist, `prior` otherwise. `furniture` — `street_level` when any street-level observation covers the bin.
+Stored in `model_versions.gaps_json`; served by `GET /api/admin/segments/{slug}/gaps`; summarised in `scene.about`.
+
+**Interpolation (compile-time, deterministic)** — `frontage`: nearest evidence-backed bins within 30 m on each side → linear blend of `lat`/`height_m`/colour (`neighbours`); one-sided → copy + seeded jitter ≤ 0.4 m / 1.2 m (`neighbours`);
+none on that side → neutral prior (`prior`): modelled-side wall plane at `footpath.hi + 1.5`, opposite side at `|far edge of opposite strips| + 1.5` (fallback `carriageway.lo − 3.0`), height 6.0–11.0 m, colour from a 6-entry neutral palette, both chosen by
+`sha1(slug|side|bin)`. `ground`: textures are interpolated by the **bake** step (feathered extension of the nearest covered bins; bins with no source anywhere stay `procedural`). `footpath_state`: `unknown` intervals take
+the nearest known neighbour state at confidence × 0.5 only for *rendering colour* (the model state is untouched, walkability treats `unknown` as not intact). `kerb`: default 0.15 m wherever a footpath strip is rendered.
+
+## Texture references — `hero.model.texture_types` (produced by `hero.imagery.bake.bake_textures`, consumed by compile)
+
+```python
+class GroundStripRef(BaseModel):   # one straightened, road-aligned image of the whole ±14 m band
+    url: str                       # "/media/textures/<slug>/ground_v<N>_<sha8>.jpg"
+    size_px: tuple[int, int]       # (width, height); longest side <= 1024
+    s_from: float; s_to: float; lat_lo: float; lat_hi: float; m_per_px: float
+    bin_source: list[Literal["satellite_hires", "satellite_overview", "interpolated", "procedural"]]   # one per 5 m bin
+class FrontageStripRef(BaseModel): # straightened facade ribbon for one side: u = s/length, v = 0 ground .. 1 top (12 m)
+    side: Literal["modelled", "opposite"]; url: str; size_px: tuple[int, int]   # (<=1024, <=256)
+    s_from: float; s_to: float; bin_source: list[Literal["user_photo", "street_view", "interpolated", "none"]]
+class TextureRefs(BaseModel):
+    ground: GroundStripRef | None; frontage: dict[str, FrontageStripRef]   # keys "modelled" / "opposite"
+    tints: dict[str, str]          # entity_id -> "#rrggbb" median colour of the entity's best crop (poles, trees, bins, bollards …)
+```
+Files are content-addressed (`sha8` in the name) under `data/textures/<slug>/`, so a recompile that changes nothing reuses them and old scenes keep working.
+
+> **r2 amendment (bake frame).** `GroundStripRef` is indexed by the OpenDRIVE frame, not game lateral: replace `lat_lo/lat_hi` by `t_lo = −14.0`, `t_hi = +14.0`; **column 0 = `t_hi` (left of travel), row 0 = `s_to`** (the `RectGrid` convention; `u = (t_hi − t)/(t_hi − t_lo)`, `v = (s_to − s)/(s_to − s_from)`). The image is never mirrored. `FrontageStripRef` is unchanged but its `side` is still `modelled|opposite` (the mesh builder maps to left/right by `footpath_side` and stacks both ribbons into the facade atlas, `spec/portability.md` §3). The bake **paints every gap into the image** (feathered extension of covered bins; otherwise a procedural pavement/asphalt/facade pattern seeded by `procedural_seed`), so downstream code never sees a blank texel; `bin_source` still records which bins were real vs interpolated vs procedural. The glb embeds these bytes; `data/textures/` remains the cache/source.
+
+## Derived-cache columns — Alembic `0003_scene_schema` (idempotent; nothing in the knowledge tables changes)
+
+| table | column | notes |
+|---|---|---|
+| `model_versions` | `scene_schema int not null default 2` | `schema_version` of `scene_json` (backfilled from the JSON for existing rows; stale = `< 3`) |
+| `model_versions` | `compiled_by varchar(64) null` | `scene.model.compiled_by` (`hero.model.compile/2` for v3) |
+| `model_versions` | `gaps_json json null` | the `GapReport` of this version's compile (null until recompiled) |
+| `segments` | `scene_schema int null` | denormalised from the served `scene_json` (null = no scene) |
+| `model_versions` | `export_json json null` | **r2:** `ExportRecord` of this version's bundle: `{mesh_sha256, glb_bytes, manifest_sha256, xodr_sha256, gameplay_sha256, bundle_sha256, sha8, files: {glb, manifest, xodr}, built_with: {pygltflib, pillow, python}, stats: {primitives, triangles}}`; null until exported. Files live under `data/exports/<slug>/street_<sha8>.{glb,manifest.json,xodr}` (content-addressed, never deleted by recompile, so old `?v=` URLs keep resolving) |
+
+The migration checks `PRAGMA table_info` per column before `ADD COLUMN` (re-runnable on a partially migrated copy). `recompile` overwrites `model_versions.scene_json/scene_schema/compiled_by/gaps_json` of
+the head version (and `segments.scene_json/scene_schema`) **in place** — the scene is a derived artefact, the snapshot columns `model_json`, `fidelity_json`, `diff_json`, `model_hash` are never rewritten by compile-only recompiles. Persisting entity runtime flags was considered and
+rejected: the classification is a pure function of the stored model, so it is recomputed (and unit-tested) rather than stored.
+
+## Uploaded photo placement (extends `observations`; no new column)
+
+`POST …/observations/upload` accepts either `lat`+`lon` **or** `s` (+ `side`); when `s` is given the server computes the camera position as `ref.point_at(s, t_cam)` with `t_cam = ±5.5 m` by `side`
+(`left` → +5.5, `right` → −5.5, `centre` → 0; > **Assumed:** 5.5 m ≈ the middle of a typical footpath, ±1 m of error is inside `HERO_UPLOAD_MAX_DISTANCE_M`). `heading_deg` may be given directly or derived from `facing ∈ forward|back|left|right|toward_left|toward_right`
+(forward/back = ± the tangent at `s`; left/right = tangent ∓ 90°; `toward_left`/`toward_right` are aliases for left/right kept for the UI wording "facing the left shops"). `captured_at` (`YYYY-MM` or `YYYY-MM-DD`, not in the future)
+fills `observations.capture_date` (`YYYY-MM`). `georef_json.placement = {"s", "t", "side", "facing", "captured_at", "how": "s_side"|"latlon"}` records how it was placed. Provenance stays `kind=user_photo`, `source=upload`.
+Fidelity: a `user_photo` produces direct left/right/forward cells **and** `closeup` cells (existing rule), so one photo facing a side on a bin that is already L2 on both sides lifts that bin to **L3**; a photo on an L1 bin lifts it to L1→L2 only if a second station + both sides exist (the hint says so).
+
+## [r1 shape, now the internal `StreetPlan` — NOT served, NOT stored; the served Scene v3 is the lite shape in "Scene JSON v3 (r2)" at the end of this file] Scene JSON v3 *(r1 body)*
+
+> **r2 reading rule.** Everything in this r1 body (`corridor` incl. `kerb`/`ground_src`, `ground_tex`, `frontage`, `furniture`, `objects`, `tokens`, `dynamic_context`, interpolation + MAX_SIZE_M + determinism rules) is the content of **`hero.model.street_plan_types.StreetPlan`**,
+> produced by `hero.model.street_plan.plan_street` (pure) and consumed by `hero.export.mesh_builder` (geometry) and `hero.export.manifest` (lanes, colliders, tokens, entities). Differences from the r1 text: (a) `StreetPlan` has **no** `schema_version`, `segment`, `about`, `generation`, `walkability` keys (those are the lite scene's); (b) it keeps game-lateral `lat` internally and adds `footpath_side`, so the exporter converts `t = lat` (left footpath) or `t = −lat` (right footpath);
+> (c) `dynamic_context.spawn_hints` is emitted to the manifest only; the lite scene keeps counts/`by_type`/summaries; (d) `ground_tex.strip` follows the r2 bake frame (below); (e) the downlevel `to_v2`/`?schema=2` is dropped; (f) lane centres, kerb default and token/walkability rules read `gameplay.json` instead of constants. `SceneV3` below in this block is superseded by r2's `SceneV3`.
+
+**Compatibility.** v3 = every v2 key with its v2 meaning (so `path`, `corridor.stations[].lane_lat/footpath/strips`, `cross_section`, `tokens`, `walkability`, `generation`, `model`, `about` keep their shape) **plus** the additive keys below; `objects[]` shrinks to
+*fixed* things (see Runtime classification). `load_scene` returns `Scene | SceneV2 | SceneV3` by `schema_version` (1|2|3). `hero.model.scene_v3.to_v2(scene) -> SceneV2` is the **downlevel** used by `GET …/scene?schema=2`: it drops `ground_tex, frontage, furniture, dynamic_context, about.interpolated/gap_summary/dynamic_summary,
+corridor.stations[].kerb/ground_src`, keeps `buildings[]` (v3 keeps the v2 `buildings[]` list as the extruded footprints for old clients — the v3 renderer ignores it in favour of `frontage`), sets `schema_version: 2` and `model.compiled_by: "hero.model.compile/2+downlevel"`.
+Frontend rule: game code branches on `scene.schema_version >= 2` for corridor logic and `=== 3` (or the presence of `frontage`) for the realism path; an old cached client that only knows `=== 2` gets a v2 via `?schema=2`; the shipped client always asks for v3.
+
+All new coordinates are **game frame**: `s` metres along the path (= `x_m`), `lat` game lateral (positive toward the modelled footpath side), metres; sizes `w` (across, lateral), `h` (up), `d` (along `s`); angles degrees; colours `#rrggbb`; counts ints; no nulls where a default exists.
+
+```jsonc
+{
+  "schema_version": 3,
+  "segment": { }, "ground": { }, "path": { }, "cross_section": { }, "buildings": [ ], "tokens": [ ], "walkability": { }, "generation": { },   // as v2
+  "model": { "version": 1, "model_hash": "…", "compiled_by": "hero.model.compile/2" },
+
+  "corridor": { "step_m": 2.5, "ground_half_m": 30.0, "stations": [ {          // v2 fields (s, lane_lat, footpath, strips, ground_uv) PLUS:
+      "s": 12.5, "lane_lat": [5.9, 4.1, 2.3],
+      "footpath": {"lo": 5.1, "hi": 6.7, "state": "intact", "material": "paver", "height_m": 0.15, "confidence": 0.91} ,
+      "strips": [ {"kind": "carriageway", "lo": -4.9, "hi": 3.6, "material": "asphalt", "height_m": 0.0, "confidence": 0.67} ],
+      "ground_uv": [[0.512, 0.401], [0.512, 0.612]],
+      "kerb": {"lat": 3.6, "height_m": 0.15, "width_m": 0.2},           // boundary between carriageway and footpath at this station; height 0.0 where the footpath is missing or a kerb_cut/ramp lowers it. Always present (never null)
+      "ground_src": "satellite_hires"                                    // satellite_hires | satellite_overview | interpolated | procedural — what the ground strip image really holds at this station (== ground_tex.bin_source[floor(s/5)])
+  } ] },
+
+  "ground_tex": {
+    "mode": "baked_strip",                                              // baked_strip | procedural (procedural: strip == null; the renderer paints footpath/road from strips[].material + footpath.state)
+    "procedural_seed": 91827364,                                        // int32, sha1(slug) — drives procedural patterns deterministically
+    "bin_m": 5.0,
+    "bin_source": ["satellite_hires", "satellite_hires", "interpolated", "satellite_overview"],     // len == ceil(length/5)
+    "strip": { "url": "/media/textures/bellandur-main-road-n-2/ground_v1_3fa91c20.jpg", "size_px": [280, 1002],
+               "s_from": 0.0, "s_to": 100.2, "lat_lo": -14.0, "lat_hi": 14.0, "m_per_px": 0.1,
+               "uv": "u = (lat - lat_lo)/(lat_hi - lat_lo) ; v = (s - s_from)/(s_to - s_from) ; image row 0 (top) = s_to, column 0 (left) = lat_lo" }   // null when mode == procedural
+  },
+
+  "frontage": { "step_m": 2.5, "sides": [
+    { "side": "modelled",                                               // always both "modelled" and "opposite", in this order
+      "texture": { "url": "/media/textures/…/frontage_modelled_v1_b71d0a55.jpg", "size_px": [1024, 128], "s_from": 0.0, "s_to": 100.2,
+                   "bin_source": ["street_view", "street_view", "interpolated", "user_photo"],
+                   "uv": "u = s/length ; v = 0 at ground .. 1 at 12 m" },                                          // null when no photo at all on this side
+      "segments": [                                                      // CONTIGUOUS: segments[0].s_from == 0, each s_to == next s_from, last s_to == length (validated); the renderer must not leave holes
+        { "s_from": 0.0, "s_to": 28.0, "lat_from": 8.4, "lat_to": 8.6, "height_m": 9.6, "kind": "building",        // building | wall | gate
+          "colour_hex": "#c9b79c", "storeys": 3, "source": "osm",                                                     // osm | vision | entity | interpolated | prior
+          "building_id": "bld-osm-1827364", "entity_id": null, "interpolated": false, "confidence": 0.9 },
+        { "s_from": 28.0, "s_to": 41.0, "lat_from": 8.6, "lat_to": 8.1, "height_m": 2.0, "kind": "wall",
+          "colour_hex": "#8c8479", "storeys": 0, "source": "entity", "building_id": null, "entity_id": "ent-77aa31c2d0", "interpolated": false, "confidence": 0.7 },
+        { "s_from": 41.0, "s_to": 100.2, "lat_from": 8.1, "lat_to": 8.1, "height_m": 7.5, "kind": "building",
+          "colour_hex": "#b8b0a2", "storeys": 2, "source": "interpolated", "building_id": null, "entity_id": null, "interpolated": true, "confidence": 0.2 } ] },
+    { "side": "opposite", "texture": null, "segments": [ ] } ] },
+
+  "furniture": [                                                         // FIXED furniture only (poles, trees, bins, bollards, railings, signboards, bus stops, drains, manholes, kerb cuts, crossings, ramps); sorted by (s, id)
+    { "id": "ent-3f9a1c07d2", "type": "pole", "variant": "utility", "s": 12.5, "lat": 6.4, "yaw_deg": 0.0,
+      "size_m": {"w": 0.3, "h": 7.0, "d": 0.3}, "length_m": 0.0,         // length_m > 0 only for railings/crossings/drains (extent along s)
+      "colour_hex": "#9aa0a6", "canopy_hex": null,                        // tint from the entity's best crop (tints[entity_id]); canopy_hex only for trees; null => catalogue default colour
+      "object_id": "ent-3f9a1c07d2", "confidence": 0.8 }                  // object_id: the objects[] entry that is the collision proxy of this thing (null for pure scenery); renderers draw furniture, the runner collides with objects
+  ],
+
+  "objects": [ ],                                                        // v2 SceneObjectV2 for FIXED hazards/markings + synthetic gap-/blocked- objects. billboard_url is emitted for the results-card thumbnail ONLY; renderers must not draw it
+
+  "dynamic_context": {                                                   // what the street showed that is NOT baked in; the spawner's only input from the model
+    "excluded_count": 41, "entity_ids": ["ent-…"],
+    "by_type": { "parked_vehicle": {"count": 35, "per_100m": 34.9, "subtypes": {"car": 12, "two-wheeler": 15, "auto-rickshaw": 8}, "lane_share": [0.2, 0.5, 0.3], "mean_confidence": 0.71},
+                 "vendor_stall": {"count": 3, "per_100m": 3.0, "subtypes": {}, "lane_share": [1.0, 0.0, 0.0], "mean_confidence": 0.55} },
+    "spawn_hints": { "density": 0.8,                                     // 0..1 = min(1, excluded_per_100m / 40); the spawner multiplies p(L) by (0.6 + 0.4·density)
+                     "type_weights": {"parked_car": 0.30, "two_wheeler": 0.35, "cone": 0.04, "barricade": 0.04, "pothole": 0.10, "stall": 0.12, "low_branch": 0.05},   // exactly these 7 keys, sum == 1.0 (±1e-6)
+                     "lane_weights": [0.2, 0.5, 0.3] }                   // informational (the spawner uses per-lane base tables); sums to 1
+  },
+
+  "about": { /* v2 About + */
+    "interpolated": [ {"what": "frontage", "side": "opposite", "s_from": 40.0, "s_to": 60.0, "method": "neighbours", "from_s": [35.0, 60.0], "note": "…"} ],   // = gap_report.interpolations (what != furniture_unknown) — shown in the About panel
+    "gap_summary": "About 20 m of the right-hand frontage and 10 m of ground texture are interpolated from neighbouring stretches (no photo covers them).",       // "" when nothing is interpolated
+    "dynamic_summary": "Seen here but spawned dynamically during play instead of fixed in place: 35 parked vehicles, 3 vendor stalls."                           // "" when excluded_count == 0
+  }
+}
+```
+Derived rules (compile): `dynamic_context.type_weights` = normalise( `parked_vehicle` → `parked_car` (subtypes car/bus/truck/auto-rickshaw/other) and `two_wheeler` (subtype two-wheeler) split by subtype counts, `vendor_stall` → `stall`, carriageway `pothole`+`speed_breaker` → `pothole`,
+carriageway `debris` → `cone`/`barricade` 50/50 ) mixed with the default prior `{parked_car .20, two_wheeler .20, cone .15, barricade .10, pothole .15, stall .10, low_branch .10}` as `0.7·observed + 0.3·prior` when `excluded_count ≥ 3`, else the prior alone. `furniture[].size_m` = entity extent/height (catalogue default when missing),
+then **capped per type** (`MAX_SIZE_M`: tree 5.5 w × 10 h, pole 0.5 × 9, bin 1.2 × 1.4, bollard 0.4 × 1.2, railing 0.3 × 1.5, signboard 1.6 × 2.6, bus_stop 2.0 × 3.0) so no data error can produce a screen-filling object. Frontage `lat_*` (game lateral, so the opposite side is negative) are clamped to `[footpath.hi + 0.8, 30]` on the modelled side and to `[−30, min(strip.lo over carriageway/opposite footpath strips) − 1.0]` on the opposite side, never inside the carriageway or the modelled footpath. Every number is `round(x, 3)`.
+Contiguity and "no blank bins" are `SceneV3` model validators (frontage tiling, `len(bin_source) == ceil(length/5)`, `dynamic_context.spawn_hints.type_weights` keys and sum, `furniture` types ⊆ FIXED_TYPES). Determinism: byte-identical `model_dump_json()` on repeat and JSON round-trip (unit-tested), exactly as v2.
+
+---
+
+# Scene JSON v3 (r2) — the lightweight "web scene" *(`schema_version: 3`, `hero.model.scene_v3.SceneV3`, `extra="forbid"`; authoritative)*
+
+The scene is what the UI **around** the game needs (gallery, About, results, walkability, links). It contains **no geometry, no lanes, no colliders, no tokens, no spawn hints** — those are in the manifest (`spec/portability.md` §4) and the glb. One fact, one place.
+Compiled by `hero.model.compile.compile_scene` (`compiled_by: "hero.model.compile/2"`), stored in `model_versions.scene_json` / `segments.scene_json`, served by `GET /api/segments/{slug}/scene`. `load_scene` dispatches `1 | 2 | 3`; v1 and v2 keep their shapes and play on the legacy path.
+
+```jsonc
+{
+  "schema_version": 3,
+  "segment":  { /* as v1/v2 SegmentInfo; length_m = model.reference_line.length_s */ },
+  "ground":   { /* as v2 Ground: tile_url (overview satellite), size_px, zoom, scale, center, meters_per_px, frame_to_px — used ONLY by the results hazard map */ },
+  "cross_section": { /* v1 shape summary (road_width_m, lanes[3] mean lat_m/width_m, footpath_coverage[] with the extended states) — for the walkability card and tests; NOT used for geometry */ },
+  "walkability": { /* v1/v2 Walkability; formula constants from gameplay.json → scoring.walkability; hazard_count counts static colliders only */ },
+  "about": { /* v2 About + */
+      "interpolated": [ {"what": "frontage", "side": "right", "s_from": 40.0, "s_to": 60.0, "method": "neighbours", "from_s": [35.0, 60.0], "note": "…"} ],
+      "gap_summary": "…", "dynamic_summary": "…" },
+  "dynamic_context": { "excluded_count": 41, "entity_ids": ["ent-…"],
+      "by_type": { "parked_vehicle": {"count": 35, "per_100m": 34.9, "subtypes": {"car": 12}, "lane_share": [0.2, 0.5, 0.3], "mean_confidence": 0.71} } },   // counts only; spawn_hints live in the manifest
+  "generation": { /* v1/v2 Generation */ },
+  "model":  { "version": 1, "model_hash": "…", "compiled_by": "hero.model.compile/2" },
+  "assets": { "mesh_sha256": "4be0…", "sha8": "4be0a1c2",
+              "glb_url": "/api/segments/bellandur-main-road-n-2/model.glb?v=4be0a1c2",
+              "manifest_url": "/api/segments/bellandur-main-road-n-2/manifest.json?v=4be0a1c2",
+              "xodr_url": "/api/segments/bellandur-main-road-n-2/street.xodr?v=4be0a1c2",
+              "gameplay_url": "/api/gameplay.json", "glb_bytes": 1048576, "triangles": 8420, "primitives": 12 }
+}
+```
+Rules: `assets` is filled by the export step (`S10`); a scene compiled but not yet exported has `assets: null` and is **not served as v3** — publish/recompile always export in the same transaction-equivalent sequence (export files are written before the DB rows are updated; a crash in between leaves the previous scene intact).
+`about.fidelity`, `about.photos`, `about.low_confidence_parts`, `about.summary`, `about.improve_hint`, `about.legacy|placement_verified|degraded` are the v2 keys, unchanged. Payload budget ≤ 40 kB. `POST /api/segments/{slug}/runs` builds its `hazards` response and the results card's object list from `manifest.colliders` (server reads the stored export; the client reads the manifest it already fetched).
+Determinism: byte-identical `model_dump_json()` on repeat and JSON round-trip (unit-tested).
+
+## Export bundle on disk and in the DB (r2)
+
+`data/exports/<slug>/street_<sha8>.glb | .manifest.json | .xodr` (content-addressed: `sha8` = first 8 hex of `bundle_sha256 = sha256(mesh_sha256 + manifest_sha256 + xodr_sha256)`, so a `gameplay.json` change that leaves the glb untouched still yields new file names and a new `?v=`). `model_versions.export_json` (above) points at them. The served "latest" resolves through `segments` → head version → `export_json`. Contract of the files: `spec/portability.md`.

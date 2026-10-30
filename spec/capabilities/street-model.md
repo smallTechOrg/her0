@@ -21,7 +21,7 @@ deterministically into the game scene, so the street gets better with every imag
 | `CanonicalModel` snapshot per version (v0 `prior`/`legacy`, then `fused`) | document | `model_versions.model_json` |
 | `FidelityMap` (L0–L3 per 5 m bin) | document | `model_versions.fidelity_json`, API |
 | `ModelDiff` vs the parent version | document | `model_versions.diff_json`, API |
-| Compiled Scene v2 (curved corridor, variable cross-section, entities, buildings, `about`) | document | `model_versions.scene_json`, `segments.scene_json` |
+| Compiled Scene v2 (curved corridor, variable cross-section, entities, buildings, `about`) — Phase 2.1 r2: lite Scene v3 + `StreetPlan` + export bundle (`street-export.md`) | document | `model_versions.scene_json`, `segments.scene_json`, `export_json` |
 
 ## External Calls
 | System | Operation | On Failure |

@@ -61,6 +61,30 @@ code over a persistent canonical model, so a second run *adds* knowledge instead
 - **#13 Human-in-the-loop** — Phase 2: uploaded photos are first-class observations (API real, UI stub);
   Phase 3: admin correction as `human` evidence.
 
+## Phase 2.1 — AI-native lens, re-run *(realism + add-to-model; graph unchanged, no new LLM call)*
+
+The fusion graph, prompts, state, steps, error handler and finalize below are **unchanged**. Opportunities considered for the new capabilities:
+
+| Opportunity | Decision | Rationale |
+|---|---|---|
+| "Fill gaps" — decide which photos to fetch next | **no AI (deterministic planner, `hero.model.improve`)**; the free-form ReAct agent stays rejected | the fidelity map's `hint` + gap report already say exactly which image helps; cost must be predictable and previewed before spend (#16 resource-aware: preview with USD estimate, `max_usd` cap, cached targets free) |
+| Texture synthesis / generative infill of missing facades or ground | **rejected** | would invent evidence; gaps are filled by deterministic interpolation from neighbours/priors and are *labelled* (`about.interpolated`), consistent with principle 1 (evidence, not opinions) |
+| Dynamic obstacle placement | **no AI (seeded PRNG + fairness rules)** | has a right answer (fair, reproducible, testable); the model's contribution is `dynamic_context` evidence (what vehicles/stalls the street really has) used only as weights |
+| Frontage/ground texturing from photos | **no AI (Pillow bake)** | deterministic crop/blend of stored observations |
+| Classifying fixed vs dynamic | **no AI (catalogue table + band rule)** | pure function of the stored model; recomputed, not persisted |
+| Reading an uploaded photo | **AI (existing `perceive_streetlevel`, #13 human-in-the-loop)** | the uploaded photo is a normal `user_photo` observation routed like any street-level frame (#2 static routing); the human supplies **position and facing**, Claude supplies perception; no new prompt |
+| "Regenerate with what we have" | **no AI** — replays stored `observation_extractions` (#8 memory, #19 replay) through project → merge → compile | zero Claude by construction; observations lacking a stored extraction are reported, never silently sent to the model |
+
+**r2 additions (still no new LLM call or prompt):**
+
+| Opportunity | Decision | Rationale |
+|---|---|---|
+| Mesh generation / glTF export / OpenDRIVE | **no AI (deterministic builder `hero.export`)** | a geometry function with a testable right answer and a byte-equality requirement; generative meshing would be unreproducible and would invent evidence |
+| Spawner parameters in `gameplay.json` | **no AI (seeded PRNG, rules as data)** | portability needs byte-exact reimplementation in other engines |
+| Per-run model choice (Sonnet 5.5 default / Opus 5.5) | **configuration of the existing graph, not a new capability** — one dropdown value flows to the vision and critique nodes via `run.inputs.models` (#4 model routing is *human-chosen per run*, not automatic); price-aware budget guard (#16) uses the chosen model's price; the Opus option is enabled only after **one** tiny real structured-output call proves it works and a price row with a source URL exists | an unverified model must not be silently selectable; the default never changes silently |
+
+Guardrail additions (#18): `recompile`/`regenerate` run with the Google and Anthropic client constructors disabled (a test fails if either is called); the export pipeline (`build_and_store_exports`) runs under the same disabled-client guard; the fill-gaps preview endpoint never reaches an HTTP client; an upload cannot change a model until the admin presses Generate (the observation stays *unfused* and visible as such).
+
 ## Principles of the merge (the heart of "cumulative")
 
 1. **Evidence, not opinions.** Every claim on an entity/strip/building points at observation ids
