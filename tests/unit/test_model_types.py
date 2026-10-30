@@ -25,7 +25,6 @@ from hero.model.types import (
 from pydantic import TypeAdapter
 
 from tests.fixtures.street_fixtures import (
-    FIXED_NOW,
     curved_reference_line,
     make_entity,
     make_fidelity_map,

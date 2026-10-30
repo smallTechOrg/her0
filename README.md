@@ -138,8 +138,8 @@ Copy `.env.example` to `.env`; every variable is documented inline there. Prefix
 | `HERO_DATABASE_URL` | no | `sqlite:///data/hero.db` | Production DB (relative paths resolve against the repo root) |
 | `HERO_TEST_DATABASE_URL` | no | `sqlite:///data/hero_test.db` | Test DB, created and dropped by `tests/conftest.py` |
 | `HERO_DATA_DIR` | no | `data` | Imagery/OSM cache, previews, crops |
-| `HERO_VISION_MODEL` | no | `claude-sonnet-4-5` | Model for layout + obstacle detection |
-| `HERO_REVIEW_MODEL` | no | `claude-sonnet-4-5` | Model for the review loop |
+| `HERO_VISION_MODEL` | no | `claude-sonnet-5-5` | Model for layout + obstacle detection |
+| `HERO_REVIEW_MODEL` | no | `claude-sonnet-5-5` | Model for the review loop |
 | `HERO_MAX_REVIEW_ITERATIONS` | no | `1` | Bounded reflection (critique of the model render; Phase 1 default was `2`) |
 | `HERO_LLM_PRICE_TABLE` | no | `src/hero/llm/prices.json` | `{model: {input_usd_per_mtok, output_usd_per_mtok}}` |
 | `HERO_OVERPASS_URL` | no | `https://overpass-api.de/api/interpreter` | OSM endpoint |
@@ -258,9 +258,10 @@ spec/                the contract: roadmap, architecture, api, data, ui, agent
 ## Model slug and end-of-life
 
 The vision and review models are configurable via `HERO_VISION_MODEL` / `HERO_REVIEW_MODEL` (default
-`claude-sonnet-4-5` unless the Phase-2 spike changed `src/hero/llm/defaults.py`). The Anthropic SDK warns that
+`claude-sonnet-5-5`, set in `src/hero/llm/defaults.py` after the Phase-2 spike). The Anthropic SDK warns that
 `claude-sonnet-4-5` reaches end-of-life on **2026-11-30**. `claude-sonnet-5-5` accepts plain calls but rejects the forced
 `tool_choice` Phase 1 used (HTTP 400); Phase 2's client supports `auto_tool` and `json_text` structured output
 (`HERO_STRUCTURED_MODE=auto` falls back by itself), and `uv run python -m hero.tools.check_structured` records which mode each
-slug passes. If `claude-sonnet-5-5` passes, it becomes the default in `defaults.py` (see `NOTES.md`); otherwise move before the EOL date.
+slug passes. On 2026-10-30 `claude-sonnet-5-5` passed `auto_tool` and `json_text` (failed `forced_tool`), so it is the default and the
+client uses the non-forced modes for it (see `NOTES.md`). `claude-sonnet-4-5` remains selectable until its EOL.
 `src/hero/llm/prices.json` carries a `claude-sonnet-5-5` row (rate assumed equal to 4-5; verify).

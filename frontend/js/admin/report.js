@@ -1,6 +1,6 @@
 // Run report (GET /api/admin/runs/{id}/report -> RunReport, spec/data.md) + "Images used" grid.
 
-import { el, fmtUsd, fmtUsdPrecise, pct } from '/js/admin/auth.js?v=4';
+import { el, fmtUsd, fmtUsdPrecise, pct } from '/js/admin/auth.js?v=5';
 
 const LEVELS = ['L0', 'L1', 'L2', 'L3'];
 

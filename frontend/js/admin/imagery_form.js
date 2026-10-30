@@ -2,7 +2,7 @@
 // with a live client-side estimate. Mirrors hero.imagery.plan.plan_images maths; cached = matching stored observations.
 // API: GET .../observations (inventory), POST .../imagery (acquire-only), POST .../generate (fetch + generate).
 
-import { el, apost, segPath, fmtUsd } from '/js/admin/auth.js?v=4';
+import { el, apost, segPath, fmtUsd } from '/js/admin/auth.js?v=5';
 
 export const EST_SV_USD = 0.007;
 export const EST_SAT_USD = 0.002;

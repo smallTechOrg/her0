@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import hashlib
 import io
-from functools import partial
 
 import pytest
 from fastapi.testclient import TestClient
@@ -154,9 +153,10 @@ def test_photo_over_the_size_limit_is_422(app_client, auth, monkeypatch):
     reset_settings()
     seg = new_segment("Upload big")
     big = jpeg_bytes(size=(600, 600), color=(1, 2, 3))
-    from PIL import ImageDraw
     img = Image.effect_noise((600, 600), 80).convert("RGB")
-    buf = io.BytesIO(); img.save(buf, format="JPEG", quality=95); big = buf.getvalue()
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG", quality=95)
+    big = buf.getvalue()
     assert len(big) > 1048
     resp = upload(app_client, seg.slug, auth, data=big)
     assert resp.status_code == 422 and "HERO_UPLOAD_MAX_MB" in resp.json()["error"]["message"]

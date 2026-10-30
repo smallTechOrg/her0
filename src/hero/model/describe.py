@@ -15,7 +15,6 @@ Interpretation notes
 
 from __future__ import annotations
 
-import math
 from typing import Mapping, Sequence
 
 from hero.model.fidelity import LEVEL_LABELS

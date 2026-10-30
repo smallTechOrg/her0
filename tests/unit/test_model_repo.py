@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-import json
 import uuid
 
 import pytest
 from sqlalchemy import text
 
-from hero.db import model_repo, models, repo
+from hero.db import model_repo, repo
 from hero.db.model_repo import (
     ExtractionCreate,
     ModelVersionCreate,

@@ -1,6 +1,6 @@
 // Version diff panel. API: GET .../model/diff?from=&to= -> ModelDiff (spec/data.md "Model diff").
 
-import { el, pct } from '/js/admin/auth.js?v=4';
+import { el, pct } from '/js/admin/auth.js?v=5';
 
 const fmtVal = (v) => (Array.isArray(v) ? v.map(fmtVal).join(', ').replace(/^/, '(').replace(/$/, ')') : v && typeof v === 'object' ? JSON.stringify(v) : v == null ? '—' : typeof v === 'number' ? String(Math.round(v * 100) / 100) : String(v));
 

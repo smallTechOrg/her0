@@ -1,0 +1,78 @@
+{
+ "run_id": "fx-run-3",
+ "segment_slug": "fixture-curved-street",
+ "mode": "generate",
+ "base_version": 2,
+ "result_version": 2,
+ "version_created": false,
+ "started_at": "2026-10-30T12:00:00Z",
+ "finished_at": "2026-10-30T12:00:00Z",
+ "duration_s": 0.0,
+ "images": {
+  "planned": 48,
+  "used_total": 48,
+  "new": 0,
+  "cached": 48,
+  "fused_this_run": 0,
+  "by_source": {
+   "google_static_maps": 4,
+   "google_streetview": 44
+  },
+  "by_kind": {
+   "satellite_crop": 3,
+   "satellite_overview": 1,
+   "streetview": 44
+  },
+  "by_view": {
+   "back": 11,
+   "forward": 11,
+   "left": 11,
+   "right": 11
+  },
+  "new_observation_ids": [],
+  "skipped": []
+ },
+ "detections": {
+  "new": [],
+  "changed": [],
+  "removed": [],
+  "contradicted": [],
+  "unchanged_count": 0
+ },
+ "profile_changes": [],
+ "fidelity": {
+  "before": {
+   "overall": 2.0,
+   "histogram_m": {
+    "L2": 100.0
+   }
+  },
+  "after": {
+   "overall": 2.0,
+   "histogram_m": {
+    "L2": 100.0
+   }
+  },
+  "improved_intervals": []
+ },
+ "confidence_changes": [],
+ "cost": {
+  "anthropic_usd": 0.0,
+  "anthropic_calls": 0,
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "google_new_requests": 0,
+  "google_cached": 48,
+  "google_est_usd": 0.0,
+  "total_usd": 0.0,
+  "run_cap_usd": 1.0,
+  "budget_remaining_usd": 49.42
+ },
+ "warnings": [],
+ "degraded": false,
+ "summary": "Run found no new images to fuse, so the model stays at v2 and nothing new was spent (48 images already stored).",
+ "suggestions": [
+  "Metres 20-25 are the least certain (1 object below 60 % confidence).",
+  "A close-up photo around 0-100 m would raise it to L3."
+ ]
+}

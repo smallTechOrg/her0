@@ -1,7 +1,7 @@
 // Entities table with filters + evidence drawer (supporting images with the detection box drawn from crop_px).
 // API: GET .../model/entities (list), GET .../model/entities/{id}?version= (drawer).
 
-import { el, aget, segPath, pct } from '/js/admin/auth.js?v=4';
+import { el, aget, segPath, pct } from '/js/admin/auth.js?v=5';
 
 /** Box overlay as CSS percentages from crop_px [x, y, w, h] over the image size. */
 export function boxStyle(crop, w, h) {

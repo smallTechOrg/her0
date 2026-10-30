@@ -1,0 +1,296 @@
+{
+ "bin_m": 5.0,
+ "length_s": 100.0,
+ "bins": [
+  {
+   "index": 0,
+   "s_from": 0.0,
+   "s_to": 5.0,
+   "level": 1,
+   "views": 2,
+   "stations": 2,
+   "sides": {
+    "left": 0,
+    "right": 0
+   },
+   "overhead_hires": true,
+   "hint": "Add a Street View frame facing left or right from another station within 15 m (needs a left-facing view, a right-facing view for L2)."
+  },
+  {
+   "index": 1,
+   "s_from": 5.0,
+   "s_to": 10.0,
+   "level": 1,
+   "views": 3,
+   "stations": 3,
+   "sides": {
+    "left": 0,
+    "right": 0
+   },
+   "overhead_hires": true,
+   "hint": "Add a Street View frame facing left or right from another station within 15 m (needs a left-facing view, a right-facing view for L2)."
+  },
+  {
+   "index": 2,
+   "s_from": 10.0,
+   "s_to": 15.0,
+   "level": 1,
+   "views": 3,
+   "stations": 3,
+   "sides": {
+    "left": 0,
+    "right": 0
+   },
+   "overhead_hires": true,
+   "hint": "Add a Street View frame facing left or right from another station within 15 m (needs a left-facing view, a right-facing view for L2)."
+  },
+  {
+   "index": 3,
+   "s_from": 15.0,
+   "s_to": 20.0,
+   "level": 1,
+   "views": 3,
+   "stations": 3,
+   "sides": {
+    "left": 0,
+    "right": 0
+   },
+   "overhead_hires": true,
+   "hint": "Add a Street View frame facing left or right from another station within 15 m (needs a left-facing view, a right-facing view for L2)."
+  },
+  {
+   "index": 4,
+   "s_from": 20.0,
+   "s_to": 25.0,
+   "level": 1,
+   "views": 3,
+   "stations": 3,
+   "sides": {
+    "left": 0,
+    "right": 0
+   },
+   "overhead_hires": true,
+   "hint": "Add a Street View frame facing left or right from another station within 15 m (needs a left-facing view, a right-facing view for L2)."
+  },
+  {
+   "index": 5,
+   "s_from": 25.0,
+   "s_to": 30.0,
+   "level": 1,
+   "views": 3,
+   "stations": 3,
+   "sides": {
+    "left": 0,
+    "right": 0
+   },
+   "overhead_hires": true,
+   "hint": "Add a Street View frame facing left or right from another station within 15 m (needs a left-facing view, a right-facing view for L2)."
+  },
+  {
+   "index": 6,
+   "s_from": 30.0,
+   "s_to": 35.0,
+   "level": 1,
+   "views": 3,
+   "stations": 3,
+   "sides": {
+    "left": 0,
+    "right": 0
+   },
+   "overhead_hires": true,
+   "hint": "Add a Street View frame facing left or right from another station within 15 m (needs a left-facing view, a right-facing view for L2)."
+  },
+  {
+   "index": 7,
+   "s_from": 35.0,
+   "s_to": 40.0,
+   "level": 1,
+   "views": 3,
+   "stations": 3,
+   "sides": {
+    "left": 0,
+    "right": 0
+   },
+   "overhead_hires": true,
+   "hint": "Add a Street View frame facing left or right from another station within 15 m (needs a left-facing view, a right-facing view for L2)."
+  },
+  {
+   "index": 8,
+   "s_from": 40.0,
+   "s_to": 45.0,
+   "level": 1,
+   "views": 3,
+   "stations": 3,
+   "sides": {
+    "left": 0,
+    "right": 0
+   },
+   "overhead_hires": true,
+   "hint": "Add a Street View frame facing left or right from another station within 15 m (needs a left-facing view, a right-facing view for L2)."
+  },
+  {
+   "index": 9,
+   "s_from": 45.0,
+   "s_to": 50.0,
+   "level": 1,
+   "views": 3,
+   "stations": 3,
+   "sides": {
+    "left": 0,
+    "right": 0
+   },
+   "overhead_hires": true,
+   "hint": "Add a Street View frame facing left or right from another station within 15 m (needs a left-facing view, a right-facing view for L2)."
+  },
+  {
+   "index": 10,
+   "s_from": 50.0,
+   "s_to": 55.0,
+   "level": 1,
+   "views": 3,
+   "stations": 3,
+   "sides": {
+    "left": 0,
+    "right": 0
+   },
+   "overhead_hires": true,
+   "hint": "Add a Street View frame facing left or right from another station within 15 m (needs a left-facing view, a right-facing view for L2)."
+  },
+  {
+   "index": 11,
+   "s_from": 55.0,
+   "s_to": 60.0,
+   "level": 1,
+   "views": 3,
+   "stations": 3,
+   "sides": {
+    "left": 0,
+    "right": 0
+   },
+   "overhead_hires": true,
+   "hint": "Add a Street View frame facing left or right from another station within 15 m (needs a left-facing view, a right-facing view for L2)."
+  },
+  {
+   "index": 12,
+   "s_from": 60.0,
+   "s_to": 65.0,
+   "level": 1,
+   "views": 3,
+   "stations": 3,
+   "sides": {
+    "left": 0,
+    "right": 0
+   },
+   "overhead_hires": true,
+   "hint": "Add a Street View frame facing left or right from another station within 15 m (needs a left-facing view, a right-facing view for L2)."
+  },
+  {
+   "index": 13,
+   "s_from": 65.0,
+   "s_to": 70.0,
+   "level": 1,
+   "views": 3,
+   "stations": 3,
+   "sides": {
+    "left": 0,
+    "right": 0
+   },
+   "overhead_hires": true,
+   "hint": "Add a Street View frame facing left or right from another station within 15 m (needs a left-facing view, a right-facing view for L2)."
+  },
+  {
+   "index": 14,
+   "s_from": 70.0,
+   "s_to": 75.0,
+   "level": 1,
+   "views": 3,
+   "stations": 3,
+   "sides": {
+    "left": 0,
+    "right": 0
+   },
+   "overhead_hires": true,
+   "hint": "Add a Street View frame facing left or right from another station within 15 m (needs a left-facing view, a right-facing view for L2)."
+  },
+  {
+   "index": 15,
+   "s_from": 75.0,
+   "s_to": 80.0,
+   "level": 1,
+   "views": 3,
+   "stations": 3,
+   "sides": {
+    "left": 0,
+    "right": 0
+   },
+   "overhead_hires": true,
+   "hint": "Add a Street View frame facing left or right from another station within 15 m (needs a left-facing view, a right-facing view for L2)."
+  },
+  {
+   "index": 16,
+   "s_from": 80.0,
+   "s_to": 85.0,
+   "level": 1,
+   "views": 3,
+   "stations": 3,
+   "sides": {
+    "left": 0,
+    "right": 0
+   },
+   "overhead_hires": true,
+   "hint": "Add a Street View frame facing left or right from another station within 15 m (needs a left-facing view, a right-facing view for L2)."
+  },
+  {
+   "index": 17,
+   "s_from": 85.0,
+   "s_to": 90.0,
+   "level": 1,
+   "views": 3,
+   "stations": 3,
+   "sides": {
+    "left": 0,
+    "right": 0
+   },
+   "overhead_hires": true,
+   "hint": "Add a Street View frame facing left or right from another station within 15 m (needs a left-facing view, a right-facing view for L2)."
+  },
+  {
+   "index": 18,
+   "s_from": 90.0,
+   "s_to": 95.0,
+   "level": 1,
+   "views": 3,
+   "stations": 3,
+   "sides": {
+    "left": 0,
+    "right": 0
+   },
+   "overhead_hires": true,
+   "hint": "Add a Street View frame facing left or right from another station within 15 m (needs a left-facing view, a right-facing view for L2)."
+  },
+  {
+   "index": 19,
+   "s_from": 95.0,
+   "s_to": 100.0,
+   "level": 1,
+   "views": 2,
+   "stations": 2,
+   "sides": {
+    "left": 0,
+    "right": 0
+   },
+   "overhead_hires": true,
+   "hint": "Add a Street View frame facing left or right from another station within 15 m (needs a left-facing view, a right-facing view for L2)."
+  }
+ ],
+ "overall": {
+  "level": 1,
+  "score": 1.0,
+  "histogram_m": {
+   "L0": 0.0,
+   "L1": 100.0,
+   "L2": 0.0,
+   "L3": 0.0
+  }
+ }
+}

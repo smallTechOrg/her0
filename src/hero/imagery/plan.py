@@ -122,12 +122,14 @@ class PlanInfo:
 
 
 def _stations(lo: float, span: float, spacing: float) -> list[float]:
+    """``lo + k*spacing`` for every multiple within the span, plus the far end when the leftover is >= half a spacing."""
     out: list[float] = []
     n = 0
-    while n * spacing < span - 1e-9:
+    while n * spacing <= span + 1e-9:
         out.append(lo + n * spacing)
         n += 1
-    out.append(lo + span)
+    if span - (n - 1) * spacing >= 0.5 * spacing - 1e-9:
+        out.append(lo + span)
     return out
 
 

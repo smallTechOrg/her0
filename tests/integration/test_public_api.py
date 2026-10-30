@@ -1,8 +1,8 @@
 """Public API (spec/api.md ## Public) against the real SQLite test DB.
 
 Deterministic cases insert a ``ready`` segment carrying the canonical example scene via
-``hero.db.repo``; the ``generated_segment`` tests (S2's session fixture) exercise the same
-routes against a really generated street and its media files.
+``hero.db.repo``; the recorded fixture street (``seeded_fixture_segment``, no LLM/Google spend) exercises the same
+routes with a v2 scene; real generation is covered by the live tier.
 """
 
 from __future__ import annotations
@@ -339,3 +339,44 @@ def test_game_run_on_v2_segment_returns_hazards_with_string_types(client, v2_str
     assert resp.status_code == 200, resp.text
     hazards = resp.json()["data"]["hazards"]
     assert hazards and hazards[0]["type"] == "parked_vehicle" and hazards[0]["action"] == "dodge"
+
+
+# ---------------------------------------------------------------- the recorded fixture street (seeded_fixture_segment)
+
+
+def test_fixture_street_gallery_badge_and_about_panel_data_agree(client, seeded_fixture_segment):
+    """The About panel's data (fidelity, photo count, summary, least-certain parts) is in the served scene and matches the badge."""
+    entry = _gallery_entry(client, seeded_fixture_segment)
+    assert entry is not None and entry["model"]["fidelity_level"] == "L2" and entry["model"]["legacy"] is False
+
+    about = client.get(f"/api/segments/{seeded_fixture_segment}/scene").json()["data"]["about"]
+
+    assert about["fidelity"]["level"] == entry["model"]["fidelity_level"]
+    assert about["fidelity"]["label"] == entry["model"]["fidelity_label"]
+    assert about["photos"]["total"] == entry["model"]["photos"] == 48
+    assert about["photos"]["street_view"] + about["photos"]["satellite"] + about["photos"]["user"] == 48
+    assert about["model_version"] == entry["model"]["version"]
+    assert "fidelity L2" in about["summary"] and "48 photos" in about["summary"]
+    assert about["low_confidence_parts"] and about["improve_hint"]
+    assert about["legacy"] is False and about["placement_verified"] is True
+
+
+def test_fixture_street_detail_and_game_run_hazards(client, seeded_fixture_segment):
+    detail = client.get(f"/api/segments/{seeded_fixture_segment}").json()["data"]
+    assert detail["status"] == "ready" and detail["model"]["photos"] == 48 and {"start", "end"} <= set(detail)
+
+    resp = client.post(f"/api/segments/{seeded_fixture_segment}/runs", json=_valid_run(score=5, distance_m=5.0, tokens=0))
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["data"]["hazards"]
+
+
+def test_legacy_import_badge_is_flagged_legacy(client, ready_segment):
+    """A Phase-1 segment lazily imported as v0 'legacy' by the admin model page shows legacy=true on its card."""
+    from hero.config import get_settings
+
+    assert _gallery_entry(client, ready_segment.slug)["model"] is None
+    auth = {"X-Hero-Admin-Password": get_settings().admin_password.get_secret_value()}
+    assert client.get(f"/api/admin/segments/{ready_segment.slug}/model", headers=auth).status_code == 200
+
+    model = _gallery_entry(client, ready_segment.slug)["model"]
+    assert model["legacy"] is True and model["version"] == 0

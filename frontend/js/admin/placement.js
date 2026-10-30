@@ -1,7 +1,7 @@
 // Placement preview rendering shared by /admin/ (after Create segment) and the segment page.
 // API: POST /api/admin/segments/{slug}/placement-preview -> {url, reference_line, placement_verified, warnings[]}.
 
-import { el, apost, segPath } from '/js/admin/auth.js?v=4';
+import { el, apost, segPath } from '/js/admin/auth.js?v=5';
 
 const OSM_SOURCES = new Set(['osm_nominatim', 'osm_overpass']);
 

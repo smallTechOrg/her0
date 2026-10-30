@@ -62,3 +62,8 @@ Run start: 2026-10-29 ~19:00 local. Platform: Claude Code (VS Code extension), b
 - **Geocoders disagree.** Google resolved "100 Feet Road, Bengaluru" to Koramangala, Nominatim to Indiranagar. Showing candidates plus a "check on map" link beats picking one silently.
 - **Overpass was down again (3 mirrors timed out).** Nominatim `reverse` with `polygon_geojson=1` returns the road's LineString and is a far more dependable source for road direction; Overpass is now only a fallback with a short timeout. Lesson: don't make a user-facing step depend on Overpass.
 - **Sequential vs parallel:** Nominatim's policy is ~1 req/s, so candidate lookups are sequential and cached.
+
+## P0 structured-output spike (2026-10-30)
+
+- `check_keys`: PASS. `check_structured` on the real `StreetExtraction` schema: `claude-sonnet-4-5` ok in forced_tool/auto_tool/json_text; `claude-sonnet-5-5` FAILS forced_tool (HTTP 400), ok in `auto_tool` ($0.010866) and `json_text` ($0.009936). Total spend $0.044103.
+- Decision: `DEFAULT_VISION_MODEL` and `DEFAULT_REVIEW_MODEL` = `claude-sonnet-5-5` (use `auto_tool`/`json_text`; `HERO_STRUCTURED_MODE=auto` falls back). `claude-sonnet-4-5` EOL is 2026-11-30.

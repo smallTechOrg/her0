@@ -156,7 +156,9 @@ export class Track {
     if (fp && lat < fp.lo && lat >= fp.lo - 0.3) return 'kerb';
     for (const st of near.strips) if (lat >= st.lo && lat <= st.hi) return st.kind;
     if (!fp) {
-      const edge = near.strips.length ? Math.max(...near.strips.map((x) => x.hi)) : near.lane_lat[1];
+      // the road's own edge (carriageway / kerb), not forecourts further out: the gap starts where the road ends
+      const road = near.strips.filter((x) => x.kind === 'carriageway' || x.kind === 'kerb');
+      const edge = road.length ? Math.max(...road.map((x) => x.hi)) : near.lane_lat[1];
       if (lat >= edge) return 'gap';
     }
     return 'ground';

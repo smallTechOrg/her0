@@ -1,14 +1,11 @@
 """Admin model API (spec/api.md ## Admin: model, versions, diff, coverage, entities, run report).
 
 DB state is built with ``tests/fixtures/street_fixtures.py`` (mini fixture dir, 3 versions, 2 runs) loaded through
-``hero.tools.load_fixture_street``; no network, no spend. Sibling modules that may not exist yet
-(``hero.model.diff`` / ``hero.model.legacy``) are replaced by small stubs when absent.
+``hero.tools.load_fixture_street``; no network, no spend.
 """
 
 from __future__ import annotations
 
-import sys
-import types
 import uuid
 
 import pytest
@@ -16,7 +13,6 @@ import pytest
 from hero.config import get_settings
 from hero.db import model_repo, repo
 from hero.db.repo import SegmentCreate
-from hero.model.types import ModelDiff
 from hero.scene.schema import FootpathSide, LatLon, Quality, load_example_scene
 from hero.tools.load_fixture_street import seed_fixture_segment
 from tests.fixtures.street_fixtures import write_mini_fixture_dir
@@ -43,18 +39,6 @@ def street(test_db, tmp_path):
 
 def _url(seg, tail: str = "") -> str:
     return f"/api/admin/segments/{seg.slug}/model{tail}"
-
-
-@pytest.fixture()
-def stub_diff(monkeypatch):
-    try:
-        import hero.model.diff  # noqa: F401
-    except ImportError:
-        mod = types.ModuleType("hero.model.diff")
-        mod.diff_models = lambda a, b, fa, fb: ModelDiff(
-            from_version=a.version if a else None, to_version=b.version, is_empty=a is not None and a == b,
-            summary_lines=[f"{len(b.entities)} entities"])
-        monkeypatch.setitem(sys.modules, "hero.model.diff", mod)
 
 
 # ------------------------------------------------------------------ auth
@@ -112,29 +96,13 @@ def test_reference_line_points_are_capped_at_60(client, street, auth, monkeypatc
     assert [p["s"] for p in out] == sorted(p["s"] for p in out)
 
 
-def test_legacy_scene_is_imported_lazily_on_first_call(client, test_db, auth, monkeypatch):
+def test_legacy_scene_is_imported_lazily_on_first_call(client, test_db, auth):
     seg = repo.create_segment(SegmentCreate(
         name="Legacy", city="Bengaluru", start=LatLon(lat=12.97400, lon=77.64050), end=LatLon(lat=12.97467, lon=77.64058),
         footpath_side=FootpathSide.left, slug=f"legacy-{uuid.uuid4().hex[:6]}"))
     run = repo.create_run(seg.id, inputs={})
     repo.finalize_segment_scene(seg.id, run_id=run.id, scene=load_example_scene(), quality=Quality.full, thumbnail_path=None)
     assert model_repo.head_version(seg.id) is None
-    try:
-        import hero.model.legacy  # noqa: F401
-    except ImportError:
-        from tests.fixtures.street_fixtures import make_model
-        from hero.model.refline import ReferenceLine
-        from hero.model.types import ModelKind
-
-        def import_legacy(scene, *, segment_slug, footpath_side, now):
-            ref = ReferenceLine.from_latlons([(scene.segment.start.lat, scene.segment.start.lon),
-                                              (scene.segment.end.lat, scene.segment.end.lon)])
-            return make_model(ref, slug=segment_slug, kind=ModelKind.legacy, source="legacy_straight")
-
-        mod = types.ModuleType("hero.model.legacy")
-        mod.import_legacy = import_legacy
-        monkeypatch.setitem(sys.modules, "hero.model.legacy", mod)
-
     first = client.get(_url(seg), headers=auth).json()["data"]
     second = client.get(_url(seg), headers=auth).json()["data"]
 
@@ -166,7 +134,7 @@ def test_unknown_version_404(client, street, auth, n):
     assert resp.status_code == 404 and resp.json()["error"]["code"] == "not_found"
 
 
-def test_diff_between_versions(client, street, auth, stub_diff):
+def test_diff_between_versions(client, street, auth):
     data = client.get(_url(street, "/diff?from=1&to=2"), headers=auth).json()["data"]
     assert data["from_version"] == 1 and data["to_version"] == 2
     # reversed order is allowed (from < to not required)
@@ -174,7 +142,7 @@ def test_diff_between_versions(client, street, auth, stub_diff):
     assert back.status_code == 200 and back.json()["data"]["to_version"] == 1
 
 
-def test_diff_unknown_version_404_and_missing_param_422(client, street, auth, stub_diff):
+def test_diff_unknown_version_404_and_missing_param_422(client, street, auth):
     assert client.get(_url(street, "/diff?from=1&to=9"), headers=auth).status_code == 404
     resp = client.get(_url(street, "/diff?from=1"), headers=auth)
     assert resp.status_code == 422 and resp.json()["error"]["code"] == "validation_error"
@@ -274,3 +242,35 @@ def test_run_report_404_for_phase1_run_and_unknown(client, test_db, auth):
     for rid in (run.id, "no-such-run"):
         resp = client.get(f"/api/admin/runs/{rid}/report", headers=auth)
         assert resp.status_code == 404 and resp.json()["error"]["code"] == "not_found"
+
+
+# ------------------------------------------------------------------ the full recorded fixture street (seeded_fixture_segment)
+
+
+def test_full_fixture_street_head_versions_diff_and_evidence_with_boxes(client, seeded_fixture_segment, auth):
+    seg = repo.require_segment(seeded_fixture_segment)
+    head = client.get(_url(seg), headers=auth).json()["data"]
+
+    assert head["head_version"] == 2 and head["legacy"] is False and head["placement_verified"] is True
+    assert sorted(v["version"] for v in head["versions"]) == [0, 1, 2]
+    assert head["counts"]["observations"] == 48 and head["counts"]["entities"] >= 5
+    assert len(head["reference_line"]["points"]) <= 60
+
+    diff = client.get(_url(seg, "/diff?from=1&to=2"), headers=auth).json()["data"]
+    assert diff["from_version"] == 1 and diff["to_version"] == 2
+
+    entities = client.get(_url(seg, "/entities"), headers=auth).json()["data"]
+    assert [e["s"] for e in entities] == sorted(e["s"] for e in entities)
+    boxes = 0
+    for e in entities:
+        detail = client.get(_url(seg, f"/entities/{e['id']}"), headers=auth).json()["data"]
+        for ev in detail["evidence"]:
+            ob = ev["observation"]
+            assert ob["url"].startswith("/media/") and ob["width_px"] and ob["height_px"]
+            if ev["crop_px"]:
+                x, y, w, h = ev["crop_px"]
+                assert 0 <= x and 0 <= y and x + w <= ob["width_px"] + 1 and y + h <= ob["height_px"] + 1
+                boxes += 1
+    assert boxes >= 3, "fixture evidence should carry detection boxes"
+
+    assert client.get(_url(seg, "/versions/9"), headers=auth).status_code == 404

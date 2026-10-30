@@ -1,6 +1,6 @@
 // Version history (newest first) with two selectors + Compare. Data: GET .../model -> versions[] (ascending in the API).
 
-import { el, fmtDate } from '/js/admin/auth.js?v=4';
+import { el, fmtDate } from '/js/admin/auth.js?v=5';
 
 const KIND_TEXT = { legacy: 'legacy import', prior: 'map prior', fused: 'fused', edit: 'edit' };
 

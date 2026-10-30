@@ -2,7 +2,7 @@
 // Admin API paths used: GET /api/admin/status (login gate), GET /api/admin/runs/{run_id} (polled ~2 s while queued|running).
 
 import { api, ApiError } from '/js/api.js?v=3';
-import { gate, logout, el, fmtUsd, fmtUsdPrecise, fmtMs, setState, aget } from '/js/admin/auth.js?v=4';
+import { gate, logout, el, fmtUsd, fmtUsdPrecise, fmtMs, setState, aget } from '/js/admin/auth.js?v=5';
 import { renderReport, renderImagesUsed } from '/js/admin/report.js?v=4';
 
 const POLL_MS = 2000;

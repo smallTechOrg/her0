@@ -11,9 +11,16 @@ import math
 import re
 
 import pytest
+from admin_api_mock import (
+    LENGTH_S,
+    NOOP_RUN_ID,
+    PASSWORD,
+    RUN_ID,
+    SLUG,
+    MockApi,
+    build_report,
+)
 from playwright.sync_api import Page, expect, sync_playwright
-
-from admin_api_mock import LENGTH_S, NOOP_RUN_ID, PASSWORD, RUN_ID, SLUG, MockApi, build_report
 
 PHONE = {"width": 390, "height": 844}
 
@@ -376,7 +383,7 @@ def test_dashboard_lists_model_column_open_link_and_mode_in_recent_runs(live_ser
     row = page.locator(f"tr[data-slug='{SLUG}']")
     expect(row).to_be_visible()
     expect(row.locator(".model-cell")).to_have_text("v2 · L2")
-    expect(row.locator(".chip.kind-legacy")).to_have_text("legacy")
+    expect(row.locator(".chip.kind-legacy")).to_have_text("legacy · placement unverified")
     expect(row.get_by_test_id("open-segment")).to_have_attribute("href", f"/admin/segment.html?slug={SLUG}")
     runs = page.locator("#runs-body tr").first
     expect(runs).to_contain_text("generate")
@@ -415,3 +422,95 @@ def test_dashboard_check_placement_after_create_shows_tile_and_verdict(live_serv
     expect(box.get_by_test_id("placement-verdict")).to_contain_text("Road geometry: OpenStreetMap way 25173540 (100 Feet Road) · line snapped 3 m from the address")
     expect(box.locator("img")).to_be_visible()
     assert api.posts(f"/segments/{SLUG}/placement-preview") == [None]
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# Real backend + recorded fixture street (tests/e2e/fixtures/model_fixture, seeded by ``seeded_fixture_segment``).
+# No mocks, no LLM, no spend: the admin pages read the real admin_model API from the seeded test DB.
+# ---------------------------------------------------------------------------------------------------------------
+
+
+def _real_login(page: Page, url: str) -> None:
+    from hero.config import get_settings
+
+    page.goto(url)
+    page.get_by_label("Admin password").fill(get_settings().admin_password.get_secret_value())
+    page.get_by_role("button", name="Enter").click()
+
+
+def test_real_fixture_segment_page_shows_history_coverage_entities_evidence_boxes_diff_and_imagery(
+        live_server: str, page: Page, seeded_fixture_segment: str):
+    slug = seeded_fixture_segment
+    _real_login(page, f"{live_server}/admin/segment.html?slug={slug}")
+    expect(page.locator('[data-hero-page="admin-segment"]')).to_be_visible()
+    expect(page.locator("[data-testid=model-badge]")).to_contain_text("v2 · L2")
+
+    # Version history: v2, v1, v0 newest first; the latest two preselected and compared.
+    rows = page.locator("[data-testid=versions] tbody tr")
+    expect(rows).to_have_count(3)
+    expect(rows.first).to_have_attribute("data-version", "2")
+    expect(page.locator("[name=cmp-from]")).to_have_value("1")
+    expect(page.locator("[name=cmp-to]")).to_have_value("2")
+    expect(page.locator("[data-testid=diff] [data-testid=diff-title]")).to_have_text("v1 → v2")
+    page.locator("[name=cmp-from]").select_option("0")
+    page.get_by_test_id("compare").click()
+    expect(page.locator("[data-testid=diff] [data-testid=diff-title]")).to_have_text("v0 → v2")
+
+    # Coverage map: cells with levels, histogram, popover with a hint on click.
+    cov = page.locator("[data-testid=coverage]")
+    assert cov.locator(".cov-cell").count() >= 20
+    assert {c.get_attribute("data-level") for c in cov.locator(".cov-cell").all()} <= {"L0", "L1", "L2", "L3"}
+    expect(cov.locator("[data-testid=coverage-histogram]")).to_be_visible()
+    cov.locator(".cov-cell").first.click()
+    expect(cov.locator("[data-testid=coverage-popover]")).to_be_visible()
+
+    # Entities with evidence: opening a row shows photos with a detection box inside the image.
+    ent = page.locator("[data-testid=entities]")
+    assert ent.locator("tbody tr").count() >= 5
+    opened = False
+    for i in range(ent.locator("tbody tr").count()):
+        ent.locator("tbody tr").nth(i).click()
+        drawer = ent.locator("[data-testid=evidence-drawer]")
+        expect(drawer.locator("[data-testid=evidence-description]")).to_be_visible()
+        if drawer.locator("[data-testid=evidence-thumb] [data-testid=det-box]").count():
+            opened = True
+            style = drawer.locator("[data-testid=det-box]").first.get_attribute("style")
+            assert style and "left:" in style and "width:" in style
+            img = drawer.locator("[data-testid=evidence-thumb] img").first
+            expect(img).to_be_visible()
+            assert img.evaluate("i => i.complete && i.naturalWidth > 0")
+            break
+    assert opened, "no entity of the fixture street shows a detection box on its evidence photo"
+
+    # Imagery grid + the Add more imagery form: heading, controls, Phase 3 stub.
+    imagery = page.locator("[data-testid=imagery]")
+    assert imagery.locator(".obs-grid > *").count() >= 10
+    form = page.locator("[data-testid=add-imagery]")
+    expect(form.locator("h3")).to_have_text("Add more imagery")
+    expect(form.get_by_test_id("estimate")).to_contain_text("new images")
+    expect(form.get_by_test_id("upload-stub")).to_be_disabled()
+    expect(form).to_contain_text("Coming in Phase 3")
+    expect(page.locator("[data-testid=reference-line]")).to_be_visible()
+
+    assert page.evaluate("() => document.documentElement.scrollWidth <= window.innerWidth + 1")
+    assert not page.hero_errors  # type: ignore[attr-defined]
+
+
+def test_real_fixture_run_page_shows_the_run_report(live_server: str, page: Page, seeded_fixture_segment: str):
+    import httpx
+
+    from hero.config import get_settings
+
+    hdr = {"X-Hero-Admin-Password": get_settings().admin_password.get_secret_value()}
+    runs = httpx.get(f"{live_server}/api/admin/runs?limit=100", headers=hdr, timeout=10).json()["data"]
+    mine = [r["id"] for r in runs if r["segment"]["slug"] == seeded_fixture_segment]
+    with_report = [rid for rid in mine
+                   if httpx.get(f"{live_server}/api/admin/runs/{rid}/report", headers=hdr, timeout=10).status_code == 200]
+    assert with_report, "seeded fixture street has no run with a report"
+    _real_login(page, f"{live_server}/admin/run.html?id={with_report[0]}")
+    rep = page.locator("[data-testid=run-report]")
+    expect(rep).to_be_visible()
+    expect(rep.locator("[data-testid=report-summary]")).not_to_be_empty()
+    expect(rep.locator("[data-testid=report-cost]")).to_contain_text("$")
+    assert page.evaluate("() => document.documentElement.scrollWidth <= window.innerWidth + 1")
+    assert not page.hero_errors  # type: ignore[attr-defined]

@@ -1,0 +1,40 @@
+{
+ "slug": "fixture-curved-street",
+ "name": "Fixture curved street",
+ "city": "Bengaluru",
+ "footpath_side": "left",
+ "start": {
+  "lat": 12.9706,
+  "lon": 77.6413
+ },
+ "end": {
+  "lat": 12.97128275,
+  "lon": 77.64180549
+ },
+ "description": "Generated test fixture: a 100 m arc (R=80 m, ~72 degrees) with a footpath that narrows, shifts, breaks and goes missing. Photos are synthetic drawings. Regenerate with `uv run python -m tests.fixtures.make_model_fixtures`.",
+ "versions": [
+  0,
+  1,
+  2
+ ],
+ "runs": [
+  {
+   "run": 1,
+   "result_version": 1
+  },
+  {
+   "run": 2,
+   "result_version": 2
+  },
+  {
+   "run": 3,
+   "result_version": 2,
+   "no_op": true
+  }
+ ],
+ "observations": 48,
+ "origin": [
+  12.9706,
+  77.6413
+ ]
+}

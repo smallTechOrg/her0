@@ -29,7 +29,6 @@ from hero.model.types import (
     FootpathState,
     Material,
     ModelKind,
-    ModelStats,
     Observation,
     ObservationKind,
     ObservationSource,

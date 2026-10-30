@@ -8,6 +8,8 @@ import httpx
 import pytest
 from playwright.sync_api import Browser, Page, sync_playwright
 
+pytestmark = pytest.mark.live
+
 PHONE_VIEWPORT = {"width": 390, "height": 844}
 CHROMIUM_ARGS = ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"]
 

@@ -1,0 +1,1 @@
+Model v2 (fused from photos): 10 objects, 4 buildings, fidelity L2 (score 2.00) from 48 photos. Since v1: 22 new photos fused; 3 new objects: 1 bin, 1 bollard, 1 vendor_stall; 3 objects updated; 1 new / 2 updated buildings; Fidelity L1 → L2 over 100 m.

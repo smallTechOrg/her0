@@ -55,7 +55,7 @@ export const mediaUrl = (u) => u || '';
 
 export function setState(root, state) {
   root.dataset.current = state;
-  for (const panel of root.querySelectorAll('[data-state]')) {
+  for (const panel of root.querySelectorAll('[data-state]:not(tr)')) {
     panel.hidden = panel.dataset.state !== state;
   }
 }

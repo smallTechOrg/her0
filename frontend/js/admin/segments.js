@@ -3,7 +3,7 @@
 // POST /api/admin/segments/{slug}/generate, GET /api/admin/runs?limit=20.
 
 import { api, ApiError } from '/js/api.js?v=3';
-import { gate, logout, el, fmtUsd, fmtMs, setState } from '/js/admin/auth.js?v=4';
+import { gate, logout, el, fmtUsd, fmtMs, setState } from '/js/admin/auth.js?v=5';
 import { placementButton } from '/js/admin/placement.js?v=4';
 
 const state = { status: null, segments: null, runs: null, error: null };
@@ -55,7 +55,7 @@ function generateDisabledReason(seg) {
 function modelCell(m) {
   if (!m) return el('span', { class: 'muted', text: '—' });
   const bits = [el('span', { class: 'model-cell', 'data-fidelity': m.fidelity_level, text: `v${m.head_version} · ${m.fidelity_level}` })];
-  if (m.legacy) bits.push(' ', el('span', { class: 'chip kind-legacy', title: 'Imported Phase-1 scene; placement unverified', text: 'legacy' }));
+  if (m.legacy) bits.push(' ', el('span', { class: 'chip kind-legacy', title: 'Imported Phase-1 scene; placement unverified', text: 'legacy · placement unverified' }));
   return el('span', {}, bits);
 }
 

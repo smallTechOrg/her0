@@ -1,4 +1,4 @@
-"""hero.llm against the REAL Anthropic API (workspace header, forced tool-use, pricing, budget).
+"""hero.llm against the REAL Anthropic API (real-call tests are marked ``live``; run with ``-m live``) (workspace header, forced tool-use, pricing, budget).
 
 Structure-only assertions on real outputs. The budget tests never reach Anthropic."""
 
@@ -51,6 +51,7 @@ def _red_square() -> Image.Image:
     return img
 
 
+@pytest.mark.live
 def test_vision_json_returns_schema_valid_object_priced_and_recorded(run_id):
     settings = get_settings()
     image = image_payload(_red_square(), "a synthetic test image", 256)
@@ -114,6 +115,7 @@ def test_unknown_model_slug_is_refused_before_the_request(run_id):
     assert repo.list_llm_calls(run_id) == []
 
 
+@pytest.mark.live
 def test_wrong_api_key_surfaces_as_actionable_upstream_error_and_records_failed_call(run_id):
     settings = get_settings().model_copy(update={"anthropic_api_key": type(get_settings().anthropic_api_key)("sk-ant-invalid")})
 
@@ -126,6 +128,7 @@ def test_wrong_api_key_surfaces_as_actionable_upstream_error_and_records_failed_
     assert len(calls) == 1 and calls[0].ok is False and calls[0].cost_usd == 0.0
 
 
+@pytest.mark.live
 @pytest.mark.parametrize("mode", ["auto", "json_text"])
 def test_vision_json_real_call_in_each_structured_mode_returns_valid_object(run_id, mode):
     settings = get_settings()

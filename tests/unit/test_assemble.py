@@ -10,7 +10,7 @@ import pytest
 from hero.db.repo import SegmentRecord
 from hero.pipeline.assemble import assemble_scene, build_lanes, build_tokens, normalise_coverage
 from hero.pipeline.review import PatchError, ReviewNewObject, ReviewPatchOp, apply_patch
-from hero.pipeline.state import PanoRef, TileRef
+from hero.pipeline.state import TileRef
 from hero.scene.geo import LocalFrame
 from hero.scene.schema import (
     Action,

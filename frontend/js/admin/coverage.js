@@ -2,7 +2,7 @@
 // footpath-state row from the head profile, entity markers, legend + histogram, click -> popover.
 // API: GET .../model/coverage?version= (FidelityMap + observations_by_bin).
 
-import { el } from '/js/admin/auth.js?v=4';
+import { el } from '/js/admin/auth.js?v=5';
 
 export const LEVEL_NAMES = ['L0', 'L1', 'L2', 'L3'];
 const LEVEL_TEXT = {

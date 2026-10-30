@@ -11,7 +11,7 @@ from __future__ import annotations
 import hashlib
 import io
 import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Sequence
 
@@ -195,7 +195,6 @@ def build_overhead_windows(observations: Sequence[Observation], ref: ReferenceLi
 
     Windows no tile covers (>= 60 %) are skipped. ``hero.imagery.rectify`` (S2) is imported lazily.
     """
-    from PIL import Image
 
     from hero.imagery.rectify import rectify_window
 

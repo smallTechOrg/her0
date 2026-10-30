@@ -4,7 +4,7 @@
 // POST .../imagery, POST .../generate.
 
 import { ApiError } from '/js/api.js?v=3';
-import { gate, logout, el, aget, apost, segPath, setState } from '/js/admin/auth.js?v=4';
+import { gate, logout, el, aget, apost, segPath, setState } from '/js/admin/auth.js?v=5';
 import { renderVersions } from '/js/admin/versions.js?v=4';
 import { renderCoverage } from '/js/admin/coverage.js?v=4';
 import { createEntities } from '/js/admin/entities.js?v=4';
