@@ -15,6 +15,7 @@ dependencies = [
     "pydantic-settings>=2.4",
     "structlog>=24.4",
     "python-dotenv>=1.0",
+    "pygltflib==1.16.5",
 ]
 
 [project.scripts]
@@ -40,4 +41,5 @@ timeout = 600
 addopts = "-p no:cacheprovider --tb=short"
 markers = [
     "live: needs the network and real API keys; skipped unless `-m live` is given or the invocation path includes tests/live (see tests/conftest.py)",
+    "validator: runs the external Khronos glTF validator via npx (needs node + network); skipped with a visible reason when unavailable",
 ]

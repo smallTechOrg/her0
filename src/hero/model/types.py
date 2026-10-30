@@ -717,14 +717,23 @@ class ReportCost(_M):
     google_cached: int = 0
     google_est_usd: float = 0.0
     total_usd: float = 0.0
-    run_cap_usd: float = 0.0
+    global_budget_usd: float = 0.0
     budget_remaining_usd: float = 0.0
+    share_of_global_budget: float = 0.0  # anthropic_usd / global budget; above 0.25 the report carries a (non-blocking) warning
+
+    @model_validator(mode="before")
+    @classmethod
+    def _drop_legacy_run_cap(cls, data: Any) -> Any:  # reports stored before the per-run cap was removed
+        if isinstance(data, dict) and "run_cap_usd" in data:
+            data = {k: v for k, v in data.items() if k != "run_cap_usd"}
+        return data
 
 
 class RunReport(_M):
     run_id: str
     segment_slug: str
     mode: Literal["generate", "acquire"]
+    model: str | None = None  # the LLM chosen for this run (vision + review); null on reports written before Phase 2.1 r2
     base_version: int | None = None
     result_version: int | None = None
     version_created: bool = False

@@ -359,8 +359,8 @@ class SceneV2(_Strict):
         return self.model_dump_json()
 
 
-def load_scene(data: dict[str, Any] | str | bytes) -> Scene | SceneV2:
-    """Parse a stored/served scene, discriminated by ``schema_version`` (1 -> ``Scene``, 2 -> ``SceneV2``).
+def load_scene(data: dict[str, Any] | str | bytes) -> "Scene | SceneV2 | SceneV3":
+    """Parse a stored/served scene, discriminated by ``schema_version`` (1 -> ``Scene``, 2 -> ``SceneV2``, 3 -> ``SceneV3``).
 
     Raises ``ValueError`` (a pydantic ``ValidationError`` is one) for an unknown version or an invalid scene.
     """
@@ -373,4 +373,8 @@ def load_scene(data: dict[str, Any] | str | bytes) -> Scene | SceneV2:
         return Scene.model_validate(data)
     if version == 2:
         return SceneV2.model_validate(data)
-    raise ValueError(f"unsupported scene schema_version {version!r} (expected 1 or 2)")
+    if version == 3:
+        from hero.model.scene_v3 import SceneV3  # local import: scene_v3 builds on this module
+
+        return SceneV3.model_validate(data)
+    raise ValueError(f"unsupported scene schema_version {version!r} (expected 1, 2 or 3)")

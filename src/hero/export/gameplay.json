@@ -1,0 +1,185 @@
+{
+  "schema": "hero-gameplay/1",
+  "version": 1,
+  "lanes": {
+    "count": 3,
+    "names": [
+      "footpath",
+      "road_edge",
+      "road"
+    ],
+    "road_edge_inset_m": 0.9,
+    "road_lane_gap_m": 1.8,
+    "min_footpath_to_edge_m": 1.4,
+    "default_footpath_width_m": 1.8,
+    "widths_m": {
+      "road_edge": 1.6,
+      "road": 2.0
+    }
+  },
+  "runner": {
+    "speed_start_mps": 6.0,
+    "speed_per_loop_mps": 0.1,
+    "speed_max_mps": 12.0,
+    "lane_tween_ms": 150,
+    "jump_ms": 500,
+    "slide_ms": 600,
+    "jump_height_m": 1.3,
+    "runner_half_m": 0.3,
+    "health_max": 100,
+    "hit_damage": 10,
+    "invuln_s": 1.5,
+    "start_grace_s": 3.0
+  },
+  "tokens": {
+    "value": 50,
+    "radius_m": 0.6,
+    "per_intact_m": 10.0,
+    "max_per_street": 12,
+    "crossing_lane": 1
+  },
+  "scoring": {
+    "distance_unit_m": 1.0,
+    "walkability": {
+      "coverage_weight": 0.6,
+      "crossing_bonus": 20,
+      "hazard_weight": 20,
+      "hazard_norm": 10
+    }
+  },
+  "obstacle_types": {
+    "parked_car": {
+      "action": "dodge",
+      "length_m": 4.2,
+      "size_m": {
+        "w": 1.8,
+        "h": 1.5,
+        "d": 4.2
+      },
+      "label": "parked car"
+    },
+    "two_wheeler": {
+      "action": "dodge",
+      "length_m": 1.9,
+      "size_m": {
+        "w": 0.7,
+        "h": 1.2,
+        "d": 1.9
+      },
+      "label": "two-wheeler"
+    },
+    "cone": {
+      "action": "dodge",
+      "length_m": 0.4,
+      "size_m": {
+        "w": 0.4,
+        "h": 0.7,
+        "d": 0.4
+      },
+      "label": "traffic cone"
+    },
+    "barricade": {
+      "action": "dodge",
+      "length_m": 0.6,
+      "size_m": {
+        "w": 1.6,
+        "h": 1.0,
+        "d": 0.6
+      },
+      "label": "barricade"
+    },
+    "pothole": {
+      "action": "jump",
+      "length_m": 1.0,
+      "size_m": {
+        "w": 1.0,
+        "h": 0.1,
+        "d": 1.0
+      },
+      "label": "pothole"
+    },
+    "stall": {
+      "action": "dodge",
+      "length_m": 1.5,
+      "size_m": {
+        "w": 1.5,
+        "h": 2.0,
+        "d": 1.5
+      },
+      "label": "vendor stall"
+    },
+    "low_branch": {
+      "action": "slide",
+      "length_m": 1.0,
+      "size_m": {
+        "w": 1.8,
+        "h": 0.6,
+        "d": 1.0
+      },
+      "label": "low branch"
+    }
+  },
+  "spawner": {
+    "seed_rule": "seed = ?seed integer if given else run_number; run_number = per-street counter in localStorage 'hero.run.<slug>', +1 at every run start, first run = 1; PRNG key = slug|seed|loop",
+    "prng": "mulberry32",
+    "hash": "fnv1a32",
+    "free_start_loop0_m": 30.0,
+    "free_start_later_m": 12.0,
+    "seam_free_m": 8.0,
+    "keepout_margin_m": 6.0,
+    "footpath_missing_margin_m": 2.0,
+    "row_gap_min_m": 14.0,
+    "row_gap_base_m": 26.0,
+    "row_gap_per_loop_m": 2.5,
+    "jitter_max_m": 2.5,
+    "spawn_p_base": 0.45,
+    "spawn_p_per_loop": 0.08,
+    "spawn_p_max": 0.85,
+    "density_floor": 0.6,
+    "density_gain": 0.4,
+    "second_obstacle_from_loop": 2,
+    "second_obstacle_prob": 0.5,
+    "gap_zone_m": 6.0,
+    "clear_lane_until_loop": 2,
+    "action_gap_m": 9.0,
+    "variants": 6,
+    "type_boost": 3.0,
+    "lane_weights": {
+      "0": {
+        "two_wheeler": 3.0,
+        "cone": 3.0,
+        "barricade": 2.0,
+        "stall": 2.0,
+        "low_branch": 1.5
+      },
+      "1": {
+        "parked_car": 3.0,
+        "two_wheeler": 2.0,
+        "cone": 2.0,
+        "barricade": 1.5,
+        "pothole": 2.0
+      },
+      "2": {
+        "parked_car": 3.0,
+        "two_wheeler": 2.0,
+        "cone": 1.5,
+        "barricade": 1.5,
+        "pothole": 2.5
+      }
+    },
+    "default_spawn_hints": {
+      "density": 0.5,
+      "type_weights": {
+        "parked_car": 0.2,
+        "two_wheeler": 0.2,
+        "cone": 0.15,
+        "barricade": 0.1,
+        "pothole": 0.15,
+        "stall": 0.1,
+        "low_branch": 0.1
+      }
+    },
+    "window_behind_m": 10.0,
+    "window_ahead_m": 80.0
+  }
+}
