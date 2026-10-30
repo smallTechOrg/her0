@@ -32,9 +32,10 @@ from hero.db.model_repo import ExtractionCreate, ModelVersionCreate
 from hero.fusion import assets as assets_mod
 from hero.fusion import publish as publish_mod
 from hero.fusion.convert import convert_overhead, convert_street_batch
+from hero.fusion import maxquality as MQ
 from hero.fusion.critique import drop_unknown_entity_ops, image_to_llm, run_critique
 from hero.fusion.render import render_model_topdown
-from hero.fusion.schemas import OverheadExtraction, StreetExtraction
+from hero.fusion.schemas import CritiqueResult, OverheadExtraction, StreetExtraction
 from hero.fusion.state import CritiqueIteration, FusionState
 from hero.fusion.views import (
     OverheadWindow,
@@ -68,6 +69,7 @@ from hero.model.types import (
     Observation,
     ObservationKind,
     ReportCost,
+    ReportQuality,
     ReportSkipped,
     ViewKind,
 )
@@ -318,15 +320,43 @@ def select_unfused(state: FusionState, ctx: FusionContext) -> str:
     sat_ids = {o.id for o in state.unfused if _is_satellite(o)}
     used: set[str] = set()
     state.replay_street, state.replay_overhead = [], None
-    for rec in reversed(model_repo.list_extractions(state.segment.id)):  # newest first: the latest paid answer wins
+    stored = model_repo.list_extractions(state.segment.id)
+    model = state.vision_model(ctx.settings.vision_model)
+    ver = MQ.prompt_version("perceive_streetlevel")
+    state.replay_passes = {}
+    for rec in stored:  # extra passes (index >= 1) are found by their cache key: image shas + model + prompt version + pass
         ids = list(rec.observation_ids)
-        if not ids:
+        pi = MQ.pass_index_of(rec.extraction)
+        if rec.kind == "streetlevel" and pi >= 1 and ids and set(ids) <= street_ids:
+            key = MQ.cache_key(kind="streetlevel", shas=[state.observations[i].sha256 for i in ids], model=model,
+                               prompt_ver=ver, pass_index=pi)
+            if MQ.prov_of(rec.extraction).get("cache_key") == key:
+                state.replay_passes[(_batch_id("sv", ids), pi)] = rec
+    ov_ver = MQ.prompt_version("perceive_overhead")
+
+    def _pass0_valid(rec, kind: str, prompt_ver: str) -> bool:
+        """Pass-0 replay needs the same cache key (image shas, model, prompt version, pass 0) as a fresh call.
+        Records without `_prov` are legacy (written before provenance): they are replayed only when they and the
+        current run both use the default vision model and no pass beyond 0 is requested."""
+        prov = MQ.prov_of(rec.extraction)
+        if not prov:
+            default = ctx.settings.vision_model
+            return rec.model == default and model == default and state.quality.extraction_passes <= 1
+        key = MQ.cache_key(kind=kind, shas=[state.observations[i].sha256 for i in rec.observation_ids], model=model,
+                           prompt_ver=prompt_ver, pass_index=0)
+        return prov.get("cache_key") == key
+
+    for rec in reversed(stored):  # newest first: the latest paid answer wins
+        ids = list(rec.observation_ids)
+        if not ids or MQ.pass_index_of(rec.extraction) >= 1:
             continue
         if rec.kind == "streetlevel" and set(ids) <= street_ids and not (set(ids) & used):
-            state.replay_street.append(rec)
-            used |= set(ids)
+            if _pass0_valid(rec, "streetlevel", ver):
+                state.replay_street.append(rec)
+                used |= set(ids)
         elif rec.kind == "overhead" and state.replay_overhead is None and set(ids) <= sat_ids:
-            state.replay_overhead = rec
+            if _pass0_valid(rec, "overhead", ov_ver):
+                state.replay_overhead = rec
     state.replay_street.sort(key=lambda r: (min((state.observations[i].station_s or 0.0) for i in r.observation_ids),
                                             r.id))
     if not unfused_ids:
@@ -379,7 +409,7 @@ def prepare_views(state: FusionState, ctx: FusionContext) -> str:
     jobs: list[tuple[str, object, float]] = []
     if windows and state.replay_overhead is None:
         prompt = overhead_prompt(windows, ref, footpath_side=side)
-        jobs.append(("overhead", None, estimate_call_usd(ctx, ctx.settings.vision_model, [w.image for w in windows],
+        jobs.append(("overhead", None, estimate_call_usd(ctx, state.vision_model(ctx.settings.vision_model), [w.image for w in windows],
                                                          prompt, OverheadExtraction, OVERHEAD_MAX_TOKENS)))
     centre = ref.length_s / 2.0
 
@@ -389,8 +419,10 @@ def prepare_views(state: FusionState, ctx: FusionContext) -> str:
 
     for b in sorted(batches, key=lambda b: (distance(b), b.batch_id)):
         prompt = street_prompt(b, ref, footpath_side=side)
-        jobs.append(("street", b, estimate_call_usd(ctx, ctx.settings.vision_model, b.images, prompt,
-                                                    StreetExtraction, STREET_MAX_TOKENS)))
+        calls = state.quality.extraction_passes - sum(1 for p in range(1, state.quality.extraction_passes)
+                                                      if (b.batch_id, p) in state.replay_passes)
+        jobs.append(("street", b, calls * estimate_call_usd(ctx, state.vision_model(ctx.settings.vision_model), b.images,
+                                                            prompt, StreetExtraction, STREET_MAX_TOKENS)))
     state.est_calls_usd = round(sum(j[2] for j in jobs), 4)
     keep: list[tuple[str, object, float]] = []
     if jobs:
@@ -434,10 +466,16 @@ def _call(state: FusionState, ctx: FusionContext, *, step: str, images: list[LLM
 
 
 def _save_extraction(state: FusionState, ctx: FusionContext, *, batch_index: int, kind: str, ids: list[str],
-                     model: str, prompt_name: str, obj) -> None:
+                     model: str, prompt_name: str, obj, pass_index: int = 0, cost_usd: float = 0.0,
+                     cache_extra: str = "") -> None:
+    """Store the raw answer with its provenance (model, prompt version, pass index, cost, image shas, cache key)."""
+    shas = [state.observations[i].sha256 for i in ids if i in state.observations]
+    data = obj.model_dump(mode="json")
+    data[MQ.PROVENANCE_KEY] = MQ.provenance(kind=kind, shas=shas, model=model, prompt_name=prompt_name,
+                                            pass_index=pass_index, cost_usd=cost_usd, extra=cache_extra)
     model_repo.save_extraction(ExtractionCreate(
         segment_id=state.segment.id, run_id=ctx.run_id, batch_index=batch_index, kind=kind, observation_ids=ids,
-        model=model, prompt_name=prompt_name, extraction=obj.model_dump(mode="json")))
+        model=model, prompt_name=prompt_name, extraction=data))
     state.extractions_saved += 1
 
 
@@ -450,7 +488,7 @@ def perceive_overhead(state: FusionState, ctx: FusionContext) -> str:
     prompt = overhead_prompt(windows, state.ref, footpath_side=state.base.footpath_side)
     try:
         obj, usage = _call(state, ctx, step="perceive_overhead", images=[w.image for w in windows], prompt=prompt,
-                           schema=OverheadExtraction, model=ctx.settings.vision_model,
+                           schema=OverheadExtraction, model=state.vision_model(ctx.settings.vision_model),
                            prompt_name="perceive_overhead", max_tokens=OVERHEAD_MAX_TOKENS)
     except (SchemaValidationError, UpstreamError) as exc:
         state.overhead_result = None
@@ -460,38 +498,77 @@ def perceive_overhead(state: FusionState, ctx: FusionContext) -> str:
         return "skipped after an invalid / failed answer"
     state.overhead_result = obj
     _save_extraction(state, ctx, batch_index=0, kind="overhead", ids=[w.observation.id for w in windows],
-                     model=ctx.settings.vision_model, prompt_name="perceive_overhead", obj=obj)
+                     model=state.vision_model(ctx.settings.vision_model), prompt_name="perceive_overhead", obj=obj,
+                     cost_usd=usage.cost_usd)
     return (f"{len(windows)} window(s): {len(obj.windows)} answered; {usage.input_tokens} in / "
             f"{usage.output_tokens} out tokens, ${usage.cost_usd:.4f}")
 
 
 def perceive_streetlevel(state: FusionState, ctx: FusionContext) -> str:
+    """One extraction per batch and pass. Pass 0 is the ordinary call; passes 1..N-1 (max-quality) re-ask the same
+    images independently. Every pass is replayed from storage when it was already paid for."""
     assert state.ref is not None and state.base is not None
     replay = {_batch_id("sv", list(r.observation_ids)): r for r in state.replay_street}
+    model = state.vision_model(ctx.settings.vision_model)
+    n_pass = state.quality.extraction_passes
     done = replayed = skipped = 0
+    extra_stopped = False
     for index, batch in enumerate(state.street_batches):
         record = replay.get(batch.batch_id)
         if record is not None:
             state.street_results.append((batch, StreetExtraction.model_validate(record.extraction)))
             replayed += 1
-            continue
-        prompt = street_prompt(batch, state.ref, footpath_side=state.base.footpath_side)
-        try:
-            obj, _usage = _call(state, ctx, step=f"perceive_streetlevel_{index + 1}", images=batch.images,
-                                prompt=prompt, schema=StreetExtraction, model=ctx.settings.vision_model,
-                                prompt_name="perceive_streetlevel", max_tokens=STREET_MAX_TOKENS)
-        except (SchemaValidationError, UpstreamError) as exc:
-            skipped += 1
-            state.skipped_batches.append(batch.batch_id)
-            state.degraded = True
-            state.warn(f"Street-level batch {index + 1} was skipped ({getattr(exc, 'message', str(exc))[:140]}); "
-                       f"its {len(batch.observations)} photo(s) stay unfused and are retried next run.")
-            continue
-        state.street_results.append((batch, obj))
-        _save_extraction(state, ctx, batch_index=index, kind="streetlevel", ids=[o.id for o in batch.observations],
-                         model=ctx.settings.vision_model, prompt_name="perceive_streetlevel", obj=obj)
-        done += 1
-    return f"{done} call(s), {replayed} replayed, {skipped} skipped"
+            state.cache_hits += 1
+        else:
+            prompt = street_prompt(batch, state.ref, footpath_side=state.base.footpath_side)
+            try:
+                obj, usage = _call(state, ctx, step=f"perceive_streetlevel_{index + 1}", images=batch.images,
+                                   prompt=prompt, schema=StreetExtraction, model=model,
+                                   prompt_name="perceive_streetlevel", max_tokens=STREET_MAX_TOKENS)
+            except (SchemaValidationError, UpstreamError) as exc:
+                skipped += 1
+                state.skipped_batches.append(batch.batch_id)
+                state.degraded = True
+                state.warn(f"Street-level batch {index + 1} was skipped ({getattr(exc, 'message', str(exc))[:140]}); "
+                           f"its {len(batch.observations)} photo(s) stay unfused and are retried next run.")
+                continue
+            state.street_results.append((batch, obj))
+            _save_extraction(state, ctx, batch_index=index, kind="streetlevel", ids=[o.id for o in batch.observations],
+                             model=model, prompt_name="perceive_streetlevel", obj=obj, cost_usd=usage.cost_usd)
+            done += 1
+        for p in range(1, n_pass):
+            stored = state.replay_passes.get((batch.batch_id, p))
+            if stored is not None:
+                state.street_results.append((batch, StreetExtraction.model_validate(stored.extraction)))
+                state.cache_hits += 1
+                replayed += 1
+                continue
+            if extra_stopped:
+                state.passes_skipped += 1
+                continue
+            prompt = street_prompt(batch, state.ref, footpath_side=state.base.footpath_side)
+            try:
+                obj, usage = _call(state, ctx, step=f"perceive_streetlevel_{index + 1}_p{p + 1}", images=batch.images,
+                                   prompt=prompt, schema=StreetExtraction, model=model,
+                                   prompt_name="perceive_streetlevel", max_tokens=STREET_MAX_TOKENS)
+            except BudgetExceeded as exc:  # the global hard stop: keep what the earlier passes gave us
+                extra_stopped = True
+                state.passes_skipped += 1
+                state.degraded = True
+                state.warn(f"Extra extraction passes stopped at the global budget: {exc.message[:140]}")
+                continue
+            except (SchemaValidationError, UpstreamError) as exc:
+                state.passes_skipped += 1
+                state.warn(f"Extraction pass {p + 1} of batch {index + 1} was skipped "
+                           f"({getattr(exc, 'message', str(exc))[:120]}); the other passes are kept.")
+                continue
+            state.street_results.append((batch, obj))
+            _save_extraction(state, ctx, batch_index=index, kind="streetlevel", ids=[o.id for o in batch.observations],
+                             model=model, prompt_name="perceive_streetlevel", obj=obj, pass_index=p,
+                             cost_usd=usage.cost_usd)
+            done += 1
+    return f"{done} call(s), {replayed} replayed, {skipped} skipped" + (
+        f", {n_pass} passes per batch" if n_pass > 1 else "")
 
 
 # ------------------------------------------------------------------ 10. project_detections
@@ -514,11 +591,24 @@ def project_detections(state: FusionState, ctx: FusionContext) -> str:
         batches.append(ProjectedBatch(batch_id="ov-consumed-" + _batch_id("x", list(sat_ids))[2:],
                                       observation_ids=sat_ids, detections=(), strips=(), states=(), facades=(),
                                       visible=()))
+    by_batch: dict[str, list[ProjectedBatch]] = {}
+    order: list[str] = []
     for batch, extraction in state.street_results:
         projected, drops = convert_street_batch(batch, extraction, ref)
-        batches.append(projected)
+        if batch.batch_id not in by_batch:
+            order.append(batch.batch_id)
+        by_batch.setdefault(batch.batch_id, []).append(projected)
         dropped += len(drops)
-        disagreements += sum("range_disagreement" in d.flags for d in projected.detections)
+    totals = {"passes": 0, "detections_in": 0, "detections_out": 0, "unanimous": 0, "disputed": 0}
+    for bid in order:
+        group = by_batch[bid]
+        merged = MQ.agree(group)  # a single pass is returned unchanged
+        if len(group) > 1:
+            for k, v in MQ.agreement_stats(group, merged).items():
+                totals[k] += v
+        batches.append(merged)
+        disagreements += sum("range_disagreement" in d.flags for d in merged.detections)
+    state.agreement = totals if totals["passes"] else {}
     state.projected, state.dropped_detections, state.range_disagreements = batches, dropped, disagreements
     if not batches:
         if state.calls_attempted and not state.calls_succeeded:
@@ -625,21 +715,36 @@ def critique_once(n: int) -> StepFn:
         ctx.previews_dir.mkdir(parents=True, exist_ok=True)
         render.save(ctx.previews_dir / f"critique{n}.png", format="PNG", optimize=True)
         crop_imgs, frames, used_ids = _critique_inputs(state, ctx)
-        state.calls_attempted += 1
-        try:
-            result, usage = run_critique(ctx.llm, run_id=ctx.run_id, model=model, render=render, crops=crop_imgs,
-                                         street_frames=frames, model_slug=ctx.settings.review_model,
-                                         step=f"critique_{n}")
-        except BudgetExceeded as exc:
-            state.warn(f"Critique {n} was skipped: {exc.message[:160]}")
-            return "skipped (budget)"
-        except (SchemaValidationError, UpstreamError) as exc:
-            state.warn(f"Critique {n} failed ({getattr(exc, 'message', str(exc))[:140]}); the candidate is kept.")
-            return "skipped (the critique call failed)"
-        state.calls_succeeded += 1
-        state.cost.add(usage.input_tokens, usage.output_tokens, usage.cost_usd, usage.calls)
-        _save_extraction(state, ctx, batch_index=n - 1, kind="critique", ids=used_ids,
-                         model=ctx.settings.review_model, prompt_name="critique_model", obj=result)
+        review_model = state.review_model(ctx.settings.review_model)
+        # the answer depends on the candidate model under review, so the cache key includes its summary
+        from hero.fusion.critique import model_summary
+
+        digest = MQ.cache_key(kind="critique", shas=[], model="", prompt_ver="", pass_index=0,
+                              extra=model_summary(model))
+        key = MQ.cache_key(kind="critique", shas=[state.observations[i].sha256 for i in used_ids if i in state.observations],
+                           model=review_model, prompt_ver=MQ.prompt_version("critique_model"), pass_index=n - 1,
+                           extra=digest)
+        hit = next((r for r in model_repo.list_extractions(state.segment.id) if r.kind == "critique"
+                    and MQ.prov_of(r.extraction).get("cache_key") == key), None)
+        if hit is not None:
+            result, cost = CritiqueResult.model_validate(hit.extraction), 0.0
+            state.cache_hits += 1
+        else:
+            state.calls_attempted += 1
+            try:
+                result, usage = run_critique(ctx.llm, run_id=ctx.run_id, model=model, render=render, crops=crop_imgs,
+                                             street_frames=frames, model_slug=review_model, step=f"critique_{n}")
+            except BudgetExceeded as exc:
+                state.warn(f"Critique {n} was skipped: {exc.message[:160]}")
+                return "skipped (budget)"
+            except (SchemaValidationError, UpstreamError) as exc:
+                state.warn(f"Critique {n} failed ({getattr(exc, 'message', str(exc))[:140]}); the candidate is kept.")
+                return "skipped (the critique call failed)"
+            state.calls_succeeded += 1
+            state.cost.add(usage.input_tokens, usage.output_tokens, usage.cost_usd, usage.calls)
+            cost = usage.cost_usd
+            _save_extraction(state, ctx, batch_index=n - 1, kind="critique", ids=used_ids, model=review_model,
+                             prompt_name="critique_model", obj=result, pass_index=n - 1, cost_usd=cost, cache_extra=digest)
         cleaned, pre_skipped = drop_unknown_entity_ops(model, result)
         new_model, changes, skipped = apply_critique(model, cleaned.ops, run_id=ctx.run_id, now=_now())
         state.candidate = new_model
@@ -651,7 +756,7 @@ def critique_once(n: int) -> StepFn:
             preview_url=f"/media/previews/{ctx.run_id}/critique{n}.png",
             detail=f"{len(result.ops)} op(s), {len(changes)} change(s), {len(all_skipped)} skipped"))
         return (f"accepted={result.accepted}; {len(result.ops)} op(s), {len(changes)} applied, "
-                f"{len(all_skipped)} skipped; ${usage.cost_usd:.4f}")
+                f"{len(all_skipped)} skipped; ${cost:.4f}" + (" (replayed)" if hit is not None else ""))
 
     return run
 
@@ -667,7 +772,7 @@ def publish(state: FusionState, ctx: FusionContext) -> str:
     bundle = publish_mod.assemble_version(
         candidate=candidate, base=state.base, observations=state.observations, assets=assets,
         segment_name=seg.name, city=seg.city,
-        models={"vision": ctx.settings.vision_model, "review": ctx.settings.review_model},
+        models={"vision": state.vision_model(ctx.settings.vision_model), "review": state.review_model(ctx.settings.review_model)},
         review_iterations=len(state.critique_iterations), warnings=list(state.warnings))
     state.fidelity_before, state.fidelity_after, state.diff = bundle.fidelity_before, bundle.fidelity_after, bundle.diff
     if not bundle.changed:
@@ -709,6 +814,19 @@ class _RunView:
     finished_at: datetime | None
 
 
+def _quality_report(state: FusionState, ctx: FusionContext, totals) -> ReportQuality | None:
+    q = state.quality
+    if not (q.preset or q.extraction_passes > 1 or q.review_rounds is not None):
+        return None
+    return ReportQuality(
+        preset=q.preset, model=state.chosen_model or ctx.settings.vision_model, extraction_passes=q.extraction_passes,
+        review_rounds_planned=q.rounds(ctx.settings.max_review_iterations),
+        review_rounds_run=len(state.critique_iterations), early_stop=state.review_stop,
+        extraction_calls=len(totals.calls), cache_hits=state.cache_hits, passes_skipped=state.passes_skipped,
+        prompt_versions={n: MQ.prompt_version(n) for n in ("perceive_streetlevel", "perceive_overhead", "critique_model")},
+        agreement=dict(state.agreement))
+
+
 def build_report(state: FusionState, ctx: FusionContext, *, failed: bool = False):
     """The deterministic ``RunReport`` for the current state (``None`` when there is no base model to describe)."""
     base = state.base
@@ -740,4 +858,5 @@ def build_report(state: FusionState, ctx: FusionContext, *, failed: bool = False
         fid_after=state.fidelity_after, new_observations=state.new_observations,
         cached_count=len(state.cached_observations), costs=costs, warnings=warnings, now=now,
         cached_observations=state.cached_observations, skipped=skipped,
-        degraded=state.degraded or failed or state.error is not None)
+        degraded=state.degraded or failed or state.error is not None,
+        model_id=state.chosen_model or ctx.settings.vision_model, quality=_quality_report(state, ctx, totals))

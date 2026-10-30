@@ -7,6 +7,7 @@ Function index
 --------------
 observations   upsert_observation, get_observations, get_observation, observation_counts
 versions       head_version, get_version, list_versions, save_version_only, publish_version
+derived cache  update_derived (recompile: scene/scene_schema/compiled_by/gaps/export of one version), get_export
 extractions    save_extraction, list_extractions
 run reports    save_run_report, get_run_report
 
@@ -108,6 +109,11 @@ class ModelVersionCreate(BaseModel):
     fidelity: FidelityMap
     diff: ModelDiff | None = None
     summary: str = ""
+    # Derived cache (Alembic 0003). ``scene_schema`` defaults to the scene's own ``schema_version``.
+    scene_schema: int | None = None
+    compiled_by: str | None = None
+    gaps: dict[str, Any] | None = None
+    export: dict[str, Any] | None = None
 
     @model_validator(mode="after")
     def _consistent_with_model(self) -> "ModelVersionCreate":
@@ -130,6 +136,7 @@ class ModelVersionSummary(BaseModel):
     observation_count: int
     fidelity_level: int
     summary: str
+    scene_schema: int = 2
 
 
 class ModelVersionRecord(BaseModel):
@@ -150,6 +157,10 @@ class ModelVersionRecord(BaseModel):
     observation_count: int
     fidelity_level: int
     created_at: datetime
+    scene_schema: int = 2
+    compiled_by: str | None = None
+    gaps: dict[str, Any] | None = None
+    export: dict[str, Any] | None = None
 
 
 class ExtractionCreate(BaseModel):
@@ -205,6 +216,7 @@ def _version_record(row: models.ModelVersionRow) -> ModelVersionRecord:
         diff=ModelDiff.model_validate(row.diff_json) if row.diff_json else None, summary=row.summary,
         model_hash=row.model_hash.strip(), entity_count=row.entity_count, observation_count=row.observation_count,
         fidelity_level=row.fidelity_level, created_at=_aware(row.created_at),
+        scene_schema=row.scene_schema, compiled_by=row.compiled_by, gaps=row.gaps_json, export=row.export_json,
     )
 
 
@@ -213,6 +225,7 @@ def _version_summary(row: models.ModelVersionRow) -> ModelVersionSummary:
         version=row.version, kind=row.kind, parent_version=row.parent_version, run_id=row.run_id,
         created_at=_aware(row.created_at), entity_count=row.entity_count,
         observation_count=row.observation_count, fidelity_level=row.fidelity_level, summary=row.summary,
+        scene_schema=row.scene_schema,
     )
 
 
@@ -302,6 +315,19 @@ def _hash(model: CanonicalModel) -> str:
     return model_hash(model)
 
 
+def _schema_of(scene: dict[str, Any] | None, explicit: int | None = None) -> int:
+    if explicit is not None:
+        return explicit
+    v = scene.get("schema_version") if scene else None
+    return v if isinstance(v, int) else 2
+
+
+def _compiled_by_of(scene: dict[str, Any] | None) -> str | None:
+    ref = scene.get("model") if scene else None
+    value = ref.get("compiled_by") if isinstance(ref, dict) else None
+    return str(value)[:64] if value else None
+
+
 def _head(s: Session, segment_id: str) -> int | None:
     return s.scalar(select(func.max(models.ModelVersionRow.version))
                     .where(models.ModelVersionRow.segment_id == segment_id))
@@ -341,6 +367,8 @@ def _insert_version(s: Session, segment_id: str, rec: ModelVersionCreate) -> mod
         diff_json=rec.diff.model_dump(mode="json") if rec.diff else None, summary=rec.summary,
         model_hash=_hash(rec.model), entity_count=entity_count,
         observation_count=len(rec.model.fused_observation_ids), fidelity_level=rec.fidelity.overall.level,
+        scene_schema=_schema_of(rec.scene, rec.scene_schema), compiled_by=rec.compiled_by or _compiled_by_of(rec.scene),
+        gaps_json=rec.gaps, export_json=rec.export,
     )
     s.add(row)
     s.flush()
@@ -357,6 +385,7 @@ def save_version_only(segment_id: str, rec: ModelVersionCreate, *,
 def _apply_segment_pointer(seg: models.Segment, rec: ModelVersionCreate, run_id: str | None,
                            thumbnail_path: str | None, quality: str) -> None:
     seg.scene_json = rec.scene
+    seg.scene_schema = _schema_of(rec.scene, rec.scene_schema)
     seg.status = "ready"
     seg.quality = quality
     seg.latest_run_id = run_id
@@ -382,6 +411,45 @@ def publish_version(segment_id: str, rec: ModelVersionCreate, *, thumbnail_path:
         _apply_segment_pointer(seg, rec, rec.run_id, thumbnail_path, quality)
         s.flush()
         return _version_record(row)
+
+
+def update_derived(segment_id: str, version: int, *, scene: dict[str, Any], compiled_by: str | None,
+                   gaps: dict[str, Any] | None, export: dict[str, Any] | None, scene_schema: int | None = None,
+                   session: Session | None = None) -> ModelVersionRecord:
+    """Overwrite ONLY the derived columns of ``version`` (``scene_json / scene_schema / compiled_by / gaps_json /
+    export_json``) - the knowledge columns (``model_json``, ``fidelity_json``, ``diff_json``, ``model_hash``) are never
+    touched. When ``version`` is the head and the segment already serves a scene, the segment pointer
+    (``segments.scene_json / scene_schema``) follows, in the same transaction.
+    """
+    with _session(session) as s:
+        seg = _get_segment_row(s, segment_id=segment_id)
+        row = s.scalars(select(models.ModelVersionRow).where(
+            models.ModelVersionRow.segment_id == segment_id, models.ModelVersionRow.version == version)).first()
+        if row is None:
+            raise InvalidInputError(f"segment has no model version {version}.")
+        schema = _schema_of(scene, scene_schema)
+        row.scene_json = scene
+        row.scene_schema = schema
+        row.compiled_by = compiled_by[:64] if compiled_by else None
+        row.gaps_json = gaps
+        row.export_json = export
+        if version == _head(s, segment_id) and seg.scene_json is not None:
+            seg.scene_json = scene
+            seg.scene_schema = schema
+            seg.updated_at = models.utcnow()
+        s.flush()
+        return _version_record(row)
+
+
+def get_export(segment_id: str, version: int | None = None, *, session: Session | None = None) -> dict[str, Any] | None:
+    """``export_json`` of ``version`` (default: head); ``None`` when never exported."""
+    with _session(session) as s:
+        n = _head(s, segment_id) if version is None else version
+        if n is None:
+            return None
+        row = s.scalars(select(models.ModelVersionRow).where(
+            models.ModelVersionRow.segment_id == segment_id, models.ModelVersionRow.version == n)).first()
+        return dict(row.export_json) if row is not None and row.export_json else None
 
 
 # ------------------------------------------------------------------ extractions

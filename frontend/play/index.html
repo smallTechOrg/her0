@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
   <title>#hero — play</title>
   <link rel="stylesheet" href="/css/base.css?v=3">
-  <link rel="stylesheet" href="/css/game.css?v=4">
+  <link rel="stylesheet" href="/css/game.css?v=5">
+  <script type="importmap">{"imports": {"three": "/vendor/three.module.js"}}</script>
 </head>
 <body>
   <main id="app" data-hero-page="play" class="play">
@@ -20,17 +21,21 @@
       <button type="button" id="hud-about" data-testid="hud-about" class="hud-pause" aria-label="Pause and show About this street" title="Pause · About this street">&#10074;&#10074;</button>
     </div>
     <div id="flash" aria-hidden="true"></div>
+    <div id="toast" data-testid="hit-toast" role="status" aria-live="polite"></div>
 
     <section id="panel-loading" class="panel" aria-busy="true">
       <h2 id="loading-name">Loading street…</h2>
-      <p class="muted">Building the street from satellite + street view…</p>
+      <p class="muted">Loading the street model…</p>
       <p class="muted" id="loading-progress">Fetching scene…</p>
     </section>
 
     <section id="panel-error" class="panel" hidden>
       <h2>Couldn't load this street</h2>
       <p class="error" id="error-reason"></p>
-      <a class="btn-secondary" href="/">Back to gallery</a>
+      <div class="btn-row">
+        <button type="button" id="error-retry" data-testid="error-retry">Retry</button>
+        <a class="btn-secondary" href="/">Back to gallery</a>
+      </div>
     </section>
 
     <section id="panel-ready" class="panel" hidden>
@@ -49,6 +54,6 @@
 
     <section id="results" class="panel results" hidden aria-label="Run results"></section>
   </main>
-  <script type="module" src="/js/game/main.js?v=4"></script>
+  <script type="module" src="/js/game/main.js?v=5"></script>
 </body>
 </html>

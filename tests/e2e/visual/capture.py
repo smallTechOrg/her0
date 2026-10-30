@@ -64,6 +64,9 @@ def start_server(port: int, scratch: Path) -> subprocess.Popen:
     subprocess.run(["sqlite3", str(src / "hero.db"), f".backup '{data / 'hero.db'}'"], check=True)
     env = {**os.environ, "HERO_DATA_DIR": str(data), "HERO_DATABASE_URL": f"sqlite:///{data / 'hero.db'}",
            "HERO_PORT": str(port), "HERO_HOST": "127.0.0.1"}
+    subprocess.run(["uv", "run", "alembic", "upgrade", "head"], cwd=ROOT, env=env, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.run(["uv", "run", "python", "-m", "hero.tools.recompile", "--slug", BELLANDUR_SLUG], cwd=ROOT, env=env, check=True,
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     proc = subprocess.Popen(["uv", "run", "hero-serve"], cwd=ROOT, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     for _ in range(120):
         try:
@@ -77,7 +80,7 @@ def start_server(port: int, scratch: Path) -> subprocess.Popen:
     raise RuntimeError("scratch hero server did not come up")
 
 
-def capture_scene(browser, base: str, name: str, slug: str, scene_json: Path | None, out: Path, meta: dict) -> None:
+def capture_scene(browser, base: str, name: str, slug: str, scene_json: Path | None, out: Path, meta: dict, street: dict | None = None) -> None:
     page: Page = browser.new_page(viewport=VIEWPORT)
     errors: list[str] = []
     page.on("pageerror", lambda e: errors.append(str(e)))
@@ -87,13 +90,17 @@ def capture_scene(browser, base: str, name: str, slug: str, scene_json: Path | N
         raw = json.loads(scene_json.read_text())
         body = json.dumps({"ok": True, "data": raw.get("data", raw) if raw.get("ok") else raw})
         page.route(f"**/api/segments/{slug}/scene", lambda r: r.fulfill(status=200, content_type="application/json", body=body))
-    if name == "curved":
+    if street is not None:                    # v3 stand-in: scene + glb + manifest from the real pipeline, intercepted
+        from tests.e2e.glb_harness import install_real_street
+        install_real_street(page, street)
+    elif name == "curved":
         tile = CURVED_TILE.read_bytes()
         page.route("**/media/imagery/s4-curved-tile.png", lambda r: r.fulfill(status=200, content_type="image/png", body=tile))
     page.goto(f"{base}/play/?segment={slug}")
     page.wait_for_selector("#start:not([disabled])", timeout=90_000)
+    page.add_style_tag(content="#flash { display: none !important; }")   # the hit flash would tint the evidence shots
     page.wait_for_timeout(500)
-    info = {"slug": slug, "scene_source": "recorded-json" if scene_json else "server", "shots": {}}
+    info = {"slug": slug, "scene_source": "intercepted-v3-pipeline-build" if street else ("recorded-json" if scene_json else "server"), "shots": {}}
     for d in DISTANCES:
         if d == 0:
             page.wait_for_timeout(300)
@@ -103,12 +110,32 @@ def capture_scene(browser, base: str, name: str, slug: str, scene_json: Path | N
             page.evaluate("(t) => { window.__cap.target = t; window.__cap.hit = false; window.__cap.freeze = false; }", d)
             page.wait_for_function("() => window.__cap.hit || ['crashed','results'].includes(window.__hero.state.phase)", timeout=240_000, polling=100)
         st = page.evaluate("() => ({d: window.__hero.state.distance_m, phase: window.__hero.state.phase, perf: window.__hero.perf})")
+        if d == 0:        # the start scrim would hide the scene: shoot the 0 m frame with it transparent (it stays clickable)
+            page.evaluate("() => { document.getElementById('panel-ready').style.opacity = '0'; }")
         page.screenshot(path=str(out / f"{name}_{d}m.png"))
+        if d == 0:
+            page.evaluate("() => { document.getElementById('panel-ready').style.opacity = ''; }")
         info["shots"][f"{d}m"] = {"distance_m": round(st["d"], 2), "phase": st["phase"], "perf": st["perf"]}
     info["hero_source"] = page.evaluate("() => (window.__hero && window.__hero.source) || null")
     info["console_errors"] = errors[:20]
     meta[name] = info
     page.close()
+
+
+def build_curved_street() -> dict:
+    """Compile the committed curved StreetPlan fixture with the real exporter (procedural textures)."""
+    import tempfile
+    from hero.export.pipeline import build_and_store_exports
+    from hero.model.street_plan_types import StreetPlan
+    plan = StreetPlan.model_validate_json((ROOT / "tests/fixtures/plan/curved.plan.json").read_text())
+    data_dir = Path(tempfile.mkdtemp(prefix="curved_"))
+    rec = build_and_store_exports(slug=plan.slug, version=1, model=None, scene=None, plan=plan, observations={}, data_dir=data_dir)
+    scene = json.loads((ROOT / "tests/fixtures/scene_v3/curved.json").read_text())
+    slug = scene["segment"]["slug"]
+    scene["assets"] = {"mesh_sha256": rec.mesh_sha256, "sha8": rec.sha8, "glb_url": f"/api/segments/{slug}/model.glb?v={rec.sha8}",
+                       "manifest_url": f"/api/segments/{slug}/manifest.json?v={rec.sha8}", "xodr_url": f"/api/segments/{slug}/street.xodr?v={rec.sha8}",
+                       "gameplay_url": "/api/gameplay.json", "glb_bytes": rec.glb_bytes, "triangles": rec.triangles, "primitives": rec.primitives}
+    return {"slug": slug, "scene": scene, "glb": (data_dir / rec.files["glb"]).read_bytes(), "manifest": (data_dir / rec.files["manifest"]).read_bytes()}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -117,7 +144,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--scene", default="all", choices=["bellandur", "curved", "all"])
     ap.add_argument("--out", required=True, type=Path)
     ap.add_argument("--meta", type=Path, help="sidecar JSON path (default: <out>/../<label>_meta.json)")
-    ap.add_argument("--port", type=int, default=8735)
+    ap.add_argument("--port", type=int, default=8737)
     ap.add_argument("--base-url", help="use a running server instead of starting a scratch one")
     ap.add_argument("--bellandur-source", choices=["recorded", "server"])
     ap.add_argument("--scratch", type=Path, default=Path("/private/tmp/claude-501/-Users-sai/ac0adbe2-83fb-4f31-bc20-64ea4822e608/scratchpad/s5/serve"))
@@ -137,7 +164,11 @@ def main(argv: list[str] | None = None) -> int:
             if a.scene in ("bellandur", "all"):
                 capture_scene(browser, base, "bellandur", BELLANDUR_SLUG, BELLANDUR_JSON if bsrc == "recorded" else None, a.out, meta)
             if a.scene in ("curved", "all"):
-                capture_scene(browser, base, "curved", "s4-curved-fixture-w", CURVED_JSON, a.out, meta)
+                if a.label == "after":
+                    street = build_curved_street()
+                    capture_scene(browser, base, "curved", street["slug"], None, a.out, meta, street)
+                else:
+                    capture_scene(browser, base, "curved", "s4-curved-fixture-w", CURVED_JSON, a.out, meta)
             browser.close()
     finally:
         if proc:

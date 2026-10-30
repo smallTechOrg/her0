@@ -25,6 +25,7 @@ from hero.config import get_settings
 from hero.db import repo
 from hero.db.repo import RunUpdate, SegmentUpdate, StepRecord
 from hero.fusion import publish as publish_mod
+from hero.fusion.maxquality import Quality
 from hero.fusion import steps as S
 from hero.fusion.state import FusionState, PipelineError
 from hero.imagery.cache import ImageryCache
@@ -55,15 +56,21 @@ def _now() -> datetime:
 
 
 def run_inputs(settings, segment: repo.SegmentRecord, *, mode: str, plan_overrides: dict[str, Any] | None,
-               base_version: int | None) -> dict[str, Any]:
+               base_version: int | None, model: str | None = None,
+               quality: dict[str, Any] | Quality | None = None) -> dict[str, Any]:
+    """``model`` (already validated by ``hero.llm.models.resolve_model``) sets BOTH the vision and the review model of
+    the run; None keeps the configured defaults. ``models.source`` records which."""
     from hero.imagery.plan import default_plan, merge_plan
 
     plan = merge_plan(default_plan(settings), dict(plan_overrides or {}))
+    q = quality if isinstance(quality, Quality) else Quality.model_validate(quality or {})
     return {
+        "quality": q.model_dump(),
         "mode": mode, "imagery_plan": plan.model_dump(mode="json"), "plan_overrides": dict(plan_overrides or {}),
         "base_version": base_version, "structured_mode": settings.structured_mode,
         "start": segment.start.model_dump(), "end": segment.end.model_dump(), "footpath_side": segment.footpath_side.value,
-        "models": {"vision": settings.vision_model, "review": settings.review_model},
+        "models": ({"vision": model, "review": model, "source": "request"} if model else
+                   {"vision": settings.vision_model, "review": settings.review_model, "source": "default"}),
         "max_iterations": settings.max_review_iterations, "batch_images": settings.perception_batch_images,
         "budgets": {"total_usd": settings.claude_budget_usd},
     }
@@ -213,11 +220,12 @@ def succeed(state: FusionState) -> repo.PipelineRunRecord:
 # ------------------------------------------------------------------ entry point
 
 
-def build_context(run_id: str, settings=None, *, llm=None, google=None, http: httpx.Client | None = None) -> S.FusionContext:
+def build_context(run_id: str, settings=None, *, llm=None, google=None, http: httpx.Client | None = None,
+                  models: dict[str, str] | None = None) -> S.FusionContext:
     settings = settings or get_settings()
     prices = load_price_table(settings)
-    prices.require(settings.vision_model)
-    prices.require(settings.review_model)
+    prices.require((models or {}).get("vision") or settings.vision_model)
+    prices.require((models or {}).get("review") or settings.review_model)
     guard = BudgetGuard(settings)
     data_dir = settings.data_dir_abs
     return S.FusionContext(
@@ -236,12 +244,13 @@ def run_fusion(run_id: str, *, llm=None, google=None, http: httpx.Client | None 
     state = FusionState(
         run=run, segment=segment, mode=str(inputs.get("mode", "generate")), settings_snapshot=dict(inputs),
         plan_overrides=dict(inputs.get("plan_overrides") or {}), started_at=_now(),
-        previous_segment_status=segment.status.value)
+        models={k: str(v) for k, v in dict(inputs.get("models") or {}).items() if k in ("vision", "review") and v},
+        previous_segment_status=segment.status.value, quality=Quality.from_inputs(inputs.get("quality")))
     repo.update_run(run_id, RunUpdate(status=RunStatus.running, started_at=state.started_at))
     if segment.status is not SegmentStatus.ready:  # a ready street stays playable while it is regenerated
         repo.update_segment(segment.id, SegmentUpdate(status=SegmentStatus.generating))
     try:
-        ctx = build_context(run_id, settings, llm=llm, google=google, http=http)
+        ctx = build_context(run_id, settings, llm=llm, google=google, http=http, models=state.models)
     except Exception as exc:  # noqa: BLE001 - config errors are reported on the run, never raised
         state.error = PipelineError(code="upstream_error", message=str(exc), step="build_context")
         return fail(state)
@@ -285,11 +294,19 @@ def _execute(state: FusionState, ctx: S.FusionContext) -> repo.PipelineRunRecord
     ]:
         if not run_step(state, ctx, step):
             return fail(state, ctx)
-    for n in range(1, max(0, settings.max_review_iterations) + 1):
+    rounds = state.quality.rounds(settings.max_review_iterations)
+    for n in range(1, max(0, rounds) + 1):
         before = len(state.critique_iterations)
         if not run_step(state, ctx, Step(f"critique_{n}", S.critique_once(n), recoverable=True)):
             return fail(state, ctx)
-        if len(state.critique_iterations) == before or state.critique_iterations[-1].accepted:
+        if len(state.critique_iterations) == before:
+            break
+        last = state.critique_iterations[-1]
+        if last.accepted:
+            break
+        if (state.quality.preset or state.quality.review_rounds is not None) and last.applied <= state.quality.review_stop_changes and n < rounds:
+            state.review_stop = (f"early stop after round {n}: the review applied {last.applied} change(s) "
+                                 f"(<= {state.quality.review_stop_changes}), so the model has converged")
             break
     if not run_step(state, ctx, Step("publish", S.publish, recoverable=False)):
         return fail(state, ctx)

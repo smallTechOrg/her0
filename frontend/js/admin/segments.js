@@ -55,6 +55,10 @@ function generateDisabledReason(seg) {
 function modelCell(m) {
   if (!m) return el('span', { class: 'muted', text: '—' });
   const bits = [el('span', { class: 'model-cell', 'data-fidelity': m.fidelity_level, text: `v${m.head_version} · ${m.fidelity_level}` })];
+  if (m.scene_schema != null) {
+    bits.push(' ', el('span', { class: 'scene-cell muted', 'data-testid': 'scene-schema', text: `· scene v${m.scene_schema}` }));
+    if (m.scene_schema < 3) bits.push(' ', el('span', { class: 'chip warn', 'data-testid': 'scene-stale', title: 'Open the segment and press Regenerate with what we have ($0) to upgrade', text: 'stale' }));
+  }
   if (m.legacy) bits.push(' ', el('span', { class: 'chip kind-legacy', title: 'Imported Phase-1 scene; placement unverified', text: 'legacy · placement unverified' }));
   return el('span', {}, bits);
 }

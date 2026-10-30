@@ -20,7 +20,7 @@ from hero.fusion.runner import run_inputs
 from hero.pipeline import registry
 from hero.scene.schema import FootpathSide, LatLon, Quality, RunStatus, Scene
 from tests.fixtures.google.fake_google import FakeGoogle, straight_ref
-from tests.integration.test_fusion_run import FORWARD_BACK, new_world
+from tests.integration.test_fusion_run import new_world
 
 SCENE_EXAMPLE = Path(__file__).resolve().parents[1] / "e2e" / "fixtures" / "scene_example.json"
 

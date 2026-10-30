@@ -39,7 +39,7 @@ from PIL import Image, ImageDraw
 from hero.config import PROJECT_ROOT
 from hero.imagery.cache import ImageryCache
 from hero.model.batch import FacadeDetection, ProjectedBatch, ProjectedDetection, StateSpan, StripSample, VisibleRegion
-from hero.model.compile import compile_scene
+from hero.model.compile import CompileResult, compile_scene, compile_scene_v2
 from hero.model.coverage import visible_regions
 from hero.model.describe import version_summary
 from hero.model.diff import diff_models
@@ -76,6 +76,11 @@ FIXTURE_NAME = "Fixture curved street"
 CITY = "Bengaluru"
 OUT_DIR = PROJECT_ROOT / "tests" / "e2e" / "fixtures" / "model_fixture"
 SCENE_OUT = PROJECT_ROOT / "tests" / "e2e" / "fixtures" / "scene_curved_v2.json"
+V3_DIR = PROJECT_ROOT / "tests" / "fixtures" / "scene_v3"      # Phase 2.1 r2: lite web scenes (curved.json, bellandur.json)
+PLAN_DIR = PROJECT_ROOT / "tests" / "fixtures" / "plan"        # the matching StreetPlans (*.plan.json)
+RECORDED_BELLANDUR = PROJECT_ROOT / "tests" / "fixtures" / "recorded" / "bellandur"
+BELLANDUR_NAME = "Bellandur Main Road"
+BELLANDUR_CITY = "Bengaluru"
 
 NOWS = [datetime(2026, 10, 30, h, 0, 0, tzinfo=UTC) for h in (9, 10, 11, 12)]  # v0, run 1, run 2, run 3
 RUN_IDS = ("fx-run-1", "fx-run-2", "fx-run-3")
@@ -643,7 +648,7 @@ def build() -> Bundle:
     tile = omap[groups["overhead"][0]]
     scenes, summaries = [], []
     for m, fid, df in zip(models, fids, diffs):
-        sc = compile_scene(m, observations=omap, assets={}, tile=tile, fidelity=fid, slug_name=FIXTURE_NAME, city=CITY)
+        sc = compile_scene_v2(m, observations=omap, assets={}, tile=tile, fidelity=fid, slug_name=FIXTURE_NAME, city=CITY)
         scenes.append(json.loads(sc.model_dump_json()))
         summaries.append(version_summary(m, df, fid))
 
@@ -731,12 +736,40 @@ def write(bundle: Bundle, out_dir: Path = OUT_DIR, scene_out: Path | None = SCEN
         scene_out.write_text(_dump(bundle.scenes[2]), encoding="utf-8")
 
 
+def build_v3(bundle: Bundle) -> dict[str, CompileResult]:
+    """Compile the curved fixture (model v2) and the recorded Bellandur model (v1) with the r2 compile."""
+    from hero.model.types import CanonicalModel, FidelityMap
+
+    omap = {o.id: o for o in bundle.observations}
+    tile = next(o for o in bundle.observations if o.kind is ObservationKind.satellite_overview)
+    curved = compile_scene(bundle.models[2], observations=omap, assets={}, tile=tile, fidelity=bundle.fidelities[2],
+                           slug_name=FIXTURE_NAME, city=CITY)
+    rec = RECORDED_BELLANDUR
+    model = CanonicalModel.model_validate_json((rec / "model_v1.json").read_text(encoding="utf-8"))
+    obs = {o["id"]: Observation.model_validate(o) for o in json.loads((rec / "observations.json").read_text(encoding="utf-8"))}
+    fid = FidelityMap.model_validate_json((rec / "fidelity_v1.json").read_text(encoding="utf-8"))
+    btile = next(o for o in obs.values() if o.kind is ObservationKind.satellite_overview)
+    bell = compile_scene(model, observations=obs, assets={}, tile=btile, fidelity=fid, slug_name=BELLANDUR_NAME,
+                         city=BELLANDUR_CITY)
+    return {"curved": curved, "bellandur": bell}
+
+
+def write_v3(results: dict[str, CompileResult], scene_dir: Path = V3_DIR, plan_dir: Path = PLAN_DIR) -> None:
+    scene_dir.mkdir(parents=True, exist_ok=True)
+    plan_dir.mkdir(parents=True, exist_ok=True)
+    for name, r in sorted(results.items()):
+        (scene_dir / f"{name}.json").write_text(_dump(_pyd(r.scene)), encoding="utf-8")
+        (plan_dir / f"{name}.plan.json").write_text(_dump(_pyd(r.plan)), encoding="utf-8")
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Generate the model fixture (tests/e2e/fixtures/model_fixture).")
     ap.add_argument("--out", type=Path, default=OUT_DIR)
     args = ap.parse_args(argv)
     bundle = build()
     write(bundle, args.out, SCENE_OUT if args.out == OUT_DIR else None)
+    if args.out == OUT_DIR:
+        write_v3(build_v3(bundle))
     m = bundle.models[2]
     print(f"wrote {args.out}: {len(bundle.observations)} observations, versions 0..2, "
           f"v2 has {m.computed_stats().entity_count} entities, fidelity L{bundle.fidelities[2].overall.level}")

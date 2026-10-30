@@ -1,6 +1,7 @@
 """Compile one canonical model version into a Scene v2 (spec/data.md -> "Scene JSON v2" and "Compile rules").
 
-``compile_scene`` is a pure function: no clock (``created_at`` is read from the model), no randomness, no network, no
+``compile_scene_v2`` (this module's Phase-2 compile, kept for the legacy path and its fixtures) and ``compile_scene``
+(Phase 2.1 r2: ``CompileResult(scene: SceneV3, plan: StreetPlan, gaps: GapReport)``) are pure functions: no clock (``created_at`` is read from the model), no randomness, no network, no
 dict-order dependence. The same model + observations + assets + tile + fidelity gives a byte-identical
 ``SceneV2.model_dump_json()``, also on a model that was round-tripped through JSON.
 
@@ -37,7 +38,13 @@ import math
 from dataclasses import dataclass, field
 from typing import Mapping, Sequence
 
-from hero.model import catalogue, describe
+from hero.export import load_gameplay
+from hero.export.gameplay_types import GameplayV1
+from hero.model import catalogue, describe, dynamic
+from hero.model.gap_types import GapReport
+from hero.model.scene_v3 import AboutV3, ModelRefV3, SceneV3
+from hero.model.street_plan_types import StreetPlan
+from hero.model.texture_types import TextureRefs
 from hero.model.diff import model_hash
 from hero.model.fidelity import LEVEL_LABELS
 from hero.model.refline import ReferenceLine
@@ -111,6 +118,41 @@ LANE_OVERLAP_M = 0.15
 TOKEN_EVERY_M = 10.0
 DEFAULT_BUILDING_COLOUR = "#b8b0a2"
 SYNTHETIC_TILE = (1280, 1280, 19, 2)
+
+
+@dataclass(frozen=True)
+class _Rules:
+    """The lane / token / walkability constants. ``LEGACY`` = the Phase-2 numbers (``compile_scene_v2``);
+    ``rules_from_gameplay`` reads ``gameplay.json`` (``compile_scene``)."""
+
+    road_edge_inset: float = PRIOR_PATH_OFFSET_M
+    lane_gap: float = 1.8
+    min_sep: float = MIN_LANE_SEP_M
+    prior_centre_offset: float = PRIOR_PATH_OFFSET_M
+    bands: tuple[float, float, float] = LANE_BAND_M
+    token_every: float = TOKEN_EVERY_M
+    max_tokens: int = MAX_TOKENS
+    crossing_lane: int = 1
+    coverage_weight: float = COVERAGE_WEIGHT
+    crossing_bonus: float = CROSSING_BONUS
+    hazard_weight: float = HAZARD_WEIGHT
+    hazard_norm: float = HAZARD_SATURATION
+    split: bool = False  # classify entities fixed / dynamic_context
+
+
+LEGACY = _Rules()
+KERB_BASE_M = 0.15  # prior kerb between a carriageway and a footpath
+
+
+def rules_from_gameplay(gp) -> _Rules:
+    ln, tk, wk = gp.lanes, gp.tokens, gp.scoring.walkability
+    return _Rules(
+        road_edge_inset=ln.road_edge_inset_m, lane_gap=ln.road_lane_gap_m, min_sep=ln.min_footpath_to_edge_m,
+        prior_centre_offset=KERB_BASE_M + ln.default_footpath_width_m / 2.0,
+        bands=(ln.default_footpath_width_m, ln.widths_m.road_edge, ln.widths_m.road),
+        token_every=tk.per_intact_m, max_tokens=min(MAX_TOKENS, tk.max_per_street), crossing_lane=tk.crossing_lane,
+        coverage_weight=wk.coverage_weight, crossing_bonus=wk.crossing_bonus, hazard_weight=wk.hazard_weight,
+        hazard_norm=wk.hazard_norm, split=True)
 
 
 # ------------------------------------------------------------------ small helpers
@@ -231,7 +273,7 @@ def _eval_station(model: CanonicalModel, s: float, sign: int) -> _Station:
     return _Station(s=s, interval=iv, fp=fp, strips=strips, edge=max(edges) if edges else DEFAULT_EDGE_M)
 
 
-def _fill_centres(stations: Sequence[_Station]) -> list[float]:
+def _fill_centres(stations: Sequence[_Station], prior_offset: float = PRIOR_PATH_OFFSET_M) -> list[float]:
     """Footpath centre per station; gaps (missing) take the nearest known centre, interpolated across the gap."""
     known = [(i, (st.fp.lo + st.fp.hi) / 2.0) for i, st in enumerate(stations) if st.fp is not None]
     out: list[float] = []
@@ -247,7 +289,7 @@ def _fill_centres(stations: Sequence[_Station]) -> list[float]:
         elif prev or nxt:
             out.append((prev or nxt)[1])  # type: ignore[index]
         else:
-            out.append(st.edge + PRIOR_PATH_OFFSET_M)
+            out.append(st.edge + prior_offset)
     return out
 
 
@@ -320,18 +362,18 @@ def _interp(stations: Sequence[_Station], s: float, getter) -> float:
     return getter(stations[-1])
 
 
-def _fp_width(st: _Station) -> float:
-    return st.fp.hi - st.fp.lo if st.fp is not None else LANE_BAND_M[0]
+def _fp_width(st: _Station, default: float = LANE_BAND_M[0]) -> float:
+    return st.fp.hi - st.fp.lo if st.fp is not None else default
 
 
-def _lanes_for(stations: Sequence[_Station], s: float, lat: float, width: float) -> list[int]:
+def _lanes_for(stations: Sequence[_Station], s: float, lat: float, width: float, rules: _Rules = LEGACY) -> list[int]:
     lo, hi = lat - width / 2.0, lat + width / 2.0
     need = min(LANE_OVERLAP_M, width)
-    fpw = _interp(stations, s, _fp_width)
+    fpw = _interp(stations, s, lambda st: _fp_width(st, rules.bands[0]))
     out = []
     for i in range(3):
         c = _interp(stations, s, lambda st, i=i: st.lane[i])
-        band = fpw if i == 0 else LANE_BAND_M[i]
+        band = fpw if i == 0 else rules.bands[i]
         overlap = min(hi, c + band / 2.0) - max(lo, c - band / 2.0)
         if overlap >= need - 1e-9:
             out.append(i)
@@ -339,7 +381,8 @@ def _lanes_for(stations: Sequence[_Station], s: float, lat: float, width: float)
 
 
 def _entity_object(e: Entity, model: CanonicalModel, g: _Geo, stations: Sequence[_Station], length: float,
-                   observations: Mapping[str, Observation], assets: Mapping[str, str]) -> list[SceneObjectV2]:
+                   observations: Mapping[str, Observation], assets: Mapping[str, str],
+                   rules: _Rules = LEGACY) -> list[SceneObjectV2]:
     cat = catalogue.entry(e.type)
     w0, h0, d0 = catalogue.default_size_m(e.type, e.subtype, e.extent.length_s)
     width = e.extent.width_t if e.extent.width_t > 0 else w0
@@ -348,7 +391,7 @@ def _entity_object(e: Entity, model: CanonicalModel, g: _Geo, stations: Sequence
     x = _r(min(max(e.position.s, 0.0), length - 1e-3))
     depth = max(0.0, min(depth, length + 5.0 - x))
     lat = g.sign * e.position.t
-    lanes = _lanes_for(stations, x, lat, max(width, 0.05))
+    lanes = _lanes_for(stations, x, lat, max(width, 0.05), rules)
     scenery = not lanes
     action = Action.none if scenery else Action(catalogue.action_for(e.type, e.attributes, in_lane_band=True))
     counts = describe.evidence_counts(e, observations)
@@ -370,7 +413,7 @@ def _entity_object(e: Entity, model: CanonicalModel, g: _Geo, stations: Sequence
     if cat.type is EntityType.tree and catalogue.emits_low_branch(e.type, e.attributes):
         lb_w, lb_h, lb_d = catalogue.default_size_m(EntityType.low_branch)
         lane0 = _interp(stations, x, lambda st: st.lane[0])  # the canopy hangs over the walkway
-        lb_lanes = _lanes_for(stations, x, lane0, lb_w)
+        lb_lanes = _lanes_for(stations, x, lane0, lb_w, rules)
         out.append(SceneObjectV2(
             id=f"lb-{e.id}", entity_id=e.id, type="low_branch", label="low branch", x_m=x, length_m=_r(lb_d),
             lanes=lb_lanes, action=Action.none if not lb_lanes else Action.slide, lateral_m=_r(lane0), yaw_deg=0.0,
@@ -382,7 +425,8 @@ def _entity_object(e: Entity, model: CanonicalModel, g: _Geo, stations: Sequence
     return out
 
 
-def _interval_objects(model: CanonicalModel, g: _Geo, stations: Sequence[_Station], length: float) -> list[SceneObjectV2]:
+def _interval_objects(model: CanonicalModel, g: _Geo, stations: Sequence[_Station], length: float,
+                      rules: _Rules = LEGACY) -> list[SceneObjectV2]:
     out: list[SceneObjectV2] = []
     for iv in model.profile:
         if iv.footpath_state not in (FootpathState.missing, FootpathState.blocked):
@@ -401,7 +445,7 @@ def _interval_objects(model: CanonicalModel, g: _Geo, stations: Sequence[_Statio
             desc = f"The footpath is blocked from {a} to {b} m."
         out.append(SceneObjectV2(
             id=oid, entity_id=None, type=typ, label=label, x_m=x, length_m=depth, lanes=[0], action=Action.dodge,
-            lateral_m=_r(lat), yaw_deg=0.0, size_m=SizeM(w=_r(_interp(stations, mid, _fp_width)), h=h, d=depth),
+            lateral_m=_r(lat), yaw_deg=0.0, size_m=SizeM(w=_r(_interp(stations, mid, lambda st: _fp_width(st, rules.bands[0]))), h=h, d=depth),
             confidence=conf, scenery=False, description=desc,
             evidence=ObjectEvidence(observation_count=0, sources=EvidenceSources(), summary=f"Footpath {iv.footpath_state.value} from {a} to {b} m "
                                     "(from the profile, not a detected object).", observation_ids=[],
@@ -414,16 +458,16 @@ def _interval_objects(model: CanonicalModel, g: _Geo, stations: Sequence[_Statio
 
 
 def _tokens(model: CanonicalModel, g: _Geo, stations: Sequence[_Station], objects: Sequence[SceneObjectV2],
-            length: float) -> list[Token]:
+            length: float, rules: _Rules = LEGACY) -> list[Token]:
     hazards = [o for o in objects if o.action != Action.none and 0 in o.lanes]
 
     def blocked(x: float) -> bool:
         return any(o.x_m - 0.5 <= x <= o.x_m + o.length_m + 0.5 for o in hazards)
 
-    marks = [(o.x_m, 1, TokenReason.crossing if o.type == "crossing" else TokenReason.ramp)
+    marks = [(o.x_m, rules.crossing_lane, TokenReason.crossing if o.type == "crossing" else TokenReason.ramp)
              for o in objects if o.type in ("crossing", "ramp") and o.x_m < length]
     marks.sort(key=lambda m: (m[0], m[2].value))
-    marks = marks[:MAX_TOKENS]
+    marks = marks[:rules.max_tokens]
     runs: list[tuple[float, float]] = []
     for iv in model.profile:
         if iv.footpath_state is FootpathState.intact:
@@ -433,14 +477,14 @@ def _tokens(model: CanonicalModel, g: _Geo, stations: Sequence[_Station], object
                 runs.append((iv.s_from, iv.s_to))
     cand: list[float] = []
     for a, b in runs:
-        for k in range(int((b - a) // TOKEN_EVERY_M)):
-            x0 = a + TOKEN_EVERY_M * (k + 0.5)
+        for k in range(int((b - a) // rules.token_every)):
+            x0 = a + rules.token_every * (k + 0.5)
             for shift in (0.0, 1.0, 2.0, 3.0, -1.0, -2.0, -3.0):
                 x = x0 + shift
                 if a + 0.25 <= x <= b - 0.25 and x < length and not blocked(x):
                     cand.append(_r(x))
                     break
-    room = MAX_TOKENS - len(marks)
+    room = rules.max_tokens - len(marks)
     if len(cand) > room:
         cand = [cand[(i * len(cand)) // room] for i in range(room)] if room > 0 else []
     items = [(x, 0, TokenReason.intact_footpath) for x in cand] + marks
@@ -454,13 +498,13 @@ def _tokens(model: CanonicalModel, g: _Geo, stations: Sequence[_Station], object
 
 
 def _walkability(model: CanonicalModel, objects: Sequence[SceneObjectV2], ranges: Sequence[CoverageRangeV2],
-                 length: float) -> Walkability:
+                 length: float, rules: _Rules = LEGACY) -> Walkability:
     intact = sum(r.length_m for r in ranges if r.state is FootpathState.intact)
     pct = min(100.0, max(0.0, _round_half_up(100.0 * intact / length, 1)))
     hazards = sum(1 for o in objects if o.action != Action.none)
     crossing = any(o.type == "crossing" for o in objects)
-    raw = (COVERAGE_WEIGHT * pct + (CROSSING_BONUS if crossing else 0.0)
-           + HAZARD_WEIGHT * max(0.0, 1.0 - hazards / HAZARD_SATURATION))
+    raw = (rules.coverage_weight * pct + (rules.crossing_bonus if crossing else 0.0)
+           + rules.hazard_weight * max(0.0, 1.0 - hazards / rules.hazard_norm))
     return Walkability(footpath_coverage_pct=pct, hazard_count=hazards, crossing_present=crossing,
                        score=int(min(100, max(0, _round_half_up(raw)))))
 
@@ -468,8 +512,44 @@ def _walkability(model: CanonicalModel, objects: Sequence[SceneObjectV2], ranges
 # ------------------------------------------------------------------ the compiler
 
 
-def compile_scene(model: CanonicalModel, *, observations: Mapping[str, Observation], assets: Mapping[str, str],
-                  tile: Observation | None, fidelity: FidelityMap, slug_name: str, city: str) -> SceneV2:
+@dataclass
+class _Core:
+    """Everything the two compiles share (stations, lanes, corridor, objects, tokens, walkability)."""
+
+    model: CanonicalModel
+    ref: ReferenceLine
+    length: float
+    side: str
+    sign: int
+    georef: TileGeoref
+    mpp: float
+    g: _Geo
+    tile: Observation | None
+    s_grid: list[float]
+    stations: list[_Station]
+    samples: list[PathSample]
+    corridor: Corridor
+    cross: CrossSectionV2
+    ranges: list[CoverageRangeV2]
+    objects: list[SceneObjectV2]
+    tokens: list[Token]
+    walk: Walkability
+    dynamic: list[tuple[Entity, int]]
+    rules: _Rules
+
+
+def _band_at(stations: Sequence[_Station], s: float) -> tuple[float, float]:
+    """Widened modelled-side footpath band at ``s`` (the prior band when the footpath is missing/unknown there)."""
+    st = min(stations, key=lambda x: abs(x.s - s))
+    if st.fp is not None and st.fp.state not in (FootpathState.missing.value, FootpathState.unknown.value):
+        lo = _interp(stations, s, lambda x: x.fp.lo if x.fp is not None else st.fp.lo)  # type: ignore[union-attr]
+        hi = _interp(stations, s, lambda x: x.fp.hi if x.fp is not None else st.fp.hi)  # type: ignore[union-attr]
+        return dynamic.widen((lo, hi))
+    return dynamic.widen(dynamic.prior_band(_interp(stations, s, lambda x: x.edge)))
+
+
+def _core(model: CanonicalModel, *, observations: Mapping[str, Observation], assets: Mapping[str, str],
+          tile: Observation | None, rules: _Rules) -> _Core:
     ref = ReferenceLine.from_model(model.reference_line)
     length = model.reference_line.length_s
     side = model.footpath_side
@@ -480,10 +560,10 @@ def compile_scene(model: CanonicalModel, *, observations: Mapping[str, Observati
     # ---- stations
     s_grid = station_grid(length)
     stations = [_eval_station(model, s, sign) for s in s_grid]
-    centres = _fill_centres(stations)
+    centres = _fill_centres(stations, rules.prior_centre_offset)
     for st, c in zip(stations, centres):
-        l1 = st.edge - PRIOR_PATH_OFFSET_M
-        st.lane = [max(c, l1 + MIN_LANE_SEP_M), l1, l1 - 1.8]
+        l1 = st.edge - rules.road_edge_inset
+        st.lane = [max(c, l1 + rules.min_sep), l1, l1 - rules.lane_gap]
     _blend_seam(stations, length)
 
     # ---- path (world frame)
@@ -497,7 +577,6 @@ def compile_scene(model: CanonicalModel, *, observations: Mapping[str, Observati
         zs.append(zs[-1] - math.cos(thetas[i]) * ds)
     samples = [PathSample(s=_r(s), x=_r(x, 4), z=_r(z, 4), theta=_r(th, 5), tile_px=g.px(s, 0.0))
                for s, x, z, th in zip(s_grid, xs, zs, thetas)]
-    path = Path(length_m=length, samples=samples)
 
     # ---- corridor
     w_px, h_px = georef.size_px
@@ -532,9 +611,9 @@ def compile_scene(model: CanonicalModel, *, observations: Mapping[str, Observati
         if cw:
             widths.append(max(cw))
     road_width = _r(sum(widths) / len(widths)) if widths else 8.5
-    lanes = [Lane(index=0, name="footpath", kind="footpath", lat_m=lane_r[0], width_m=LANE_BAND_M[0]),
-             Lane(index=1, name="road_edge", kind="road_edge", lat_m=lane_r[1], width_m=LANE_BAND_M[1]),
-             Lane(index=2, name="road", kind="road", lat_m=lane_r[2], width_m=LANE_BAND_M[2])]
+    lanes = [Lane(index=0, name="footpath", kind="footpath", lat_m=lane_r[0], width_m=rules.bands[0]),
+             Lane(index=1, name="road_edge", kind="road_edge", lat_m=lane_r[1], width_m=rules.bands[1]),
+             Lane(index=2, name="road", kind="road", lat_m=lane_r[2], width_m=rules.bands[2])]
     ranges = []
     prev_to = 0.0
     for i, iv in enumerate(model.profile):
@@ -546,28 +625,36 @@ def compile_scene(model: CanonicalModel, *, observations: Mapping[str, Observati
         prev_to = to
     cross = CrossSectionV2(road_width_m=max(road_width, 0.1), lanes=lanes, footpath_coverage=ranges)
 
-    # ---- buildings
-    buildings = []
-    for b in sorted(model.buildings, key=lambda x: x.id):
-        buildings.append(BuildingV2(
-            id=b.id, source=b.source, footprint=[(_r(s), _r(sign * t)) for s, t in b.footprint], height_m=b.height_m,
-            color_hex=b.colour_hex or DEFAULT_BUILDING_COLOUR, facade_url=assets.get(b.id),
-            confidence=_r(b.confidence), side="modelled" if b.side == side else "opposite",
-            description=b.description or f"Building about {b.height_m:.0f} m tall on the "
-                                         f"{'modelled' if b.side == side else 'opposite'} side."))
-
-    # ---- objects
+    # ---- objects (fixed only when rules.split), dynamic entities set aside
     objects: list[SceneObjectV2] = []
+    dyn: list[tuple[Entity, int]] = []
     for e in sorted(model.entities, key=lambda x: x.id):
         if e.state is EntityState.removed or e.confidence < MIN_OBJECT_CONFIDENCE:
             continue
-        objects.extend(_entity_object(e, model, g, stations, length, observations, assets))
-    objects.extend(_interval_objects(model, g, stations, length))
+        if rules.split:
+            lat = sign * e.position.t
+            if dynamic.runtime_of(e, _band_at(stations, min(max(e.position.s, 0.0), length)),
+                                  lateral=lat) == "dynamic_context":
+                w0 = catalogue.default_size_m(e.type, e.subtype, e.extent.length_s)[0]
+                x = min(max(e.position.s, 0.0), length - 1e-3)
+                lns = _lanes_for(stations, x, lat, max(e.extent.width_t or w0, 0.05), rules)
+                if not lns:
+                    lns = [min(range(3), key=lambda i: abs(_interp(stations, x, lambda st, i=i: st.lane[i]) - lat))]
+                dyn.append((e, lns[0]))
+                continue
+        objects.extend(_entity_object(e, model, g, stations, length, observations, assets, rules))
+    objects.extend(_interval_objects(model, g, stations, length, rules))
     objects.sort(key=lambda o: (o.x_m, o.id))
-    tokens = _tokens(model, g, stations, objects, length)
-    walk = _walkability(model, objects, ranges, length)
+    tokens = _tokens(model, g, stations, objects, length, rules)
+    walk = _walkability(model, objects, ranges, length, rules)
+    return _Core(model=model, ref=ref, length=length, side=side, sign=sign, georef=georef, mpp=mpp, g=g, tile=tile,
+                 s_grid=s_grid, stations=stations, samples=samples, corridor=corridor, cross=cross, ranges=ranges,
+                 objects=objects, tokens=tokens, walk=walk, dynamic=dyn, rules=rules)
 
-    # ---- about / generation / model ref
+
+def _meta(c: _Core, *, observations: Mapping[str, Observation], fidelity: FidelityMap, slug_name: str, city: str):
+    """(about kwargs, generation, segment, ground) - identical for v2 and v3."""
+    model, length, side = c.model, c.length, c.side
     fused = sorted(set(model.fused_observation_ids))
     buckets = {"street_view": 0, "satellite": 0, "user": 0}
     dates = []
@@ -588,7 +675,7 @@ def compile_scene(model: CanonicalModel, *, observations: Mapping[str, Observati
             dates.append(o.capture_date)
     level = fidelity.overall.level
     parts = describe.low_confidence_parts(model, fidelity)
-    about = About(
+    about = dict(
         model_version=model.version,
         fidelity=AboutFidelity(level=f"L{level}", score=fidelity.overall.score, label=LEVEL_LABELS[level],
                                histogram_m={k: _r(v) for k, v in sorted(fidelity.overall.histogram_m.items())}),
@@ -601,20 +688,80 @@ def compile_scene(model: CanonicalModel, *, observations: Mapping[str, Observati
         improve_hint=describe.improve_hint(fidelity), legacy=model.legacy, placement_verified=model.placement_verified,
         degraded=(not model.legacy) and level == 0)
     quality = Quality.full if level >= 1 else (Quality.satellite_only if overhead else Quality.generic)
-    confs = [o.confidence for o in objects] + [r.confidence for r in ranges]
+    confs = [o.confidence for o in c.objects] + [r.confidence for r in c.ranges]
     generation = Generation(run_id=model.run_id or "none", quality=quality,
                             confidence_overall=_clamp01(_r(sum(confs) / len(confs), 2)) if confs else 0.0,
                             review_iterations=0, models={}, warnings=[])
-
     first, last = model.reference_line.points[0], model.reference_line.points[-1]
     start, end = LatLon(lat=first.lat, lon=first.lon), LatLon(lat=last.lat, lon=last.lon)
     frame = LocalFrame.from_endpoints(first.lat, first.lon, last.lat, last.lon, FootpathSide(side))
     segment = SegmentInfo(slug=model.segment_slug, name=slug_name, city=city, start=start, end=end, length_m=length,
                           heading_deg=_r(frame.heading_deg % 360.0, 1) % 360.0, footpath_side=FootpathSide(side))
-    ground = GroundV2(tile_url=tile.url if tile is not None else None, size_px=(w_px, h_px), zoom=georef.zoom,
-                      scale=georef.scale, center=LatLon(lat=georef.center_lat, lon=georef.center_lon),
-                      meters_per_px=_r(mpp, 5), frame_to_px=compute_frame_to_px(frame, georef))
-    return SceneV2(schema_version=2, segment=segment, ground=ground, path=path, corridor=corridor, cross_section=cross,
-                   buildings=buildings, objects=objects, tokens=tokens, walkability=walk, about=about,
-                   generation=generation, model=ModelRef(version=model.version, model_hash=model_hash(model),
-                                                         compiled_by=COMPILED_BY))
+    w_px, h_px = c.georef.size_px
+    ground = GroundV2(tile_url=c.tile.url if c.tile is not None else None, size_px=(w_px, h_px), zoom=c.georef.zoom,
+                      scale=c.georef.scale, center=LatLon(lat=c.georef.center_lat, lon=c.georef.center_lon),
+                      meters_per_px=_r(c.mpp, 5), frame_to_px=compute_frame_to_px(frame, c.georef))
+    return about, generation, segment, ground
+
+
+# ------------------------------------------------------------------ Phase 2 compile (Scene v2; legacy path + fixtures)
+
+
+def compile_scene_v2(model: CanonicalModel, *, observations: Mapping[str, Observation], assets: Mapping[str, str],
+                     tile: Observation | None, fidelity: FidelityMap, slug_name: str, city: str) -> SceneV2:
+    """The Phase-2 compile (every entity is an object, legacy lane constants). Output unchanged since Phase 2."""
+    c = _core(model, observations=observations, assets=assets, tile=tile, rules=LEGACY)
+    about, generation, segment, ground = _meta(c, observations=observations, fidelity=fidelity, slug_name=slug_name,
+                                               city=city)
+    buildings = []
+    for b in sorted(model.buildings, key=lambda x: x.id):
+        buildings.append(BuildingV2(
+            id=b.id, source=b.source, footprint=[(_r(s), _r(c.sign * t)) for s, t in b.footprint], height_m=b.height_m,
+            color_hex=b.colour_hex or DEFAULT_BUILDING_COLOUR, facade_url=assets.get(b.id),
+            confidence=_r(b.confidence), side="modelled" if b.side == c.side else "opposite",
+            description=b.description or f"Building about {b.height_m:.0f} m tall on the "
+                                         f"{'modelled' if b.side == c.side else 'opposite'} side."))
+    return SceneV2(schema_version=2, segment=segment, ground=ground, path=Path(length_m=c.length, samples=c.samples),
+                   corridor=c.corridor, cross_section=c.cross, buildings=buildings, objects=c.objects, tokens=c.tokens,
+                   walkability=c.walk, about=About(**about), generation=generation,
+                   model=ModelRef(version=model.version, model_hash=model_hash(model), compiled_by=COMPILED_BY))
+
+
+# ------------------------------------------------------------------ Phase 2.1 r2 compile
+
+
+@dataclass(frozen=True)
+class CompileResult:
+    scene: SceneV3
+    plan: StreetPlan
+    gaps: GapReport
+
+
+def load_gameplay_model() -> GameplayV1:
+    return GameplayV1.model_validate(load_gameplay())
+
+
+def compile_scene(model: CanonicalModel, *, observations: Mapping[str, Observation], assets: Mapping[str, str],
+                  tile: Observation | None, fidelity: FidelityMap, slug_name: str, city: str,
+                  textures: TextureRefs | None = None, gameplay: GameplayV1 | None = None) -> CompileResult:
+    """Compile one model version into the lite web scene (``SceneV3``), the geometry plan (``StreetPlan``) and the gap
+    report. Pure and deterministic (byte-identical JSON on repeat and after a JSON round-trip of the model).
+    ``assets`` is accepted for signature compatibility (crop URLs); ``scene.assets`` is filled by the export step."""
+    from hero.model.gaps import analyze_gaps, blank_from_plan  # local: gaps/street_plan build on this module's helpers
+    from hero.model.street_plan import plan_from_core
+
+    gp = gameplay or load_gameplay_model()
+    gaps = analyze_gaps(model, observations, fidelity, textures)
+    c = _core(model, observations=observations, assets=assets, tile=tile, rules=rules_from_gameplay(gp))
+    plan = plan_from_core(c, fidelity=fidelity, gaps=gaps, textures=textures, gameplay=gp, name=slug_name, city=city)
+    gaps = gaps.model_copy(update={"blank_after_compile": blank_from_plan(plan)})  # counted on the real plan
+    about, generation, segment, ground = _meta(c, observations=observations, fidelity=fidelity, slug_name=slug_name,
+                                               city=city)
+    interps = [i for i in gaps.interpolations if i.what != "furniture_unknown"]
+    dyn_lite, _ = dynamic.dynamic_context(c.dynamic, c.length, gp)
+    about_v3 = AboutV3(**about, interpolated=interps, gap_summary=describe.gap_summary(interps),
+                       dynamic_summary=describe.dynamic_summary(dyn_lite.by_type))
+    scene = SceneV3(schema_version=3, segment=segment, ground=ground, cross_section=c.cross, walkability=c.walk,
+                    about=about_v3, dynamic_context=dyn_lite, generation=generation,
+                    model=ModelRefV3(version=model.version, model_hash=model_hash(model)), assets=None)
+    return CompileResult(scene=scene, plan=plan, gaps=gaps)

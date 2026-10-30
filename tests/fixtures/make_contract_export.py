@@ -33,7 +33,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from PIL import Image  # noqa: E402
 
-from hero.export import GENERATOR, SCHEMAS_DIR, gameplay_bytes, gameplay_sha256, load_gameplay  # noqa: E402
+from hero.export import GENERATOR, SCHEMAS_DIR, gameplay_sha256, load_gameplay  # noqa: E402
 from hero.export.gameplay_types import GameplayV1  # noqa: E402
 from hero.export.manifest_types import ManifestV1  # noqa: E402
 from hero.export.mesh_types import (  # noqa: E402
@@ -308,7 +308,8 @@ def build_plan(v2: dict[str, Any]) -> tuple[StreetPlan, Frame]:
         "objects": objects, "tokens": tokens,
         "dynamic_context": {"excluded_count": 2, "entity_ids": ["ent-0000000001", "ent-0000000004"],
                             "spawn_hints": {"density": r3(min(1.0, (2 / L * 100.0) / 40.0)),
-                                            "type_weights": dict(load_gameplay()["spawner"]["default_spawn_hints"]["type_weights"])}},
+                                            "type_weights": dict(load_gameplay()["spawner"]["default_spawn_hints"]["type_weights"]),
+                                            "lane_weights": [0.25, 0.25, 0.5]}},
         "fidelity": {"overall_level": 2, "score": r3(sum(levels) / len(levels)),
                      "bins": [{"index": i, "s_from": i * BIN_M, "s_to": min(L, (i + 1) * BIN_M), "level": lv} for i, lv in enumerate(levels)]},
         "interpolated": interp,
@@ -1015,7 +1016,7 @@ def build_scene(v2: dict, plan: StreetPlan, manifest: dict, glb: bytes, manifest
     ground["frame_to_px"] = {"origin_px": list(p0), "along_px_per_m": [0.0, -round(1 / MPP, 2)], "across_px_per_m": [-round(1 / MPP, 2), 0.0]}
     scene = {
         "schema_version": 3, "segment": seg, "ground": ground, "cross_section": v2["cross_section"],
-        "walkability": v2["walkability"], "about": about,
+        "walkability": walkability(v2, plan), "about": about,
         "dynamic_context": {"excluded_count": 2, "entity_ids": ["ent-0000000001", "ent-0000000004"], "by_type": {
             "parked_vehicle": {"count": 1, "per_100m": 1.67, "subtypes": {"auto-rickshaw": 1}, "lane_share": [0.5, 0.5, 0.0], "mean_confidence": 0.86},
             "pothole": {"count": 1, "per_100m": 1.67, "subtypes": {}, "lane_share": [0.0, 0.0, 1.0], "mean_confidence": 0.7}}},
@@ -1051,6 +1052,21 @@ def sample_gap_report(plan: StreetPlan) -> dict:
             "uncovered": {"ground": 1, "frontage_modelled": 2, "frontage_opposite": 8, "footpath": 0, "furniture": 0},
             "blank_after_compile": {"ground": 0, "frontage_modelled": 0, "frontage_opposite": 0, "footpath": 0},
             "interpolations": [i.model_dump(mode="json") for i in plan.interpolated]}
+
+
+def walkability(v2: dict, plan: StreetPlan) -> dict:
+    """Walkability derived from the coverage intervals / objects of THIS stand-in (internally consistent), using the
+    gameplay.json weights: score = 0.6*coverage% + 20*crossing + 20*max(0, 1 - hazards/10)."""
+    cov = v2["cross_section"]["footpath_coverage"]
+    intact = sum(r["to_m"] - r["from_m"] for r in cov if r["state"] == "intact")
+    pct = int(1000.0 * intact / plan.length_m + 0.5) / 10.0
+    hazards = sum(1 for o in plan.objects if o.action.value != "none")
+    crossing = any(o.type == "crossing" for o in plan.objects)
+    wk = load_gameplay()["scoring"]["walkability"]
+    raw = (wk["coverage_weight"] * pct + (wk["crossing_bonus"] if crossing else 0.0)
+           + wk["hazard_weight"] * max(0.0, 1.0 - hazards / wk["hazard_norm"]))
+    return {"footpath_coverage_pct": pct, "hazard_count": hazards, "crossing_present": crossing,
+            "score": int(min(100, max(0, int(raw + 0.5))))}
 
 
 def build_all() -> dict[Path, bytes]:

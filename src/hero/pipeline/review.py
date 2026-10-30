@@ -66,7 +66,7 @@ class PatchError(ValueError):
 
 def scene_summary(scene: Scene) -> str:
     lines = [f"road_width_m={scene.cross_section.road_width_m}, lanes lat_m="
-             + ", ".join(f"{l.index}:{l.lat_m}" for l in scene.cross_section.lanes)]
+             + ", ".join(f"{l.index}:{l.lat_m}" for l in scene.cross_section.lanes)]  # noqa: E741
     lines.append("footpath_coverage: " + "; ".join(
         f"{r.from_m:.0f}-{r.to_m:.0f} m {r.state.value} (conf {r.confidence:.2f})"
         for r in scene.cross_section.footpath_coverage))

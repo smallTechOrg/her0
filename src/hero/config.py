@@ -90,6 +90,13 @@ class Settings(BaseSettings):
     structured_mode: str = "auto"
     upload_max_mb: float = Field(default=10.0, gt=0)
 
+    # ---- Phase 2.1 (texture bake, uploads, export)
+    ground_strip_mpp: float = Field(default=0.1, gt=0)  # bake resolution (widened so the longest side <= 1024 px)
+    bake_jpeg_quality: int = Field(default=82, ge=40, le=95)
+    upload_max_distance_m: float = Field(default=60.0, gt=0)  # max camera distance from the reference line
+    export_max_glb_mb: float = Field(default=2.5, gt=0)  # a bigger mesh fails the export (`export_too_large`)
+    gltf_validator: str = "auto"  # auto|off: only the integration test and `validate_glb --khronos` read it
+
     log_level: str = "INFO"
 
     @field_validator("*", mode="before")
@@ -105,6 +112,14 @@ class Settings(BaseSettings):
         value = value.strip().lower()
         if value not in STRUCTURED_MODES:
             raise ValueError(f"HERO_STRUCTURED_MODE must be one of {', '.join(STRUCTURED_MODES)} (got {value!r})")
+        return value
+
+    @field_validator("gltf_validator")
+    @classmethod
+    def _gltf_validator_known(cls, value: str) -> str:
+        value = value.strip().lower()
+        if value not in ("auto", "off"):
+            raise ValueError(f"HERO_GLTF_VALIDATOR must be auto or off (got {value!r})")
         return value
 
     @field_validator("sv_headings")

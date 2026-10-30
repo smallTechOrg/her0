@@ -3,7 +3,7 @@
 
 import { api, ApiError } from '/js/api.js?v=3';
 import { gate, logout, el, fmtUsd, fmtUsdPrecise, fmtMs, setState, aget } from '/js/admin/auth.js?v=5';
-import { renderReport, renderImagesUsed } from '/js/admin/report.js?v=4';
+import { renderReport, renderImagesUsed } from '/js/admin/report.js?v=5';
 
 const POLL_MS = 2000;
 const TERMINAL = new Set(['succeeded', 'failed', 'failed_budget']);

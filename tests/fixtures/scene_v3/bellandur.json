@@ -1,0 +1,325 @@
+{
+ "schema_version": 3,
+ "segment": {
+  "slug": "bellandur-main-road-n-2",
+  "name": "Bellandur Main Road",
+  "city": "Bengaluru",
+  "start": {
+   "lat": 12.92291188,
+   "lon": 77.67256169
+  },
+  "end": {
+   "lat": 12.92287952,
+   "lon": 77.67348076
+  },
+  "length_m": 100.0,
+  "heading_deg": 92.1,
+  "footpath_side": "left"
+ },
+ "ground": {
+  "tile_url": "/media/imagery/6acb21089d9d07d0295e635a352a8845468376d0d78a79ab9d9808d296c2fa86.jpg",
+  "size_px": [
+   1280,
+   1280
+  ],
+  "zoom": 19,
+  "scale": 2,
+  "center": {
+   "lat": 12.922920108512828,
+   "lon": 77.67302139438522
+  },
+  "meters_per_px": 0.14551,
+  "frame_to_px": {
+   "origin_px": [
+    297.21956592798233,
+    646.2950664013624
+   ],
+   "along_px_per_m": [
+    6.875594049692154,
+    0.24836483597755432
+   ],
+   "across_px_per_m": [
+    0.24836480617523193,
+    -6.8755941689014435
+   ]
+  }
+ },
+ "cross_section": {
+  "road_width_m": 8.577,
+  "lanes": [
+   {
+    "index": 0,
+    "name": "footpath",
+    "kind": "footpath",
+    "lat_m": 5.882,
+    "width_m": 1.8
+   },
+   {
+    "index": 1,
+    "name": "road_edge",
+    "kind": "road_edge",
+    "lat_m": 4.481,
+    "width_m": 1.6
+   },
+   {
+    "index": 2,
+    "name": "road",
+    "kind": "road",
+    "lat_m": 2.681,
+    "width_m": 2.0
+   }
+  ],
+  "footpath_coverage": [
+   {
+    "from_m": 0.0,
+    "to_m": 15.0,
+    "state": "intact",
+    "confidence": 0.493
+   },
+   {
+    "from_m": 15.0,
+    "to_m": 30.0,
+    "state": "encroached",
+    "confidence": 0.493
+   },
+   {
+    "from_m": 30.0,
+    "to_m": 50.0,
+    "state": "intact",
+    "confidence": 0.493
+   },
+   {
+    "from_m": 50.0,
+    "to_m": 52.5,
+    "state": "intact",
+    "confidence": 0.602
+   },
+   {
+    "from_m": 52.5,
+    "to_m": 82.5,
+    "state": "intact",
+    "confidence": 0.473
+   },
+   {
+    "from_m": 82.5,
+    "to_m": 87.5,
+    "state": "intact",
+    "confidence": 0.473
+   },
+   {
+    "from_m": 87.5,
+    "to_m": 97.5,
+    "state": "encroached",
+    "confidence": 0.473
+   },
+   {
+    "from_m": 97.5,
+    "to_m": 100.0,
+    "state": "encroached",
+    "confidence": 0.585
+   }
+  ]
+ },
+ "walkability": {
+  "footpath_coverage_pct": 72.5,
+  "hazard_count": 16,
+  "crossing_present": false,
+  "score": 44
+ },
+ "about": {
+  "model_version": 1,
+  "fidelity": {
+   "level": "L2",
+   "score": 2.0,
+   "label": "Multi-view: every part seen from at least two places, both sides",
+   "histogram_m": {
+    "L0": 0.0,
+    "L1": 0.0,
+    "L2": 100.0,
+    "L3": 0.0
+   }
+  },
+  "photos": {
+   "total": 48,
+   "street_view": 44,
+   "satellite": 4,
+   "user": 0
+  },
+  "last_updated": "2026-10-30",
+  "capture_dates": {
+   "oldest": "2026-04",
+   "newest": "2026-04"
+  },
+  "low_confidence_parts": [
+   {
+    "s_from": 0.0,
+    "s_to": 100.0,
+    "reason": "80 objects below 60 % confidence; 63 unresolved conflicts"
+   }
+  ],
+  "summary": "This street is modelled at fidelity L2 (Multi-view: every part seen from at least two places, both sides) from 48 photos (model v1). It covers 100 m of Bellandur Main Road. Least certain: 0-100 m. Previously seen but no longer supported: 12 objects.",
+  "improve_hint": "A close-up photo around 0-100 m would raise it to L3.",
+  "legacy": false,
+  "placement_verified": true,
+  "degraded": false,
+  "interpolated": [
+   {
+    "what": "frontage",
+    "side": "left",
+    "s_from": 0.0,
+    "s_to": 2.5,
+    "method": "neighbours",
+    "from_s": [
+     2.5
+    ],
+    "note": "No photo or footprint covers the left side here; the frontage is copied from the nearest covered stretch."
+   },
+   {
+    "what": "ground_texture",
+    "side": "both",
+    "s_from": 0.0,
+    "s_to": 100.0,
+    "method": "procedural",
+    "from_s": [],
+    "note": "No usable imagery here; the ground is a procedural pavement/asphalt pattern."
+   },
+   {
+    "what": "frontage",
+    "side": "right",
+    "s_from": 45.0,
+    "s_to": 47.5,
+    "method": "neighbours",
+    "from_s": [
+     45.0,
+     47.5
+    ],
+    "note": "No photo or footprint covers the right side here; frontage blended between 45 m and 47.5 m."
+   },
+   {
+    "what": "frontage",
+    "side": "right",
+    "s_from": 85.0,
+    "s_to": 90.0,
+    "method": "neighbours",
+    "from_s": [
+     85.0,
+     90.0
+    ],
+    "note": "No photo or footprint covers the right side here; frontage blended between 85 m and 90 m."
+   },
+   {
+    "what": "frontage",
+    "side": "left",
+    "s_from": 87.5,
+    "s_to": 92.5,
+    "method": "neighbours",
+    "from_s": [
+     87.5,
+     92.5
+    ],
+    "note": "No photo or footprint covers the left side here; frontage blended between 87.5 m and 92.5 m."
+   }
+  ],
+  "gap_summary": "About 8 m of the left-hand frontage, 8 m of the right-hand frontage and 100 m of ground texture are interpolated from neighbouring stretches or neutral defaults (no photo or map data covers them).",
+  "dynamic_summary": "Seen here but spawned dynamically during play instead of fixed in place: 4 pieces of debris, 33 parked vehicles, 1 vendor stall."
+ },
+ "dynamic_context": {
+  "excluded_count": 38,
+  "entity_ids": [
+   "ent-0c96f5c39f",
+   "ent-1980825a0b",
+   "ent-1bce19a51b",
+   "ent-255a5e3aa9",
+   "ent-291872c818",
+   "ent-43ede1976c",
+   "ent-4d6dd4f668",
+   "ent-4f36a18642",
+   "ent-51d381ecc5",
+   "ent-5f66b14406",
+   "ent-6217ae30f1",
+   "ent-6b372ddf13",
+   "ent-7597e2e002",
+   "ent-7a2595e35b",
+   "ent-8214a2615b",
+   "ent-844968ef4b",
+   "ent-8461689dc1",
+   "ent-85f848263b",
+   "ent-872da4343d",
+   "ent-8b5360ca43",
+   "ent-90b2030524",
+   "ent-95443e2cea",
+   "ent-9a1a494c61",
+   "ent-a3ff6954a4",
+   "ent-acb6f1eddb",
+   "ent-ae5da1d98b",
+   "ent-b36d869a51",
+   "ent-bbba6cd54b",
+   "ent-c098ccfa99",
+   "ent-c51704e8cb",
+   "ent-c7a17204af",
+   "ent-cd158dd250",
+   "ent-d56d3c14e1",
+   "ent-dba02b76f9",
+   "ent-eb6cfb8b90",
+   "ent-ebb2b58e26",
+   "ent-faabedd195",
+   "ent-ffd6a5d22d"
+  ],
+  "by_type": {
+   "debris": {
+    "count": 4,
+    "per_100m": 4.0,
+    "subtypes": {},
+    "lane_share": [
+     0.25,
+     0.25,
+     0.5
+    ],
+    "mean_confidence": 0.329
+   },
+   "parked_vehicle": {
+    "count": 33,
+    "per_100m": 33.0,
+    "subtypes": {
+     "auto-rickshaw": 5,
+     "bicycle": 1,
+     "car": 5,
+     "truck": 1,
+     "two-wheeler": 20,
+     "van": 1
+    },
+    "lane_share": [
+     0.242,
+     0.061,
+     0.697
+    ],
+    "mean_confidence": 0.495
+   },
+   "vendor_stall": {
+    "count": 1,
+    "per_100m": 1.0,
+    "subtypes": {},
+    "lane_share": [
+     1.0,
+     0.0,
+     0.0
+    ],
+    "mean_confidence": 0.751
+   }
+  }
+ },
+ "generation": {
+  "run_id": "9d70ba9f-b2fa-467c-8301-abaf951313dc",
+  "quality": "full",
+  "confidence_overall": 0.46,
+  "review_iterations": 0,
+  "models": {},
+  "warnings": []
+ },
+ "model": {
+  "version": 1,
+  "model_hash": "eaba1794d2a49675df934d6d45e0e8e96f0e52b7a8cd59deb90dad8ef55281dc",
+  "compiled_by": "hero.model.compile/2"
+ },
+ "assets": null
+}

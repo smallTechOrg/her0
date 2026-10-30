@@ -1,6 +1,6 @@
 # Capability: Street export (shared mesh, glTF, manifest, OpenDRIVE)
 ## What It Does
-Builds, once and deterministically in Python, a low-poly textured 3D street from a model version and publishes it as `street.glb` + `street.manifest.json` + `street.xodr` (+ `gameplay.json`) that the browser game loads and that Unity, Unreal or Godot can import.
+Builds, once and deterministically in Python, a low-poly textured 3D street from a model version and publishes it as `street.glb` + `street.manifest.json` + `street.xodr` (+ `gameplay.json`) that the browser game loads. The files are engine-neutral so the game can move to another engine later; no engine export UI exists.
 ## Inputs
 | Input | Type | Source | Required |
 |---|---|---|---|
@@ -14,7 +14,7 @@ Builds, once and deterministically in Python, a low-poly textured 3D street from
 | `street.glb` | glTF 2.0 binary (metres, +Y up, named nodes, PBR, baked UVs, `extras`) | `data/exports/<slug>/`, `GET …/model.glb` |
 | `street.manifest.json` | JSON `hero-street-manifest/1` | `GET …/manifest.json` |
 | `street.xodr` | OpenDRIVE 1.7 (best effort) | `GET …/street.xodr` |
-| `export.zip` | deterministic zip + `IMPORT.txt` | admin "Download for Unity / Unreal / Godot" |
+| `export.zip` | deterministic zip + `IMPORT.txt` (legacy convenience; no UI offers it) | `GET /api/admin/segments/{slug}/export.zip` |
 | `export_json` | `ExportRecord` | `model_versions` |
 ## External Calls
 | System | Operation | On Failure |

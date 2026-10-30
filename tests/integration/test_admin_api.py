@@ -372,7 +372,7 @@ def test_generate_over_http_runs_fusion_and_the_run_detail_carries_the_phase_2_k
     assert client.get(img["streetview"][0]["url"]).status_code == 200
     assert img["streetview_available"] is True and img["osm_available"] is True and img["plan_trimmed"] is False
     assert len(run["iterations"]) == 1 and client.get(run["iterations"][0]["preview_url"]).status_code == 200
-    assert run["scene"]["schema_version"] == 2 and run["scene"]["model"]["version"] == 1
+    assert run["scene"]["schema_version"] == 3 and run["scene"]["model"]["version"] == 1
     assert client.get(run["thumbnail_url"]).status_code == 200 and run["preview_url"] == run["thumbnail_url"]
     cost = run["cost"]
     assert cost["cost_usd"] > 0 and len(cost["calls"]) == len(replay_worker[0].calls) >= 3

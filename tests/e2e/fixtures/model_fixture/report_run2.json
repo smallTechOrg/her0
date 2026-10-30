@@ -116,6 +116,128 @@
     "from": "L1",
     "to": "L2"
    }
+  ],
+  "bins": [
+   {
+    "s_from": 0.0,
+    "s_to": 5.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 5.0,
+    "s_to": 10.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 10.0,
+    "s_to": 15.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 15.0,
+    "s_to": 20.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 20.0,
+    "s_to": 25.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 25.0,
+    "s_to": 30.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 30.0,
+    "s_to": 35.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 35.0,
+    "s_to": 40.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 40.0,
+    "s_to": 45.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 45.0,
+    "s_to": 50.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 50.0,
+    "s_to": 55.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 55.0,
+    "s_to": 60.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 60.0,
+    "s_to": 65.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 65.0,
+    "s_to": 70.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 70.0,
+    "s_to": 75.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 75.0,
+    "s_to": 80.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 80.0,
+    "s_to": 85.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 85.0,
+    "s_to": 90.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 90.0,
+    "s_to": 95.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 95.0,
+    "s_to": 100.0,
+    "level_before": 1,
+    "level_after": 2
+   }
   ]
  },
  "confidence_changes": [
@@ -154,6 +276,7 @@
   "budget_remaining_usd": 49.42,
   "share_of_global_budget": 0.0
  },
+ "quality": null,
  "warnings": [],
  "degraded": false,
  "summary": "Run added 22 new images (26 of 48 images were already cached) and created model v2 from v1: 3 new objects, 3 changed, 0 removed, 0 newly contradicted; fidelity L1 -> L2. Cost $0.42.",

@@ -1,0 +1,120 @@
+{
+  "label": "after",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "bellandur_source": "server",
+  "bellandur": {
+    "slug": "bellandur-main-road-n-2",
+    "scene_source": "server",
+    "shots": {
+      "0m": {
+        "distance_m": 0,
+        "phase": "ready",
+        "perf": {
+          "draw_calls": 41,
+          "triangles": 8742,
+          "textures": 3,
+          "texture_mb": 2.48,
+          "fps_avg": 30,
+          "glb_bytes": 316772
+        }
+      },
+      "20m": {
+        "distance_m": 20,
+        "phase": "running",
+        "perf": {
+          "draw_calls": 30,
+          "triangles": 6304,
+          "textures": 3,
+          "texture_mb": 2.48,
+          "fps_avg": 30,
+          "glb_bytes": 316772
+        }
+      },
+      "40m": {
+        "distance_m": 40,
+        "phase": "running",
+        "perf": {
+          "draw_calls": 29,
+          "triangles": 6208,
+          "textures": 3,
+          "texture_mb": 2.48,
+          "fps_avg": 30,
+          "glb_bytes": 316772
+        }
+      },
+      "70m": {
+        "distance_m": 70,
+        "phase": "running",
+        "perf": {
+          "draw_calls": 28,
+          "triangles": 5920,
+          "textures": 3,
+          "texture_mb": 2.48,
+          "fps_avg": 30,
+          "glb_bytes": 316772
+        }
+      }
+    },
+    "hero_source": "glb",
+    "console_errors": []
+  },
+  "curved": {
+    "slug": "fixture-curved-street",
+    "scene_source": "intercepted-v3-pipeline-build",
+    "shots": {
+      "0m": {
+        "distance_m": 0,
+        "phase": "ready",
+        "perf": {
+          "draw_calls": 25,
+          "triangles": 4416,
+          "textures": 3,
+          "texture_mb": 1.29,
+          "fps_avg": 30,
+          "glb_bytes": 163800
+        }
+      },
+      "20m": {
+        "distance_m": 20,
+        "phase": "running",
+        "perf": {
+          "draw_calls": 17,
+          "triangles": 2786,
+          "textures": 3,
+          "texture_mb": 1.29,
+          "fps_avg": 30,
+          "glb_bytes": 163800
+        }
+      },
+      "40m": {
+        "distance_m": 40,
+        "phase": "running",
+        "perf": {
+          "draw_calls": 22,
+          "triangles": 3578,
+          "textures": 3,
+          "texture_mb": 1.29,
+          "fps_avg": 30,
+          "glb_bytes": 163800
+        }
+      },
+      "70m": {
+        "distance_m": 70,
+        "phase": "running",
+        "perf": {
+          "draw_calls": 25,
+          "triangles": 3828,
+          "textures": 3,
+          "texture_mb": 1.29,
+          "fps_avg": 30,
+          "glb_bytes": 163800
+        }
+      }
+    },
+    "hero_source": "glb",
+    "console_errors": []
+  }
+}

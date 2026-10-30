@@ -152,9 +152,12 @@ class FurniturePlan(_S):
 class SpawnHints(_S):
     density: float = Field(ge=0.0, le=1.0)
     type_weights: dict[str, float]
+    lane_weights: tuple[float, float, float]  # informational share of dynamic obstacles per lane (sums to 1)
 
     @model_validator(mode="after")
     def _weights(self) -> "SpawnHints":
+        if abs(sum(self.lane_weights) - 1.0) > 1e-6 or any(w < 0 for w in self.lane_weights):
+            raise ValueError("lane_weights must be >= 0 and sum to 1.0 (+-1e-6)")
         if tuple(self.type_weights) != SPAWN_TYPES:
             raise ValueError(f"type_weights keys must be exactly {SPAWN_TYPES} in order")
         if abs(sum(self.type_weights.values()) - 1.0) > 1e-6:

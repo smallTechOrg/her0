@@ -1,8 +1,9 @@
-"""Public JSON API (spec/api.md ## Public): health, gallery list, segment detail, scene (v1 | v2), game runs.
+"""Public JSON API (spec/api.md ## Public): health, gallery list, segment detail, scene (v1 | v2 | v3-lite), game runs.
 
 Phase 2 adds the additive ``model`` fidelity badge on gallery cards / detail (derived from the head
 ``model_versions`` row; ``null`` for a segment with no model version). The scene is served verbatim, v1 or v2,
-as stored by ``publish_version`` (v2 carries ``about``). ``GET /segments/nearest`` and
+as stored by ``publish_version`` (v2 carries ``about``); a v3-lite scene (no geometry) is served only once it carries
+``assets`` (the export ran), and its ``hazards`` come from the stored manifest's ``colliders``. ``GET /segments/nearest`` and
 ``GET /segments/{slug}/runs`` are Phase 3 and deliberately absent.
 """
 
@@ -20,11 +21,13 @@ from hero.db import model_repo, repo
 from hero.db.repo import CLIENT_MAX_CHARS, GameRunCreate, InvalidInputError, NotFoundError, SegmentRecord
 from hero.db.session import get_session
 from hero.model.scene_v2 import SceneV2
+from hero.model.scene_v3 import SceneV3
 from hero.scene.schema import LatLon, Quality, Scene, SegmentStatus, Walkability
 
 router = APIRouter(prefix="/api", tags=["public"])
 
 NOT_GENERATED_MESSAGE = "This street has not been generated yet."
+NOT_EXPORTED_MESSAGE = "This street's 3D model is not built yet (run: uv run python -m hero.tools.recompile --all)."
 
 
 # ------------------------------------------------------------------ response models
@@ -140,12 +143,32 @@ def _val(x: Any) -> str:
     return x.value if hasattr(x, "value") else str(x)  # v1 uses enums, v2 plain catalogue strings
 
 
-def hazards_of(scene: Scene | SceneV2) -> list[HazardOut]:
+def hazards_of(scene: Scene | SceneV2 | SceneV3, slug: str | None = None) -> list[HazardOut]:
+    """Hazards for the results card: ``scene.objects`` (v1/v2) or the stored manifest's colliders (v3)."""
+    if isinstance(scene, SceneV3):
+        return _manifest_hazards(scene, slug)
     return [
         HazardOut(id=o.id, type=_val(o.type), label=o.label, confidence=o.confidence, tile_px=o.tile_px,
                   latlon=o.latlon, action=_val(o.action))
         for o in scene.hazards()
     ]
+
+
+def _manifest_hazards(scene: SceneV3, slug: str | None) -> list[HazardOut]:
+    from hero.fusion.assets import read_manifest
+
+    manifest = read_manifest(slug or scene.segment.slug, {"sha8": scene.assets.sha8}) if scene.assets else None
+    if manifest is None:
+        return []
+    out: list[HazardOut] = []
+    for c in manifest.get("colliders", []):
+        if c.get("action", "none") == "none":
+            continue
+        tile = c.get("tile_px")
+        out.append(HazardOut(id=c["id"], type=c["type"], label=c["label"], confidence=c["confidence"],
+                             tile_px=tuple(tile) if tile else None, latlon=LatLon(**c["latlon"]),
+                             action=c["action"]))
+    return out
 
 
 def _dump(model: BaseModel | list[BaseModel]) -> Any:
@@ -161,9 +184,11 @@ def _require(slug: str) -> SegmentRecord:
         raise ApiError("not_found", str(exc)) from exc
 
 
-def _require_ready_scene(record: SegmentRecord) -> Scene | SceneV2:
+def _require_ready_scene(record: SegmentRecord) -> Scene | SceneV2 | SceneV3:
     if record.status is not SegmentStatus.ready or record.scene is None:
         raise ApiError("not_found", NOT_GENERATED_MESSAGE)
+    if isinstance(record.scene, SceneV3) and record.scene.assets is None:  # compiled but never exported
+        raise ApiError("not_found", NOT_EXPORTED_MESSAGE)
     return record.scene
 
 
@@ -205,5 +230,5 @@ def post_game_run(slug: str, body: GameRunCreate, request: Request):
         raise ApiError("not_found", str(exc)) from exc
     return ok(_dump(GameRunOut(
         run_id=result.run.id, score=result.run.score, best_score=result.best_score, is_new_best=result.is_new_best,
-        walkability=scene.walkability, hazards=hazards_of(scene),
+        walkability=scene.walkability, hazards=hazards_of(scene, slug),
     )))

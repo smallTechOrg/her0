@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from hero.model.compile import GROUND_HALF_M, SEAM_M, STEP_M, compile_scene, station_grid
+from hero.model.compile import GROUND_HALF_M, SEAM_M, STEP_M, compile_scene_v2 as compile_scene, station_grid
 from hero.model.scene_v2 import SceneV2, load_scene
 from hero.model.types import (
     Entity,
@@ -377,3 +377,108 @@ def test_fixture_generator_is_reproducible_and_committed_files_are_current(tmp_p
     for rel in files_a:
         assert (a / rel).read_bytes() == (b / rel).read_bytes(), rel
         assert (a / rel).read_bytes() == (FIXTURE / rel).read_bytes(), f"committed fixture is stale: {rel}"
+
+
+# ------------------------------------------------------------------ Phase 2.1 r2: compile_scene -> CompileResult
+
+from hero.export import load_gameplay as _load_gp  # noqa: E402
+from hero.export.gameplay_types import GameplayV1  # noqa: E402
+from hero.model import compile as compile_mod  # noqa: E402
+from hero.model.gap_types import GapReport  # noqa: E402
+from hero.model.scene_v3 import SceneV3  # noqa: E402
+from hero.model.street_plan_types import StreetPlan  # noqa: E402
+from hero.model.types import CanonicalModel  # noqa: E402
+
+
+def compile3(model, *, fid=None, obs=None, tile=None, **kw):
+    fid = fid or make_fidelity_map(model.reference_line.length_s, 1)
+    return compile_mod.compile_scene(model, observations=obs or {}, assets={}, tile=tile, fidelity=fid,
+                                     slug_name="Test street", city="Bengaluru", **kw)
+
+
+def test_compile_scene_returns_a_result_with_scene_plan_and_gaps():
+    m = straight_model(entities=[ent(s=12.5, t=5.9), ent("ent-0000000002", EntityType.parked_vehicle, 30.0, 5.9)])
+    r = compile3(m)
+    assert isinstance(r, compile_mod.CompileResult)
+    assert isinstance(r.scene, SceneV3) and isinstance(r.plan, StreetPlan) and isinstance(r.gaps, GapReport)
+    assert r.scene.schema_version == 3 and r.scene.model.compiled_by == "hero.model.compile/2" and r.scene.assets is None
+    assert r.scene.segment.length_m == r.plan.length_m == 100.0 and r.plan.slug == r.scene.segment.slug
+    assert isinstance(load_scene(r.scene.model_dump_json()), SceneV3)
+    assert r.scene.payload_bytes() < 40_000
+
+
+def test_compile_scene_is_deterministic_and_survives_a_model_round_trip():
+    m = make_model(curved_reference_line(), entities=[ent(s=12.5, t=5.9), ent("ent-0000000002", EntityType.tree, 40.0, -6.0),
+                                                      ent("ent-0000000003", EntityType.parked_vehicle, 50.0, 1.0)],
+                   states=[FootpathState.intact, FootpathState.broken, FootpathState.missing, FootpathState.intact])
+    a = compile3(m)
+    b = compile3(m)
+    c = compile3(CanonicalModel.model_validate_json(m.model_dump_json()))
+    for x in (b, c):
+        assert x.scene.model_dump_json() == a.scene.model_dump_json()
+        assert x.plan.model_dump_json() == a.plan.model_dump_json()
+        assert x.gaps.model_dump_json() == a.gaps.model_dump_json()
+
+
+def test_entity_order_does_not_matter_for_the_plan():
+    es = [ent("ent-0000000001", s=12.5, t=5.9), ent("ent-0000000002", EntityType.tree, 40.0, 6.0),
+          ent("ent-0000000003", EntityType.bin, 40.0, 6.0)]
+    a = compile3(straight_model(entities=es)).plan.model_dump(exclude={"model_hash"})  # the hash covers the entity order
+    assert compile3(straight_model(entities=list(reversed(es)))).plan.model_dump(exclude={"model_hash"}) == a
+
+
+def test_scene_about_carries_interpolation_gap_and_dynamic_summaries():
+    m = straight_model(entities=[ent("ent-0000000002", EntityType.parked_vehicle, 30.0, 5.9)])
+    r = compile3(m)
+    ab = r.scene.about
+    assert ab.interpolated and all(i.what != "furniture_unknown" for i in ab.interpolated)
+    assert ab.interpolated == [i for i in r.gaps.interpolations if i.what != "furniture_unknown"]
+    assert ab.gap_summary.startswith("About ") and ab.dynamic_summary.endswith("1 parked vehicle.")
+    assert ab.model_version == r.scene.model.version == m.version
+    assert r.scene.dynamic_context.excluded_count == 1
+
+
+def test_no_dynamic_entities_gives_an_empty_dynamic_summary():
+    r = compile3(straight_model(entities=[ent()]))
+    assert r.scene.about.dynamic_summary == "" and r.scene.dynamic_context.excluded_count == 0
+    assert r.plan.dynamic_context.spawn_hints.type_weights == GameplayV1.model_validate(_load_gp()).spawner.default_spawn_hints.type_weights
+
+
+def test_v3_hazards_are_fixed_only_while_v2_still_counts_every_object():
+    m = straight_model(entities=[ent("ent-0000000001", EntityType.parked_vehicle, 20.0, 5.9),
+                                 ent("ent-0000000002", EntityType.pole, 40.0, 5.9)])
+    v2 = compile_scene(m, observations={}, assets={}, tile=None, fidelity=make_fidelity_map(100.0, 1), slug_name="T", city="C")
+    v3 = compile3(m)
+    assert {o.type for o in v2.objects} == {"parked_vehicle", "pole"} and v2.walkability.hazard_count == 2
+    assert v3.scene.walkability.hazard_count == 1 and [o.type for o in v3.plan.objects] == ["pole"]
+
+
+def test_v3_scene_keeps_the_v2_summary_blocks_in_step_with_the_legacy_compile():
+    m = make_model(curved_reference_line(), fused_observation_ids=["a", "b"], entities=[ent(s=12.5, t=5.9)])
+    v2 = compile_scene(m, observations={}, assets={}, tile=None, fidelity=make_fidelity_map(100.0, 1),
+                       slug_name="Test street", city="Bengaluru")
+    v3 = compile3(m).scene
+    assert v3.about.summary == v2.about.summary and v3.about.photos == v2.about.photos
+    assert v3.about.fidelity == v2.about.fidelity and v3.segment == v2.segment and v3.ground.frame_to_px == v2.ground.frame_to_px
+    assert [c.model_dump() for c in v3.cross_section.footpath_coverage] == [c.model_dump() for c in v2.cross_section.footpath_coverage]
+
+
+def test_plan_and_scene_agree_on_coverage_and_footpath_side():
+    m = straight_model(side="right")
+    r = compile3(m)
+    assert r.plan.footpath_side == "right" == r.scene.segment.footpath_side.value
+    assert r.scene.cross_section.footpath_coverage[-1].to_m == r.plan.length_m
+
+
+def test_committed_v3_fixtures_are_current():
+    import tempfile
+
+    from tests.fixtures import make_model_fixtures as mk
+
+    results = mk.build_v3(mk.build())
+    with tempfile.TemporaryDirectory() as td:
+        sd, pd = Path(td) / "scene", Path(td) / "plan"
+        mk.write_v3(results, sd, pd)
+        for name in ("curved", "bellandur"):
+            assert (sd / f"{name}.json").read_bytes() == (ROOT / "tests/fixtures/scene_v3" / f"{name}.json").read_bytes(), name
+            assert (pd / f"{name}.plan.json").read_bytes() == (ROOT / "tests/fixtures/plan" / f"{name}.plan.json").read_bytes(), name

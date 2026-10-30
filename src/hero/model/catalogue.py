@@ -15,6 +15,7 @@ CATALOGUE_VERSION = 1
 
 EntityClass = Literal["obstacle", "hazard", "marking", "scenery"]
 Action = Literal["jump", "slide", "dodge", "none"]
+Runtime = Literal["fixed", "dynamic_context", "by_position"]
 
 
 @dataclass(frozen=True)
@@ -25,12 +26,24 @@ class CatalogueEntry:
     size_m: tuple[float, float, float]  # default w x h x d; d == 0.0 means "use the entity's extent"
     note: str = ""
     emits_tokens: bool = False          # crossings / ramps generate tokens
+    runtime: Runtime = "fixed"          # type default of the runtime classification (hero.model.dynamic refines "by_position")
+
+
+# Runtime classification (spec/data.md -> "Runtime classification"): anything not listed is "fixed".
+_RUNTIME: Mapping[str, Runtime] = {
+    "parked_vehicle": "dynamic_context",
+    "vendor_stall": "dynamic_context",
+    "speed_breaker": "dynamic_context",
+    "pothole": "by_position",   # fixed when its centre lies in the footpath band
+    "debris": "by_position",
+    "other": "by_position",     # dynamic unless attributes.blocks_footpath and in the footpath band
+}
 
 
 def _e(t: str, klass: EntityClass, action: Action, w: float, h: float, d: float, note: str = "",
        tokens: bool = False) -> tuple[EntityType, CatalogueEntry]:
     et = EntityType(t)
-    return et, CatalogueEntry(et, klass, action, (w, h, d), note, tokens)
+    return et, CatalogueEntry(et, klass, action, (w, h, d), note, tokens, _RUNTIME.get(t, "fixed"))
 
 
 CATALOGUE: Mapping[EntityType, CatalogueEntry] = dict([

@@ -81,3 +81,9 @@ Run start: 2026-10-29 ~19:00 local. Platform: Claude Code (VS Code extension), b
 - A full-suite run once made unmeasured real Anthropic calls: real-API tests are now `live`-marked and skipped unless `-m live` or the path is tests/live.
 - QA found the Google API key leaking via httpx INFO URL logs and cached REQUEST_DENIED metadata: both fixed (redaction filter, only OK/ZERO_RESULTS/NOT_FOUND cached).
 - A live gate bearing check must be axial (a south-running road is north-aligned).
+
+## Phase 2.1 docs slice (2026-10-30)
+
+- User scope change: no engine-specific (Unity/Unreal/Godot) import docs and no engine export UI. `spec/portability.md` cut from ~300 to ~90 lines, section headings 1-10 kept so code references still resolve; the spawner text now points to `src/hero/export/SPAWNER_ALGORITHM.md` (with the [R8] note kept). Section 9 is now "No engine export UI".
+- Leftovers outside the docs slice: `src/hero/export/bundle.py` and `GET /api/admin/segments/{slug}/export.zip` still exist, and `spec/api.md` line ~211 and `spec/roadmap.md` S12-docs row still mention the Unity/Unreal/Godot text and the download button.
+- `hero.tools.recompile --all` has no skip list: the legacy street `100-feet-road-indiranagar-w` is recompiled like the others.

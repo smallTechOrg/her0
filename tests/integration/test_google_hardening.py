@@ -20,7 +20,6 @@ from hero.imagery.google import GoogleImagery
 from hero.llm.errors import UpstreamError
 from hero.pipeline import registry
 from hero.scene.schema import FootpathSide, LatLon, RunStatus
-from tests.fixtures.google.fake_google import make_imagery, FakeGoogle, straight_ref
 from tests.integration.test_fusion_run import ALL_FOUR, FORWARD_BACK, new_world
 
 START = LatLon(lat=12.97400, lon=77.64050)

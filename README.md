@@ -106,6 +106,47 @@ Upgrading an existing dev DB: `uv run alembic upgrade head` (revision `0002`), t
 Model slug check: `uv run python -m hero.tools.check_structured` tries each structured-output mode (`forced_tool`, `auto_tool`, `json_text`)
 on `claude-sonnet-4-5` and `claude-sonnet-5-5`; `HERO_STRUCTURED_MODE=auto` falls back automatically when a slug rejects forced tool choice.
 
+## Phase 2.1: improve an existing model
+
+### Add to an existing model
+
+Step by step, from the admin area (`http://localhost:8711/admin/`):
+
+1. Open the segment page (`/admin/segment.html?slug=<slug>`) and find **How to improve this model**.
+2. Pick one of the paths:
+   - **Fill gaps** - fetches only the imagery for the stretches the coverage map says are weak, shows the estimate, then runs.
+   - **Add more imagery** - choose Street View spacing and headings, satellite crop zoom and an `s` range, see the estimate, then fetch.
+   - **Upload photos placed on the coverage map** - upload your own photos and place them on the coverage map so they are georeferenced to a stretch.
+   - **Regenerate with what we have ($0)** - recompiles the current model from the cached observations; no Google or Anthropic spend.
+3. Press **Generate** to fuse whatever is new. Every run publishes a new model version (entity ids are kept) with a run report.
+
+**Model (per run).** Each paid run has a **Model** dropdown: `claude-sonnet-5-5` is the default, `claude-opus-5-5` is verified (one tiny real call, $0.0154, `docs/evidence/phase2_1/model_check_claude-opus-5-5.json`).
+
+**Max quality (admin).** On a segment's Fill-gaps card and Add-imagery form, tick *Max quality* to spend more tokens on one run: a Street View frame every ~12 m with four headings, satellite crops at zoom 21 plus an overlapping zoom-20 set, three independent extraction passes per frame batch merged by agreement (disagreement lowers confidence, nothing is dropped) and up to four review-and-fix rounds that stop early when the model has converged. The model defaults to Opus 5.5 when enabled, and you can switch it back. The estimate is shown before launch; a typical 100 m street is about $1.74 with Opus 5.5 or $1.00 with Sonnet 5.5 as an upper bound. Every pass is stored with its provenance and cached, so re-running work already paid for costs $0, and each run creates a new model version with a per-5 m before/after fidelity report. The global HERO_CLAUDE_BUDGET_USD hard stop still applies; there is no per-run cap.
+
+### Recompile existing streets
+
+```bash
+# from /Users/sai/Workspace/her0 (repo root)
+uv run python -m hero.tools.recompile --all                 # zero spend: cached model + observations only
+uv run python -m hero.tools.recompile --slug <slug> --dry-run
+```
+
+Prints one line per street (`scene 2->3, glb <sha8>, ...` or `unchanged`). Phase-1 legacy imports with no canonical model (e.g. the off-road street `100-feet-road-indiranagar-w`) are skipped (`skipped (legacy, no canonical model)`) and keep serving their stored scene; recompile one only with `--slug X --include-legacy`.
+
+### Game: dynamic obstacles
+
+Obstacles are spawned at runtime by a deterministic spawner. The seed is `?seed=<int>` if given, otherwise the per-street run number (stored in the browser as `hero.run.<slug>`, +1 per run), so each run differs and `?seed=7` twice gives identical obstacles. The rules are data in `src/hero/export/gameplay.json`.
+`frontend/vendor/` is git-ignored, so after a fresh clone (or if the game shows a blank scene) regenerate it:
+
+```bash
+uv run python -m hero.tools.vendor_three
+```
+
+### Data formats
+
+Streets are stored as engine-neutral data: canonical model JSON, scene v3-lite JSON, `street.glb`, `street.manifest.json`, `gameplay.json` and, as a best-effort byproduct, `street.xodr` (OpenDRIVE; not exposed in the UI). There is no engine export UI. See `spec/portability.md`.
+
 ## Player flow
 
 1. `http://<mac-lan-ip>:8711/` - the gallery lists `ready` segments (one card after the
@@ -232,7 +273,6 @@ Logs are JSON lines on stdout (structlog). Key events:
 - Gallery: **Use my location** button, disabled, "Coming in Phase 3".
 - Admin dashboard: **Seed city - Phase 3**, disabled.
 - Admin run view: **Correct detected lines - Phase 3**, disabled.
-- Admin segment page: **Upload a photo**, disabled, "Coming in Phase 3" (the upload API and storage are real).
 - API routes `GET /api/segments/nearest`, `GET /api/segments/{slug}/runs`,
   `POST /api/admin/seed*`, `/api/admin/segments/{slug}/corrections` are not registered.
 

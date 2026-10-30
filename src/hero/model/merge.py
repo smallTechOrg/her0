@@ -851,7 +851,7 @@ def apply_critique(model: CanonicalModel, ops: Sequence[CritiqueOp], *, run_id: 
                    ) -> tuple[CanonicalModel, list[ChangeRecord], list[str]]:
     """Apply review ops as low-weight ``critique`` evidence. Never deletes; out-of-bound / unknown ops are skipped
     (and listed). Per entity the total confidence change is capped at 0.15; nudges at 3 m (edges 1 m)."""
-    base = model
+    base = model  # noqa: F841
     m = model.model_copy(deep=True)
     ents = {e.id: e for e in m.entities}
     changes: list[ChangeRecord] = []

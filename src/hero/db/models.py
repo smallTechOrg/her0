@@ -52,6 +52,8 @@ class Segment(Base):
     latest_run_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
     best_score: Mapped[int | None] = mapped_column(Integer, nullable=True)
     best_distance_m: Mapped[float | None] = mapped_column(Float, nullable=True)
+    # Derived cache (0003): ``schema_version`` of ``scene_json`` (null = no scene).
+    scene_schema: Mapped[int | None] = mapped_column(Integer, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=utcnow, onupdate=utcnow)
 
@@ -198,6 +200,11 @@ class ModelVersionRow(Base):
     entity_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     observation_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     fidelity_level: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    # Derived cache (0003): everything below is recomputable from the knowledge columns above.
+    scene_schema: Mapped[int] = mapped_column(Integer, nullable=False, default=2, server_default="2")
+    compiled_by: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    gaps_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    export_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=utcnow)
 
 

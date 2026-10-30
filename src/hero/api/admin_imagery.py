@@ -12,6 +12,7 @@ import hashlib
 import inspect
 import io
 import math
+import re
 from datetime import UTC, datetime
 from email.parser import BytesParser
 from email.policy import HTTP
@@ -31,7 +32,7 @@ from hero.imagery.acquire import classify_view
 from hero.imagery.annotate import annotate_reference_line
 from hero.imagery.cache import ImageryCache
 from hero.imagery.google import GoogleImagery
-from hero.imagery.plan import SRange, default_plan, merge_plan, overview_zoom_for
+from hero.imagery.plan import MAX_TARGETS, PlanTarget, SRange, default_plan, merge_plan, overview_zoom_for
 from hero.imagery.roads import fetch_road_polyline
 from hero.llm.errors import UpstreamError
 from hero.logging import get_logger
@@ -43,8 +44,12 @@ log = get_logger("hero.api")
 router = APIRouter(prefix="/api/admin", tags=["admin-imagery"], dependencies=[Depends(require_admin)])
 
 UPLOAD_MAX_DISTANCE_M = 60.0
+UPLOAD_MAX_PIXELS = 50_000_000  # width x height cap, checked from the header before any pixel is decoded
 UPLOAD_FORMATS = {"JPEG": ("jpg", "image/jpeg"), "PNG": ("png", "image/png")}
 DEFAULT_UPLOAD_FOV = 70.0
+SIDE_T_M = {"left": 5.5, "right": -5.5, "centre": 0.0}  # camera offset from the line (left-positive)
+FACING_OFFSET_DEG = {"forward": 0.0, "back": 180.0, "left": 270.0, "right": 90.0,
+                     "toward_left": 270.0, "toward_right": 90.0}
 MAX_FORM_OVERHEAD_BYTES = 64 * 1024
 
 
@@ -122,6 +127,35 @@ def _float_field(form: dict, name: str, *, required: bool, default: float | None
     return value
 
 
+_CAPTURED_RE = re.compile(r"^(\d{4})-(\d{2})(?:-(\d{2}))?$")
+
+
+def _text_field(form: dict, name: str) -> str | None:
+    if name not in form:
+        return None
+    text = form[name][0].decode("utf-8", "replace").strip()
+    return text or None
+
+
+def _parse_captured_at(value: str | None) -> str | None:
+    """``YYYY-MM`` / ``YYYY-MM-DD`` (not in the future) -> ``YYYY-MM``; ``None`` stays ``None`` (date unknown)."""
+    if value is None:
+        return None
+    m = _CAPTURED_RE.match(value)
+    bad = ApiError("validation_error", "Field 'captured_at' must be YYYY-MM or YYYY-MM-DD.", {"field": "captured_at"})
+    if not m:
+        raise bad
+    year, month, day = int(m.group(1)), int(m.group(2)), int(m.group(3) or 1)
+    try:
+        datetime(year, month, day)
+    except ValueError:
+        raise bad from None
+    now = datetime.now(UTC)
+    if (year, month, day if m.group(3) else 1) > (now.year, now.month, now.day if m.group(3) else 1):
+        raise ApiError("validation_error", "Field 'captured_at' is in the future.", {"field": "captured_at"})
+    return f"{year:04d}-{month:02d}"
+
+
 # ------------------------------------------------------------------ observations
 
 
@@ -167,29 +201,70 @@ async def upload_observation(slug: str, request: Request):
         raise ApiError("validation_error", f"The photo is larger than HERO_UPLOAD_MAX_MB ({settings.upload_max_mb:g} MB).",
                        {"field": "file", "max_bytes": limit})
     try:
+        with Image.open(io.BytesIO(data)) as img:  # header only: size is known without decoding pixels
+            fmt, (width, height) = (img.format or "").upper(), img.size
+        if width * height > UPLOAD_MAX_PIXELS:
+            raise ApiError("validation_error",
+                           f"The photo is {width}x{height} px; the maximum is {UPLOAD_MAX_PIXELS // 1_000_000} megapixels.",
+                           {"field": "file", "max_pixels": UPLOAD_MAX_PIXELS})
         with Image.open(io.BytesIO(data)) as img:
             img.verify()
-        with Image.open(io.BytesIO(data)) as img:
-            fmt, (width, height) = (img.format or "").upper(), img.size
-    except (UnidentifiedImageError, OSError, SyntaxError, ValueError):
+    except Image.DecompressionBombError:
+        raise ApiError("validation_error", "The photo has too many pixels (decompression bomb).",
+                       {"field": "file", "max_pixels": UPLOAD_MAX_PIXELS}) from None
+    except (UnidentifiedImageError, OSError, SyntaxError, ValueError, Image.DecompressionBombWarning):
         raise ApiError("validation_error", "The file is not a readable jpeg or png image.", {"field": "file"}) from None
     if fmt not in UPLOAD_FORMATS:
         raise ApiError("validation_error", f"Only jpeg or png photos are accepted (got {fmt or 'unknown'}).", {"field": "file"})
 
-    lat = _float_field(form, "lat", required=True, lo=-90, hi=90)
-    lon = _float_field(form, "lon", required=True, lo=-180, hi=180)
-    heading = _float_field(form, "heading_deg", required=True, lo=-360, hi=720) % 360.0
     pitch = _float_field(form, "pitch_deg", required=False, default=0.0, lo=-90, hi=90)
     fov = _float_field(form, "fov_deg", required=False, default=DEFAULT_UPLOAD_FOV, lo=10, hi=180)
     note = form["note"][0].decode("utf-8", "replace").strip()[:500] or None if "note" in form else None
+    captured = _parse_captured_at(_text_field(form, "captured_at"))
+    facing = _text_field(form, "facing")
+    if facing is not None and facing not in FACING_OFFSET_DEG:
+        raise ApiError("validation_error", f"Field 'facing' must be one of {', '.join(FACING_OFFSET_DEG)}.",
+                       {"field": "facing", "allowed": list(FACING_OFFSET_DEG)})
+    side = _text_field(form, "side")
+    if side is not None and side not in SIDE_T_M:
+        raise ApiError("validation_error", "Field 'side' must be left, right or centre.", {"field": "side"})
+    explicit_heading = _float_field(form, "heading_deg", required=False, lo=-360, hi=720)
+    has_latlon = _text_field(form, "lat") is not None or _text_field(form, "lon") is not None
+    has_s = _text_field(form, "s") is not None
+    if not has_latlon and not has_s:
+        raise ApiError("validation_error", "Say where the photo was taken: give 's' + 'side' (metres along the street) "
+                       "or 'lat' + 'lon'.", {"field": "s"})
+    if explicit_heading is None and facing is None:
+        raise ApiError("validation_error", "Say where the camera pointed: give 'facing' or 'heading_deg'.",
+                       {"field": "facing"})
 
     ref = reference_line_of(seg)
     if ref is None:
         raise ApiError("validation_error", "This segment has no reference line yet; run Generate or the placement preview first.")
-    proj = ref.to_st(lat, lon)
-    if proj.dist_m > UPLOAD_MAX_DISTANCE_M:
-        raise ApiError("validation_error", f"The camera is {proj.dist_m:.0f} m from the reference line (max {UPLOAD_MAX_DISTANCE_M:.0f} m).",
-                       {"distance_m": round(proj.dist_m, 1), "max_m": UPLOAD_MAX_DISTANCE_M})
+    max_dist = float(getattr(settings, "upload_max_distance_m", UPLOAD_MAX_DISTANCE_M))
+    if has_latlon:
+        lat = _float_field(form, "lat", required=True, lo=-90, hi=90)
+        lon = _float_field(form, "lon", required=True, lo=-180, hi=180)
+        proj = ref.to_st(lat, lon)
+        if proj.dist_m > max_dist:
+            raise ApiError("validation_error", f"The camera is {proj.dist_m:.0f} m from the reference line (max {max_dist:.0f} m).",
+                           {"distance_m": round(proj.dist_m, 1), "max_m": max_dist})
+        s_cam, t_cam, how = proj.s, proj.t, "latlon"
+    else:
+        s_cam = _float_field(form, "s", required=True, lo=0.0, hi=ref.length_s)
+        if side is None:
+            raise ApiError("validation_error", "Field 'side' (left, right or centre) is required with 's'.", {"field": "side"})
+        t_cam, how = SIDE_T_M[side], "s_side"
+        lat, lon = ref.point_at(s_cam, t_cam)
+    s_clamped = min(max(s_cam, 0.0), ref.length_s)
+    bearing = ref.bearing_deg(s_clamped)
+    heading = (explicit_heading if explicit_heading is not None else bearing + FACING_OFFSET_DEG[facing]) % 360.0
+    view = classify_view(heading, bearing)
+    if side is None:
+        side = "left" if t_cam > 0.5 else "right" if t_cam < -0.5 else "centre"
+    placement = {"s": round(s_cam, 3), "t": round(t_cam, 3), "side": side, "facing": facing or view.value,
+                 "captured_at": captured, "how": how, "lat": round(lat, 7), "lon": round(lon, 7),
+                 "heading_deg": round(heading, 2)}
 
     sha = hashlib.sha256(data).hexdigest()
     ext, media = UPLOAD_FORMATS[fmt]
@@ -200,16 +275,36 @@ async def upload_observation(slug: str, request: Request):
         tmp = dest.with_name(dest.name + ".tmp")
         tmp.write_bytes(data)
         tmp.replace(dest)
-    s_clamped = min(max(proj.s, 0.0), ref.length_s)
     obs, created = model_repo.upsert_observation(ObservationCreate(
         segment_id=seg.id, obs_key=f"upload:{sha}", kind=ObservationKind.user_photo, source=ObservationSource.upload,
         sha256=sha, file_path=f"uploads/{dest.name}", media_type=media, width_px=width, height_px=height, bytes=len(data),
-        lat=lat, lon=lon, heading_deg=round(heading, 2), pitch_deg=pitch, fov_deg=fov, station_s=round(proj.s, 3),
-        offset_t=round(proj.t, 3), view=classify_view(heading, ref.bearing_deg(s_clamped)),
-        georef={"size_px": [width, height], "note": note}, cost_usd=0.0, note=note))
+        lat=lat, lon=lon, heading_deg=round(heading, 2), pitch_deg=pitch, fov_deg=fov, station_s=round(s_cam, 3),
+        offset_t=round(t_cam, 3), view=view, capture_date=captured,
+        georef={"size_px": [width, height], "note": note, "placement": placement}, cost_usd=0.0, note=note))
     log.info("observation.ingested", run_id=None, observation_id=obs.id, kind=obs.kind.value,
-             view=obs.view.value if obs.view else None, station_s=obs.station_s, cache_hit=not created, cost_usd=0.0)
-    return ok(observation_json(obs, None), status_code=201 if created else 200)
+             view=obs.view.value if obs.view else None, station_s=obs.station_s, cache_hit=not created, cost_usd=0.0,
+             how=(obs.georef.get("placement") or placement)["how"])
+    body = observation_json(obs, None)
+    body["placement"] = obs.georef.get("placement") or placement
+    body["affects"] = _affects(seg, obs, ref)
+    return ok(body, status_code=201 if created else 200)
+
+
+def _affects(seg: repo.SegmentRecord, obs: Observation, ref: ReferenceLine) -> dict[str, Any]:
+    """Informational: which bins the photo covers and the level it can lift them to (never fails the upload)."""
+    from hero.model.improve import photo_effect
+
+    try:
+        head = model_repo.head_version(seg.id)
+        rec = model_repo.get_version(seg.id, head) if head is not None else None
+        if rec is None:
+            raise LookupError("no model")
+        ids = [i for i in rec.model.fused_observation_ids if i != obs.id]
+        fused = {o.id: o for o in model_repo.get_observations(seg.id, ids=ids, limit=100_000)} if ids else {}
+        return photo_effect(rec.model, fused, obs, ref)
+    except Exception as exc:  # noqa: BLE001 - the effect is advice; the stored photo is what matters
+        log.warning("upload.affects_failed", error=repr(exc)[:200])
+        return {"s_from": None, "s_to": None, "can_reach_level": 2, "message": "The effect of this photo could not be estimated."}
 
 
 # ------------------------------------------------------------------ add more imagery (acquire-only run)
@@ -224,6 +319,8 @@ class ImageryBody(BaseModel):
     sat_crop_spacing_m: float | None = Field(default=None, gt=0)
     max_images: int | None = Field(default=None, ge=1, le=200)
     s_range: SRange | None = None
+    sat_extra_zoom: int | None = Field(default=None, ge=18, le=21)
+    targets: list[PlanTarget] | None = Field(default=None, min_length=1, max_length=MAX_TARGETS)
 
     @model_validator(mode="after")
     def _at_least_one(self) -> "ImageryBody":
@@ -342,3 +439,71 @@ def _store_prior(seg: repo.SegmentRecord, ref: ReferenceLine, ref_model, warning
     model_repo.save_version_only(seg.id, model_repo.ModelVersionCreate(
         version=0, kind="prior", parent_version=None, run_id=None, model=model, scene=None,
         fidelity=compute_fidelity(model, {}), diff=None, summary="Prior model from OSM geometry (no imagery yet)."))
+
+
+# ------------------------------------------------------------------ estimate before launch (Add imagery)
+
+
+class ImageryEstimateBody(BaseModel):
+    model_config = ConfigDict(extra="forbid", protected_namespaces=())
+
+    imagery: dict[str, Any] = Field(default_factory=dict)
+    model: str | None = Field(default=None, min_length=1, max_length=80)
+    quality: dict[str, Any] | None = None
+    fuse: bool = True
+
+
+@router.post("/segments/{slug}/imagery/estimate")
+def estimate_imagery(slug: str, raw: dict[str, Any] = Body(default_factory=dict)):
+    """No spend, no network: the planned images of an imagery form, how many are new, and the Google + Claude estimate
+    including extraction passes and review rounds (an upper bound; the global hard stop is the only limit)."""
+    from hero.fusion.maxquality import Quality
+    from hero.imagery.plan import plan_images
+    from hero.llm import models as llm_models
+    from hero.model import improve
+
+    seg = _segment(slug)
+    try:
+        body = ImageryEstimateBody.model_validate(raw)
+        overrides = ImageryBody.model_validate(body.imagery).overrides() if body.imagery else {}
+        quality = Quality.resolve(body.quality)
+    except ValidationError as exc:
+        raise ApiError("validation_error", "The estimate request did not pass validation.",
+                       exc.errors(include_url=False, include_context=False, include_input=False)) from None
+    settings = get_settings()
+    model = None
+    if body.model:
+        try:
+            model = llm_models.resolve_model(body.model, settings).model
+        except llm_models.ModelChoiceError as exc:
+            raise ApiError("validation_error", exc.message, {"field": "model", "reason": exc.reason}) from None
+    try:
+        plan = merge_plan(default_plan(settings), overrides)
+        rec = None
+        head = model_repo.head_version(seg.id)
+        if head is not None:
+            rec = model_repo.get_version(seg.id, head)
+        ref = (ReferenceLine.from_model(rec.model.reference_line) if rec is not None and not rec.model.legacy else
+               ReferenceLine.from_latlons([(seg.start.lat, seg.start.lon), (seg.end.lat, seg.end.lon)]))
+        items, info = plan_images(ref, plan)
+    except ValueError as exc:
+        raise ApiError("validation_error", str(exc)) from None
+    stored = model_repo.get_observations(seg.id, limit=100_000)
+    new_sv = new_sat = 0
+    for it in items:
+        if it.kind == "streetview":
+            t = PlanTarget(kind="streetview", station_s=it.station_s, view=it.view)  # type: ignore[arg-type]
+            new_sv += 0 if improve._stored_match(stored, t) else 1
+        elif it.kind == "satellite_crop":
+            t = PlanTarget(kind="satellite_crop", station_s=it.station_s, zoom=it.zoom)
+            new_sat += 0 if improve._stored_match(stored, t) else 1
+        else:
+            new_sat += 0 if any(o.kind is ObservationKind.satellite_overview for o in stored) else 1
+    rounds = quality.rounds(settings.max_review_iterations)
+    est = improve.estimate_cost(new_sv, new_sat, model, fuse=body.fuse, passes=quality.extraction_passes,
+                                review_rounds=rounds)
+    planned = info.paid_total
+    return ok({"counts": dict(info.counts), "planned": planned, "new": new_sv + new_sat, "cached": planned - new_sv - new_sat,
+               "new_streetview": new_sv, "new_satellite": new_sat, "trimmed": info.trimmed, "notes": list(info.notes),
+               "est": est.as_dict(), "extraction_passes": quality.extraction_passes, "review_rounds": rounds,
+               "upper_bound": True})

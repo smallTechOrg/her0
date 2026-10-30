@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from hero.model.compile import compile_scene
+from hero.model.compile import compile_scene_v2
 from hero.model.fidelity import compute_fidelity
 from hero.model.legacy import import_legacy
 from hero.model.types import CanonicalModel, EntityType, FootpathState, ModelKind
@@ -115,7 +115,7 @@ def test_invalid_side_is_rejected(scene):
 
 
 def test_a_legacy_model_compiles_to_a_flagged_scene_v2(model):
-    sc = compile_scene(model, observations={}, assets={}, tile=None, fidelity=model.fidelity,
+    sc = compile_scene_v2(model, observations={}, assets={}, tile=None, fidelity=model.fidelity,
                        slug_name="100 Feet Road", city="Bengaluru")
     assert sc.about.legacy and not sc.about.placement_verified and sc.about.fidelity.level == "L0"
     assert not sc.about.degraded and "legacy, placement unverified" in sc.about.summary

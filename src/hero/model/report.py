@@ -34,10 +34,12 @@ from hero.model.types import (
     ReportContradicted,
     ReportCost,
     ReportDetections,
+    ReportBin,
     ReportFidelity,
     ReportFidelitySide,
     ReportImages,
     ReportNewDetection,
+    ReportQuality,
     ReportSkipped,
     RunReport,
 )
@@ -54,6 +56,15 @@ def _side(f: FidelityMap | None) -> ReportFidelitySide:
         return ReportFidelitySide()
     return ReportFidelitySide(overall=f.overall.score,
                               histogram_m={k: v for k, v in sorted(f.overall.histogram_m.items()) if v > 0})
+
+
+def _bins(before: FidelityMap | None, after: FidelityMap | None) -> list[ReportBin]:
+    """Per-bin level before -> after (bins matched by index; a missing 'before' counts as L0)."""
+    if after is None:
+        return []
+    prior = {b.index: b.level for b in before.bins} if before is not None else {}
+    return [ReportBin(s_from=b.s_from, s_to=b.s_to, level_before=prior.get(b.index, 0), level_after=b.level)
+            for b in after.bins]
 
 
 def _cost(costs: ReportCost | Mapping[str, Any] | None, new: Sequence[Observation], cached: int) -> ReportCost:
@@ -85,7 +96,8 @@ def build_run_report(*, run: Any, mode: str, base: CanonicalModel | None, result
                      new_observations: Sequence[Observation], cached_count: int,
                      costs: ReportCost | Mapping[str, Any] | None, warnings: Sequence[str], now: datetime,
                      cached_observations: Sequence[Observation] = (), skipped: Sequence[ReportSkipped] = (),
-                     degraded: bool = False) -> RunReport:
+                     degraded: bool = False, model_id: str | None = None,
+                     quality: ReportQuality | None = None) -> RunReport:
     model = result or base
     if model is None:
         raise ValueError("build_run_report needs a base or a result model")
@@ -135,7 +147,8 @@ def build_run_report(*, run: Any, mode: str, base: CanonicalModel | None, result
                 conf_changes.append(ReportConfidenceChange(entity_id=c.id, type=types.get(c.id, "other"),
                                                            before=float(pair[0]), after=float(pair[1]),
                                                            reason=c.reason))
-    fidelity = ReportFidelity(before=_side(fid_before), after=_side(fid_after or fid_before), improved_intervals=improved)
+    fidelity = ReportFidelity(before=_side(fid_before), after=_side(fid_after or fid_before), improved_intervals=improved,
+                              bins=_bins(fid_before, fid_after or fid_before))
     cost = _cost(costs, new_observations, cached_count)
 
     # ---- text
@@ -176,4 +189,4 @@ def build_run_report(*, run: Any, mode: str, base: CanonicalModel | None, result
         result_version=result_v, version_created=version_created, started_at=started, finished_at=finished,
         duration_s=round(duration, 1), images=images, detections=dets, profile_changes=profile_changes,
         fidelity=fidelity, confidence_changes=conf_changes, cost=cost, warnings=list(warnings), degraded=degraded,
-        summary=summary, suggestions=suggestions)
+        summary=summary, suggestions=suggestions, model=model_id, quality=quality)

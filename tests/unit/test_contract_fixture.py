@@ -341,3 +341,12 @@ def test_committed_files_are_fresh_and_build_is_deterministic():
     assert a == b  # in-process twice
     for path, data in a.items():
         assert path.read_bytes() == data, f"{path.relative_to(ROOT)} is stale: run uv run python tests/fixtures/make_contract_export.py"
+
+
+def test_contract_scene_walkability_is_derived_from_its_own_coverage_and_objects():
+    sc = SceneV3.model_validate_json((ROOT / "tests/fixtures/scene_v3/contract_curved.json").read_text())
+    plan = StreetPlan.model_validate_json((BUNDLE / "plan.json").read_text())
+    intact = sum(r.to_m - r.from_m for r in sc.cross_section.footpath_coverage if r.state == "intact")
+    assert sc.walkability.footpath_coverage_pct == pytest.approx(100.0 * intact / sc.segment.length_m, abs=0.05) == 62.5
+    assert sc.walkability.crossing_present is True and any(o.type == "crossing" for o in plan.objects)
+    assert sum(plan.dynamic_context.spawn_hints.lane_weights) == pytest.approx(1.0)

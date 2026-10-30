@@ -21,6 +21,7 @@ from hero.db import model_repo, repo
 from hero.db.repo import RunUpdate, StepRecord
 from hero.fusion.runner import run_fusion, run_inputs
 from hero.llm.budget import BudgetGuard
+from hero.llm.models import resolve_model
 from hero.llm.pricing import load_price_table
 from hero.logging import get_logger
 from hero.scene.schema import RunStatus
@@ -156,16 +157,23 @@ def _new_paid_cost(segment: repo.SegmentRecord, settings, items) -> float:
     return round(total, 4)
 
 
-def start_run(slug: str, *, mode: str = "generate",
-              plan_overrides: dict[str, Any] | None = None) -> repo.PipelineRunRecord:
+def start_run(slug: str, *, mode: str = "generate", plan_overrides: dict[str, Any] | None = None,
+              model: str | None = None, quality: dict[str, Any] | None = None) -> repo.PipelineRunRecord:
+    """``model`` (optional id from ``GET /api/admin/models``) is the vision AND review model of the run; unknown or
+    disabled ids raise ``ModelChoiceError`` before anything is queued or spent. Acquire-only runs have no LLM and
+    ignore it. ``quality`` ({preset, extraction_passes, review_rounds, review_stop_changes}) raises the number of
+    extraction passes / review rounds of a generate run; there is no per-run dollar cap (only the global hard stop)."""
     if mode not in MODES:
         raise ValueError(f"mode must be one of {MODES} (got {mode!r})")
     settings = get_settings()
     segment = repo.require_segment(slug)
+    chosen: str | None = None
     if mode == "generate":
+        if model:
+            chosen = resolve_model(model, settings).model  # ModelChoiceError -> 422 before any spend
         prices = load_price_table(settings)
-        prices.require(settings.vision_model)
-        prices.require(settings.review_model)
+        prices.require(chosen or settings.vision_model)
+        prices.require(chosen or settings.review_model)
     _planned_items(segment, settings, plan_overrides)  # PlanError (a ValueError) before anything is queued
     with _lock:
         current = active_run()
@@ -176,7 +184,11 @@ def start_run(slug: str, *, mode: str = "generate",
             if guard.remaining_usd() <= 0:
                 raise BudgetExhausted(spent_usd=repo.total_llm_cost_usd(), budget_usd=guard.budget_total_usd)
         run = repo.create_run(segment.id, run_inputs(settings, segment, mode=mode, plan_overrides=plan_overrides,
-                                                     base_version=model_repo.head_version(segment.id)))
+                                                     base_version=model_repo.head_version(segment.id),
+                                                     model=chosen, quality=quality if mode == "generate" else None))
+        log.info("model.chosen", run_id=run.id, segment_slug=slug, mode=mode,
+                 vision=run.inputs["models"]["vision"], review=run.inputs["models"]["review"],
+                 source=run.inputs["models"]["source"])
         thread = threading.Thread(target=_worker, args=(run.id,), name=f"hero-run-{run.id[:8]}", daemon=True)
         _threads[run.id] = thread
         thread.start()

@@ -138,3 +138,12 @@ a { color: var(--accent); }
 .state-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; font-size: .9rem; }
 .state-list li[data-state="unknown"] { color: var(--muted); }
 #results-about-open { margin-top: 8px; }
+
+/* ---------- Phase 2.1 r2: glb renderer ---------- */
+#toast { position: absolute; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 28px); transform: translateX(-50%);
+  max-width: 80%; padding: 6px 14px; border-radius: 999px; background: rgba(0,0,0,.62); color: #fff; font-size: .95rem;
+  font-weight: 600; pointer-events: none; z-index: 4; opacity: 0; transition: opacity .15s; white-space: nowrap; }
+#toast.on { opacity: 1; }
+#panel-error .btn-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+#error-retry { font-size: 1rem; padding: 12px 20px; }
+.about-attribution { font-size: .8rem; }

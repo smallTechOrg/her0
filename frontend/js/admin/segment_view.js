@@ -1,7 +1,8 @@
 // /admin/segment.html?slug=<slug>: what does the model know, how well, and from what.
 // Admin API used: GET /api/admin/status (login + limits), GET /api/admin/segments, GET .../model, .../model/versions/{n},
 // .../model/coverage, .../model/entities[/{id}], .../model/diff, .../observations, POST .../placement-preview,
-// POST .../imagery, POST .../generate.
+// POST .../imagery, POST .../generate, GET .../improve-plan, GET /api/admin/models (+ the endpoints used by improve.js /
+// upload_form.js / quality_fields.js).
 
 import { ApiError } from '/js/api.js?v=3';
 import { gate, logout, el, aget, apost, segPath, setState } from '/js/admin/auth.js?v=5';
@@ -11,10 +12,15 @@ import { createEntities } from '/js/admin/entities.js?v=4';
 import { renderDiff } from '/js/admin/diff.js?v=4';
 import { renderObservations, createImageryForm } from '/js/admin/imagery_form.js?v=4';
 import { placementButton, referenceLineText } from '/js/admin/placement.js?v=4';
+import { createImprove, createModels } from '/js/admin/improve.js?v=1';
+import { createUploadForm } from '/js/admin/upload_form.js?v=1';
 
 const params = new URLSearchParams(location.search);
 const slug = params.get('slug');
-const state = { slug, status: null, segment: null, model: null, observations: null, diff: null, error: null };
+const state = { slug, status: null, segment: null, model: null, observations: null, diff: null, error: null, obsItems: [], plan: null };
+const models = createModels();
+let improveCtl = null;
+let uploadCtl = null;
 window.__hero = { page: 'admin-segment', get state() { return structuredClone(state); } };
 
 const $ = (id) => document.getElementById(id);
@@ -74,11 +80,13 @@ function renderHeader() {
       warn.hidden = false;
     }
   } else badge.hidden = true;
+  if (improveCtl) improveCtl.setBadge(badge.hidden ? 'no model yet' : badge.textContent);
   const play = $('play-link');
   if (seg && seg.status === 'ready') { play.href = `/play/?segment=${encodeURIComponent(slug)}`; play.hidden = false; }
   const reason = activeReason();
   const gen = $('generate-btn');
   gen.disabled = !!reason; gen.title = reason || `Fuse the imagery plan into a new model version for ${slug}`;
+  if (improveCtl) improveCtl.busyUpdate();
 }
 
 async function onGenerate() {
@@ -86,7 +94,7 @@ async function onGenerate() {
   const msg = $('header-msg');
   btn.disabled = true; btn.textContent = 'Starting…'; msg.hidden = true;
   try {
-    const data = await apost(segPath(slug, '/generate'));
+    const data = await apost(segPath(slug, '/generate'), models.value() ? { model: models.value() } : undefined);
     location.href = `/admin/run.html?id=${encodeURIComponent(data.run_id)}`;
   } catch (err) {
     if (authFailed(err)) return;
@@ -140,6 +148,7 @@ async function loadAll() {
   $('no-model').hidden = hasModel;
   for (const id of ['versions', 'coverage', 'entities', 'diff']) sec(id).hidden = !hasModel;
   load(sec('imagery'), loadImagery);
+  load(sec('improve'), loadImprove);
   if (!hasModel) return;
 
   const head = model.head_version;
@@ -160,7 +169,7 @@ async function loadAll() {
     renderCoverage(sec('coverage').querySelector('.cov-body'), {
       coverage: cov, profile: (vd.model && vd.model.profile) || [], entities: ents,
       obsById: new Map(((obs && obs.items) || []).map((o) => [o.id, o])),
-      onPickRange: (a, b) => formCtl && formCtl.setRange(a, b),
+      onPickRange: (a, b) => { if (improveCtl) improveCtl.setRange(a, b); if (formCtl) formCtl.setRange(a, b); },
     });
   });
   load(sec('entities'), async () => {
@@ -173,16 +182,37 @@ async function loadAll() {
   });
 }
 
+const modelLength = () => (state.model && state.model.reference_line && state.model.reference_line.length_s) || (state.segment && state.segment.length_m) || 100;
+
+function uploadCtx() {
+  const m = state.model || {};
+  const cfg = state.plan && state.plan.actions && state.plan.actions.upload;
+  const lim = (state.status && state.status.limits) || {};
+  return {
+    length: modelLength(), points: (m.reference_line && m.reference_line.points) || [], bins: (m.fidelity && m.fidelity.bins) || [],
+    observations: state.obsItems, maxMb: (cfg && cfg.max_mb) || lim.upload_max_mb || 10,
+  };
+}
+
+async function loadImprove() {
+  state.plan = await aget(segPath(slug, '/improve-plan'));
+  improveCtl.update(state.plan, state.model);
+  uploadCtl.refresh();
+}
+
 async function loadImagery() {
   const data = await aget(segPath(slug, '/observations?limit=200'));
+  state.obsItems = data.items;
+  if (uploadCtl) uploadCtl.refresh();
   state.observations = { total: data.total, loaded: data.items.length };
   renderObservations(sec('imagery'), data);
   const form = $('add-imagery');
   if (!formCtl) {
     formCtl = createImageryForm({
       form, slug, limits: state.status && state.status.limits,
-      getLength: () => (state.model && state.model.reference_line && state.model.reference_line.length_s) || (state.segment && state.segment.length_m) || 100,
-      getObservations: () => data.items,
+      getLength: modelLength,
+      getObservations: () => state.obsItems,
+      getModel: () => models.value(), models,
       activeReason, onAuth: authFailed,
     });
     $('clear-range').onclick = () => { form.querySelector('[name=s_from]').value = ''; form.querySelector('[name=s_to]').value = ''; formCtl.refresh(); };
@@ -213,6 +243,22 @@ gate({
     }
     $('page').hidden = false;
     $('generate-btn').addEventListener('click', onGenerate);
+    models.mount($('generate-model'));
+    models.mount($('imagery-model'));
+    improveCtl = createImprove({
+      root: sec('improve'), slug, models, activeReason, getActiveRunId: () => state.status && state.status.active_run_id, onAuth: authFailed,
+      onUploadHere: (iv) => uploadCtl.presetS((iv.s_from + iv.s_to) / 2),
+      onRegenerated: async () => {
+        state.model = await aget(segPath(slug, '/model'));
+        renderHeader();
+        await loadImprove();
+      },
+    });
+    uploadCtl = createUploadForm({
+      root: document.querySelector('[data-testid=upload-form]'), slug, getCtx: uploadCtx, onAuth: authFailed, activeReason,
+      onUploaded: loadImagery, getModel: () => models.value(), mountModel: (c) => models.mount(c),
+    });
+    models.load().catch((err) => authFailed(err));
     await loadAll();
   },
 });

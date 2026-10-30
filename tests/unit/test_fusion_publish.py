@@ -11,7 +11,7 @@ from hero.fusion import assets as assets_mod
 from hero.fusion import publish as pub
 from hero.fusion.state import CritiqueIteration, FusionState
 from hero.imagery.osm import OsmGeometry, OsmWay
-from hero.model.scene_v2 import SceneV2
+from hero.model.scene_v3 import SceneV3
 from hero.model.types import (
     Billboard,
     EntityState,
@@ -114,7 +114,7 @@ def test_assemble_version_compiles_a_valid_scene_diff_and_summary():
     bundle = bundle_for(candidate, base)
 
     assert bundle.changed and bundle.quality in ("full", "satellite_only", "generic")
-    assert isinstance(bundle.scene, SceneV2) and bundle.scene.model.version == 1
+    assert isinstance(bundle.scene, SceneV3) and bundle.scene.model.version == 1  # v3-lite; assets come with the export
     assert bundle.scene.generation.models == {"vision": "m-v", "review": "m-r"}
     assert bundle.scene.generation.review_iterations == 1 and "w1" in bundle.scene.generation.warnings
     assert bundle.model.fidelity == bundle.fidelity_after
@@ -125,7 +125,7 @@ def test_assemble_version_compiles_a_valid_scene_diff_and_summary():
     assert "Model v1" in bundle.summary and "fidelity L" in bundle.summary
     create = bundle.to_create()
     assert create.version == 1 and create.kind == "fused" and create.parent_version == 0
-    assert create.scene["schema_version"] == 2 and create.run_id == "run-1"
+    assert create.scene["schema_version"] == 3 and create.run_id == "run-1"
 
 
 def test_assemble_version_detects_no_change():

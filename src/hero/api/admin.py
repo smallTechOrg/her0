@@ -19,6 +19,8 @@ from hero.config import get_settings
 from hero.db import model_repo, repo
 from hero.db.repo import InvalidInputError, NotFoundError, SegmentCreate
 from hero.imagery import geocode as geocode_mod
+from hero.fusion.maxquality import Quality
+from hero.llm.models import ModelChoiceError
 from hero.imagery.plan import Heading, SRange, default_plan, merge_plan
 from hero.model.types import ObservationKind
 from hero.pipeline import registry
@@ -188,6 +190,7 @@ def _run_detail(run: repo.PipelineRunRecord) -> dict[str, Any]:
     if fusion:
         detail.update({
             "mode": run.inputs["mode"],
+            "model": (run.inputs.get("models") or {}).get("vision"),
             "base_version": report.base_version if report else run.inputs.get("base_version"),
             "result_version": report.result_version if report else None,
             "version_created": bool(report.version_created) if report else False,
@@ -297,12 +300,15 @@ class ImageryOverrides(BaseModel):
     sat_crop_spacing_m: float | None = Field(default=None, gt=0)
     max_images: int | None = Field(default=None, ge=1, le=200)
     s_range: SRange | None = None
+    sat_extra_zoom: int | None = Field(default=None, ge=18, le=21)
 
 
 class GenerateBody(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     imagery: ImageryOverrides | None = None
+    model: str | None = None  # id from GET /api/admin/models; sets the vision AND review model of this run
+    quality: dict[str, Any] | None = None  # max-quality options: preset, extraction_passes, review_rounds (no $ cap)
 
 
 def _validation_error(exc: ValidationError) -> ApiError:  # the shared 422 handler cannot serialise validator ``ctx``
@@ -325,8 +331,16 @@ def generate(slug: str, raw: dict[str, Any] | None = Body(default=None)):
         merge_plan(default_plan(get_settings()), overrides)
     except ValueError as exc:
         raise ApiError("validation_error", f"Invalid imagery plan: {exc}", {"field": "imagery"}) from None
+    extra: dict[str, Any] = {"model": body.model} if body.model else {}
+    if body.quality is not None:
+        try:
+            extra["quality"] = Quality.resolve(body.quality).model_dump()
+        except ValidationError as exc:
+            raise _validation_error(exc) from None
     try:
-        run = registry.start_run(slug, mode="generate", plan_overrides=overrides)
+        run = registry.start_run(slug, mode="generate", plan_overrides=overrides, **extra)
+    except ModelChoiceError as exc:
+        raise ApiError("validation_error", exc.message, {"field": "model", "model": exc.model, "reason": exc.reason})
     except NotFoundError as exc:
         raise ApiError("not_found", str(exc))
     except registry.PlanError as exc:
@@ -338,7 +352,11 @@ def generate(slug: str, raw: dict[str, Any] | None = Body(default=None)):
         raise ApiError("budget_exhausted", str(exc), {"spent_usd": round(exc.spent_usd, 4), "budget_usd": exc.budget_usd})
     except Exception as exc:  # noqa: BLE001 - e.g. UnknownModelError: refuse to start, never 500 silently
         raise ApiError("upstream_error", f"Cannot start a run: {exc}")
-    return ok({"run_id": run.id, "status": "queued", "mode": "generate"}, status_code=202)
+    data = {"run_id": run.id, "status": "queued", "mode": "generate"}
+    chosen = ((getattr(run, "inputs", None) or {}).get("models") or {}).get("vision")
+    if chosen:
+        data["model"] = chosen
+    return ok(data, status_code=202)
 
 
 @router.get("/runs")

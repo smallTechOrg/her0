@@ -12,6 +12,7 @@ from typing import Any
 
 from hero.db.model_repo import ExtractionRecord, ModelVersionRecord
 from hero.db.repo import PipelineRunRecord, SegmentRecord, StepRecord
+from hero.fusion.maxquality import Quality
 from hero.fusion.schemas import OverheadExtraction, StreetExtraction
 from hero.fusion.views import OverheadWindow, StreetBatch
 from hero.imagery.acquire import AcquireResult
@@ -83,8 +84,10 @@ class FusionState:
     mode: str = "generate"                                   # "generate" | "acquire"
     settings_snapshot: dict[str, Any] = field(default_factory=dict)
     plan_overrides: dict[str, Any] = field(default_factory=dict)
+    models: dict[str, str] = field(default_factory=dict)     # {"vision", "review"} of THIS run (run.inputs.models)
     started_at: datetime | None = None
     previous_segment_status: str = "draft"
+    quality: Quality = field(default_factory=Quality)        # run.inputs.quality (passes / review rounds); default = 1 / env
 
     # ---- model + geometry
     head_version: int | None = None
@@ -114,6 +117,7 @@ class FusionState:
     # ---- perception
     replay_street: list[ExtractionRecord] = field(default_factory=list)
     replay_overhead: ExtractionRecord | None = None
+    replay_passes: dict[tuple[str, int], ExtractionRecord] = field(default_factory=dict)  # (batch_id, pass>=1) -> stored
     windows: list[OverheadWindow] = field(default_factory=list)
     street_batches: list[StreetBatch] = field(default_factory=list)
     est_calls_usd: float = 0.0
@@ -127,6 +131,9 @@ class FusionState:
     projected: list[ProjectedBatch] = field(default_factory=list)
     dropped_detections: int = 0
     range_disagreements: int = 0
+    cache_hits: int = 0                                      # extractions / critiques answered from storage (no call)
+    passes_skipped: int = 0                                  # extra passes that failed or hit the budget stop
+    agreement: dict[str, int] = field(default_factory=dict)  # totals over the agreement merges
 
     # ---- merge / critique / publish
     candidate: CanonicalModel | None = None
@@ -135,6 +142,7 @@ class FusionState:
     fidelity_after: FidelityMap | None = None
     diff: ModelDiff | None = None
     critique_iterations: list[CritiqueIteration] = field(default_factory=list)
+    review_stop: str = ""                                    # why the review loop ended before its last round
     published: CanonicalModel | None = None
     scene: SceneV2 | None = None
     version: int | None = None
@@ -148,6 +156,17 @@ class FusionState:
     warnings: list[str] = field(default_factory=list)
     degraded: bool = False
     error: PipelineError | None = None
+
+    def vision_model(self, default: str) -> str:
+        return self.models.get("vision") or default
+
+    def review_model(self, default: str) -> str:
+        return self.models.get("review") or default
+
+    @property
+    def chosen_model(self) -> str | None:
+        """The one model chosen for the run (the vision model; the review pass uses the same one)."""
+        return self.models.get("vision")
 
     @property
     def run_id(self) -> str:

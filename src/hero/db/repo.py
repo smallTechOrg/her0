@@ -33,6 +33,7 @@ from sqlalchemy.orm import Session
 from hero.db import models
 from hero.db.session import get_session
 from hero.model.scene_v2 import SceneV2, load_scene
+from hero.model.scene_v3 import SceneV3
 from hero.scene.geo import LocalFrame
 from hero.scene.schema import FootpathSide, LatLon, Quality, RunStatus, Scene, SegmentStatus
 
@@ -81,13 +82,14 @@ class SegmentRecord(_Record):
     heading_deg: float
     status: SegmentStatus
     quality: Quality | None
-    scene: Scene | SceneV2 | None
+    scene: Scene | SceneV2 | SceneV3 | None
     thumbnail_path: str | None
     latest_run_id: str | None
     best_score: int | None
     best_distance_m: float | None
     created_at: datetime
     updated_at: datetime
+    scene_schema: int | None = None
 
     @property
     def midpoint(self) -> LatLon:
@@ -115,7 +117,7 @@ class PipelineRunRecord(_Record):
     layout: dict[str, Any] | None
     obstacles: dict[str, Any] | None
     iterations: list[dict[str, Any]]
-    scene: Scene | SceneV2 | None
+    scene: Scene | SceneV2 | SceneV3 | None
     input_tokens: int
     output_tokens: int
     cost_usd: float
@@ -230,7 +232,7 @@ class SegmentUpdate(BaseModel):
 
     status: SegmentStatus | None = None
     quality: Quality | None = None
-    scene: Scene | SceneV2 | None = None
+    scene: Scene | SceneV2 | SceneV3 | None = None
     thumbnail_path: str | None = None
     latest_run_id: str | None = None
     best_score: int | None = None
@@ -244,7 +246,7 @@ class RunUpdate(BaseModel):
     layout: dict[str, Any] | None = None
     obstacles: dict[str, Any] | None = None
     iterations: list[dict[str, Any]] | None = None
-    scene: Scene | SceneV2 | None = None
+    scene: Scene | SceneV2 | SceneV3 | None = None
     input_tokens: int | None = None
     output_tokens: int | None = None
     cost_usd: float | None = None
@@ -317,7 +319,7 @@ def _naive(value: datetime | None) -> datetime | None:
     return value.astimezone(UTC).replace(tzinfo=None) if value.tzinfo is not None else value
 
 
-def _scene_or_none(data: dict | None) -> Scene | SceneV2 | None:
+def _scene_or_none(data: dict | None) -> Scene | SceneV2 | SceneV3 | None:
     """Parse a stored scene, discriminated by ``schema_version`` (1 -> Scene, 2 -> SceneV2)."""
     return load_scene(data) if data else None
 
@@ -331,6 +333,7 @@ def _segment_record(row: models.Segment) -> SegmentRecord:
         scene=_scene_or_none(row.scene_json), thumbnail_path=row.thumbnail_path,
         latest_run_id=row.latest_run_id, best_score=row.best_score, best_distance_m=row.best_distance_m,
         created_at=_aware(row.created_at), updated_at=_aware(row.updated_at),
+        scene_schema=row.scene_schema,
     )
 
 
@@ -474,6 +477,7 @@ def update_segment(segment_id: str, changes: SegmentUpdate, *, session: Session 
         for name, value in changes.model_dump(exclude_unset=True).items():
             if name == "scene":
                 row.scene_json = changes.scene.model_dump(mode="json") if changes.scene else None
+                row.scene_schema = changes.scene.schema_version if changes.scene else None
             elif name in ("status", "quality") and value is not None:
                 setattr(row, name, value.value if hasattr(value, "value") else value)
             else:
@@ -483,7 +487,7 @@ def update_segment(segment_id: str, changes: SegmentUpdate, *, session: Session 
         return _segment_record(row)
 
 
-def finalize_segment_scene(segment_id: str, *, run_id: str, scene: Scene | SceneV2, quality: Quality,
+def finalize_segment_scene(segment_id: str, *, run_id: str, scene: Scene | SceneV2 | SceneV3, quality: Quality,
                            thumbnail_path: str | None, session: Session | None = None) -> SegmentRecord:
     """Successful run: replace the scene, set ``ready``, quality, thumbnail and latest run."""
     return update_segment(
@@ -686,9 +690,12 @@ def google_counts(run_id: str | None = None, *, session: Session | None = None) 
 # ------------------------------------------------------------------ game runs
 
 
-def validate_game_run(data: GameRunCreate, tokens_in_scene: int) -> None:
-    """spec/data.md insert rules; raises ``InvalidInputError`` (422) on an impossible run."""
-    max_score = data.distance_m + data.tokens_collected * TOKEN_SCORE + 1
+def validate_game_run(data: GameRunCreate, tokens_in_scene: int, token_score: int = TOKEN_SCORE) -> None:
+    """spec/data.md insert rules; raises ``InvalidInputError`` (422) on an impossible run.
+
+    ``token_score`` is the token value: the module constant for v1/v2 scenes, ``gameplay.json`` ``tokens.value`` for v3.
+    """
+    max_score = data.distance_m + data.tokens_collected * token_score + 1
     if data.score > max_score:
         raise InvalidInputError(
             f"score {data.score} is impossible for {data.distance_m:.0f} m and {data.tokens_collected} tokens "
@@ -703,13 +710,32 @@ def validate_game_run(data: GameRunCreate, tokens_in_scene: int) -> None:
         )
 
 
+def _v3_token_facts(s: Session, seg: models.Segment) -> tuple[int, int]:
+    """``(tokens per loop, token value)`` of a v3 street: the stored manifest's ``tokens`` and ``gameplay.json``."""
+    from hero.export.gameplay import load_gameplay  # lazy: the export package is optional at import time
+    from hero.fusion.assets import read_manifest
+
+    head = s.scalar(select(func.max(models.ModelVersionRow.version)).where(models.ModelVersionRow.segment_id == seg.id))
+    export = s.scalar(select(models.ModelVersionRow.export_json).where(
+        models.ModelVersionRow.segment_id == seg.id, models.ModelVersionRow.version == head)) if head is not None else None
+    manifest = read_manifest(seg.slug, export) if export else None
+    gameplay_tokens = load_gameplay().tokens
+    if manifest is None:  # no readable export: fall back to the data-defined per-street maximum
+        return gameplay_tokens.max_per_street, gameplay_tokens.value
+    return len(manifest.get("tokens", [])), gameplay_tokens.value
+
+
 def record_game_run(slug: str, data: GameRunCreate, client: str, *, session: Session | None = None) -> GameRunResult:
     """Validate against the segment's scene, insert, and update the segment's best score/distance."""
     with _session(session) as s:
         seg = _get_segment_row(s, slug=slug)
         if seg.status != SegmentStatus.ready.value or not seg.scene_json:
             raise NotFoundError("This street has not been generated yet.")
-        validate_game_run(data, len(seg.scene_json.get("tokens", [])))
+        if seg.scene_json.get("schema_version") == 3:
+            tokens, value = _v3_token_facts(s, seg)
+            validate_game_run(data, tokens, value)
+        else:
+            validate_game_run(data, len(seg.scene_json.get("tokens", [])))
         row = models.GameRun(
             segment_id=seg.id, score=data.score, distance_m=data.distance_m, tokens_collected=data.tokens_collected,
             loops=data.loops, crashed_into_type=data.crashed_into_type, crashed_into_id=data.crashed_into_id,

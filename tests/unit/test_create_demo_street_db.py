@@ -28,7 +28,7 @@ def test_use_database_creates_and_migrates_the_file(tmp_path: Path, restore_env)
     with sqlite3.connect(db) as con:
         tables = {r[0] for r in con.execute("select name from sqlite_master where type='table'")}
         assert {"segments", "model_versions", "observations"} <= tables
-        assert con.execute("select version_num from alembic_version").fetchone()[0].startswith("0002")
+        assert con.execute("select version_num from alembic_version").fetchone()[0].startswith("0003")
 
 
 def test_main_with_db_uses_that_file_and_the_client(tmp_path: Path, monkeypatch, restore_env, capsys):

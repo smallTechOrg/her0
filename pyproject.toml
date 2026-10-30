@@ -43,3 +43,6 @@ markers = [
     "live: needs the network and real API keys; skipped unless `-m live` is given or the invocation path includes tests/live (see tests/conftest.py)",
     "validator: runs the external Khronos glTF validator via npx (needs node + network); skipped with a visible reason when unavailable",
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["F811", "F841", "E741"]

@@ -269,6 +269,52 @@ def about_summary(model: CanonicalModel, fidelity: FidelityMap, *, name: str | N
     return " ".join(out)
 
 
+def gap_summary(interpolated: Sequence[object]) -> str:
+    """One sentence on what is interpolated (``what`` in frontage / ground_texture / footpath_state); '' when nothing is.
+    ``interpolated`` = ``Interpolation`` objects (or anything with ``what/side/s_from/s_to/method``)."""
+    totals: dict[str, float] = {}
+    softer = False
+    for i in interpolated:
+        what = getattr(i, "what")
+        if what == "frontage":
+            key = f"{getattr(i, 'side')}-hand frontage"
+        elif what == "ground_texture":
+            key = "ground texture"
+        elif what == "footpath_state":
+            key = "footpath state"
+        else:
+            continue
+        totals[key] = totals.get(key, 0.0) + (getattr(i, "s_to") - getattr(i, "s_from"))
+        softer = softer or getattr(i, "method") in ("prior", "procedural")
+    order = ["left-hand frontage", "right-hand frontage", "ground texture", "footpath state"]
+    parts = [f"{_num(totals[k])} m of the {k}" if k.endswith("frontage") else f"{_num(totals[k])} m of {k}"
+             for k in order if k in totals and totals[k] > 0]
+    if not parts:
+        return ""
+    joined = parts[0] if len(parts) == 1 else ", ".join(parts[:-1]) + " and " + parts[-1]
+    tail = ("from neighbouring stretches or neutral defaults (no photo or map data covers them)." if softer
+            else "from neighbouring stretches (no photo covers them).")
+    return f"About {joined} {'is' if len(parts) == 1 else 'are'} interpolated {tail}"
+
+
+_MASS_NOUNS = {"debris": "of debris"}
+
+
+def _dyn_label(n: int, t: str) -> str:
+    if t in _MASS_NOUNS:
+        return f"{n} {'piece' if n == 1 else 'pieces'} {_MASS_NOUNS[t]}"
+    return _plural(n, _words(t))
+
+
+def dynamic_summary(by_type: Mapping[str, object]) -> str:
+    """One sentence on the dynamic_context entities ('' when none). ``by_type`` = {type: stats with .count}."""
+    items = [(t, getattr(st, "count")) for t, st in sorted(by_type.items()) if getattr(st, "count") > 0]
+    if not items:
+        return ""
+    text = ", ".join(_dyn_label(n, t) for t, n in items)
+    return f"Seen here but spawned dynamically during play instead of fixed in place: {text}."
+
+
 def version_summary(model: CanonicalModel, diff: ModelDiff | None, fidelity: FidelityMap) -> str:
     """One paragraph for the version history: what this version is and what changed since its parent."""
     live = model.computed_stats().entity_count

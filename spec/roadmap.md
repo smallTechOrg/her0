@@ -387,7 +387,7 @@ sqlite3 data/hero.db ".backup $GATE/hero.db" && cp -R data/imagery data/crops da
 HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run alembic upgrade head && HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run alembic upgrade head
 # G2 migrate + export existing models: zero spend, idempotent
 HERO_DATA_DIR=$GATE HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run python -m hero.tools.recompile --all        # per slug: scene 2->3, glb sha8, triangles, interpolated bins, dynamic excluded, cost 0.0
-HERO_DATA_DIR=$GATE HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run python -m hero.tools.recompile --all | grep -c unchanged   # == number of segments (glb bytes identical on rerun)
+HERO_DATA_DIR=$GATE HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run python -m hero.tools.recompile --all | grep -c unchanged   # == number of non-legacy segments (glb bytes identical on rerun; legacy streets print `skipped`)
 HERO_DATA_DIR=$GATE HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run python -m hero.tools.audit_scene --slug bellandur-main-road-n-2 --assert-no-holes
 uv run python -m hero.tools.audit_scene tests/fixtures/plan/bellandur.plan.json --assert-no-holes
 for f in $GATE/exports/*/street_*.glb; do uv run python -m hero.tools.validate_glb "$f" || exit 1; done | tee docs/evidence/phase2_1/glb_validation.json
@@ -527,7 +527,7 @@ sqlite3 data/hero.db ".backup $GATE/hero.db" && cp -R data/imagery data/crops da
 HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run alembic upgrade head && HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run alembic upgrade head    # second run: no-op
 # G2 migration of existing models: zero spend, idempotent, then the hole audit on the real street
 HERO_DATA_DIR=$GATE HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run python -m hero.tools.recompile --all                  # prints per slug: scene 2->3, interpolated bins, dynamic excluded, cost 0.0
-HERO_DATA_DIR=$GATE HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run python -m hero.tools.recompile --all | grep -c unchanged   # == number of segments
+HERO_DATA_DIR=$GATE HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run python -m hero.tools.recompile --all | grep -c unchanged   # == number of non-legacy segments
 HERO_DATA_DIR=$GATE HERO_DATABASE_URL=sqlite:///$GATE/hero.db uv run python -m hero.tools.audit_scene --slug bellandur-main-road-n-2 --assert-no-holes
 uv run python -m hero.tools.audit_scene tests/fixtures/scene_v3/bellandur.json --assert-no-holes
 # G3 deterministic tiers (live excluded by default; no Anthropic, no Google)

@@ -18,12 +18,15 @@ export function createHud() {
       if (last.d !== d) { distance.textContent = String(d); last.d = d; }
       if (last.score !== snap.score) { score.textContent = String(snap.score); last.score = snap.score; }
       if (last.tokens !== snap.tokens) { tokens.textContent = String(snap.tokens); last.tokens = snap.tokens; }
-      const h = snap.health === undefined ? 100 : snap.health;
-      if (last.health !== h) {
+      // health scale = gameplay.runner.health_max, carried on the runner snapshot (no hard-coded 100)
+      const h = snap.health, hm = snap.health_max;
+      if (h !== undefined && (last.health !== h || last.healthMax !== hm)) {
         health.textContent = String(h);
-        healthBar.style.width = `${h}%`;
-        healthBar.dataset.level = h <= 25 ? 'low' : h <= 60 ? 'mid' : 'ok';
-        last.health = h;
+        if (!(hm > 0)) throw new Error('hud: snapshot lacks health_max (gameplay.runner.health_max)');
+        const pct = (100 * h) / hm;
+        healthBar.style.width = `${pct}%`;
+        healthBar.dataset.level = pct <= 25 ? 'low' : pct <= 60 ? 'mid' : 'ok';
+        last.health = h; last.healthMax = hm;
       }
       if (last.lane !== snap.lane) {
         lane.textContent = LANE_LABELS[snap.lane_name] || snap.lane_name;

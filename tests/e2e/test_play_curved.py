@@ -508,3 +508,199 @@ def test_results_card_has_descriptions_evidence_footpath_states_and_model_line(p
     assert page.evaluate("() => document.activeElement.id") == "results-about-open"
     assert page.query_selector("#hazard-map canvas") is not None
     assert not page.hero_errors, page.hero_errors  # type: ignore[attr-defined]
+
+
+# ================================================================= v3 street: the glb-loaded game (stand-in bundle)
+# The same journey on a v3 scene: street.glb + street.manifest.json served by route interception (the S1a stand-in
+# bundle tests/fixtures/export/contract_curved/). The glb/Track frame is the TRUE unmirrored frame (spec/portability.md
+# section 2): travel toward -Z at s = 0, +X to the RIGHT, the left footpath at -X, t positive to the LEFT.
+
+import glb_harness as gh  # noqa: E402
+
+
+def _m_points(m: dict) -> list[dict]:
+    return m["reference_line"]["points"]
+
+
+def _m_pose(m: dict, s: float) -> tuple[float, float, float]:
+    """(x, z, phi_rad) of the reference line at s, linearly interpolated on the manifest's 2.5 m grid."""
+    pts = _m_points(m)
+    b0 = pts[0]["bearing_deg"]
+    for a, b in zip(pts, pts[1:]):
+        if a["s"] <= s <= b["s"]:
+            f = (s - a["s"]) / (b["s"] - a["s"])
+            return (a["x"] + (b["x"] - a["x"]) * f, a["z"] + (b["z"] - a["z"]) * f,
+                    math.radians(a["bearing_deg"] - b0 + (b["bearing_deg"] - a["bearing_deg"]) * f))
+    raise AssertionError(s)
+
+
+def _m_world(m: dict, s: float, t: float) -> tuple[float, float]:
+    x, z, phi = _m_pose(m, s)
+    return x - t * math.cos(phi), z - t * math.sin(phi)
+
+
+def _glb_start(page: Page, live_server: str) -> dict:
+    seen = gh.install_street_routes(page)
+    gh.start_run(page, live_server)
+    return seen
+
+
+def test_v3_runner_follows_the_manifest_footpath_in_the_true_frame(page: Page, live_server: str):
+    m = gh.manifest()
+    _glb_start(page, live_server)
+    samples: list[dict] = []
+    while True:
+        s = _state(page)
+        assert s["phase"] == "running", f"run ended early: {s}"
+        samples.append(s)
+        if s["s"] > 41 or s["loops"] > 0:
+            break
+        page.wait_for_timeout(120)
+    assert len({round(x["s"]) for x in samples}) > 15
+    seen_gap = False
+    for s in samples:
+        assert s["lane"] == 0 and "t_m" in s
+        if s["footpath_offset_m"] is None:        # inside the missing-footpath gap (30 - 37.5 m)
+            assert s["on_strip"] == "gap"
+            seen_gap = True
+            continue
+        assert s["on_strip"] == "footpath", s
+        assert s["footpath_offset_m"] <= 0.9
+        # world pose == the spec formula on the manifest's own reference line
+        ex, ez = _m_world(m, s["s"], s["t_m"])
+        assert math.hypot(s["world"]["x"] - ex, s["world"]["z"] - ez) < 0.15, (s, ex, ez)
+        assert abs(s["heading_deg"] - math.degrees(_m_pose(m, s["s"])[2])) < 1.0
+    assert seen_gap
+    # a LEFT footpath lies at -X of the centreline and lane t is positive-left
+    early = [s for s in samples if s["s"] < 3 and s["footpath_offset_m"] is not None]
+    assert early and all(s["t_m"] > 4.0 and s["world"]["x"] < -4.0 for s in early)
+    assert not page.hero_errors, page.hero_errors  # type: ignore[attr-defined]
+
+
+def test_v3_glb_agrees_with_the_manifest_track(page: Page, live_server: str):
+    """The footpath surface of the glb lies inside the manifest's footpath strip (t_lo..t_hi) - the Track and the mesh
+    share one frame."""
+    gh.install_street_routes(page)
+    gh.open_ready(page, live_server)
+    res = page.evaluate("""async () => {
+      const { loadStreet } = await import('/js/game/glb_loader.js?v=1');
+      const { ManifestTrack } = await import('/js/game/track_manifest.js?v=1');
+      const s = await loadStreet({ glbUrl: '/api/segments/contract-curved-street/model.glb', manifestUrl: '/api/segments/contract-curved-street/manifest.json' });
+      const tr = new ManifestTrack(s.manifest);
+      const pos = s.nodes.Footpath.geometry.getAttribute('position');
+      let inside = 0, total = 0, worst = 0;
+      for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i), z = pos.getZ(i);
+        let best = 1e9, bs = 0;
+        for (const p of tr.samples) { const d = Math.hypot(p.x - x, p.z - z); if (d < best) { best = d; bs = p.s; } }
+        const p = tr.pose(bs);
+        const t = -((x - p.x) * Math.cos(p.theta) + (z - p.z) * Math.sin(p.theta));
+        const fp = tr.footpathAt(Math.min(bs, tr.length - 0.01)) || tr.stations.map((st) => st.footpath).find(Boolean);
+        const lo = Math.min(...tr.stations.map((st) => st.footpath ? st.footpath.lo : 99)), hi = Math.max(...tr.stations.map((st) => st.footpath ? st.footpath.hi : -99));
+        total += 1;
+        const ok = t >= lo - 0.3 && t <= hi + 0.3;
+        if (ok) inside += 1; else worst = Math.max(worst, Math.min(Math.abs(t - lo), Math.abs(t - hi)));
+      }
+      const road = s.nodes.Road.geometry; road.computeBoundingBox();
+      const end = tr.pose(tr.length);
+      return { inside, total, worst, roadBox: [road.boundingBox.min.toArray(), road.boundingBox.max.toArray()], end: [end.x, end.z] };
+    }""")
+    assert res["total"] > 10 and res["inside"] == res["total"], res
+    (mn, mx), (ex, ez) = res["roadBox"], res["end"]
+    assert mn[1] >= -0.01 and mx[1] <= 0.5                      # +Y is up, the carriageway is at y = 0
+    assert mn[2] - 6 <= ez <= mx[2] + 6 and mn[0] - 6 <= ex <= mx[0] + 6  # the road reaches P(L)
+
+
+def test_v3_hit_shows_a_small_toast_with_the_object_name_and_no_labels_in_the_world(page: Page, live_server: str):
+    _glb_start(page, live_server)
+    g = page.evaluate("() => window.__hero.graph()")
+    assert g["sprites"] == 0, "no text sprites / '?' badges in the 3D world"
+    assert not [x for x in g["meshes"] if "badge" in x["name"].lower() or "label" in x["name"].lower() or "outline" in x["name"].lower()]
+    s = _wait_state(page, "s.hits >= 1", timeout_ms=40_000)
+    label = s["last_hit"]["label"]
+    page.wait_for_function("() => document.getElementById('toast').classList.contains('on')")
+    assert page.inner_text("#toast") == label
+    box = page.eval_on_selector("#toast", "(e) => { const r = e.getBoundingClientRect(); return [r.width, r.height]; }")
+    assert box[0] < 300 and box[1] < 60, "the toast stays small"
+    page.wait_for_function("() => !document.getElementById('toast').classList.contains('on')", timeout=5_000)
+    assert page.evaluate("() => window.__hero.graph().sprites") == 0
+
+
+def test_v3_camera_rig_numbers_and_atmosphere(page: Page, live_server: str):
+    _glb_start(page, live_server)
+    s = _wait_state(page, "s.distance_m > 12")
+    g = page.evaluate("() => window.__hero.graph()")
+    cam = g["camera"]
+    assert abs(cam["y"] - 3.8) <= 0.06 and cam["near"] == 0.3
+    m = gh.manifest()
+    rx, rz = s["world"]["x"], s["world"]["z"]
+    behind = math.hypot(cam["x"] - rx, cam["z"] - rz)
+    assert 6.0 <= behind <= 7.8, behind                        # ~6.6 m behind (chord of the path)
+    assert g["fog"]["near"] == 30 and g["fog"]["far"] == 90
+    assert g["lights"] >= 2
+    assert any(x["name"] == "Sky" for x in g["meshes"])
+    assert any(x["name"] == "AoBlob" for x in g["meshes"])
+    assert m["gameplay"] == page.evaluate("() => window.__hero.gameplay"), "gameplay is the manifest's embedded copy, verbatim"
+
+
+def test_v3_about_panel_lists_interpolated_parts_and_low_fidelity_only_there(page: Page, live_server: str):
+    gh.install_street_routes(page)
+    gh.open_ready(page, live_server)
+    page.get_by_test_id("about-open").click()
+    panel = page.get_by_test_id("about-panel")
+    panel.wait_for(state="visible")
+    txt = panel.inner_text()
+    sc = gh.scene_v3()
+    assert sc["about"]["summary"] in txt and sc["about"]["gap_summary"] in txt and sc["about"]["dynamic_summary"] in txt
+    rows = page.get_by_test_id("about-interpolated").locator("li").all_inner_texts()
+    assert len(rows) == len(gh.manifest()["interpolated"]) >= 4
+    assert any("frontage" in r and "right side" in r and "35–60 m" in r for r in rows), rows
+    assert "Satellite imagery © Google" in page.get_by_test_id("about-attribution").inner_text()
+    assert "neutral facade" in txt
+    # low-fidelity wording never appears in the in-world UI (ready overlay without About)
+    page.keyboard.press("Escape")
+    panel.wait_for(state="hidden")
+    assert "neutral facade" not in page.inner_text("#panel-ready") and "interpolated" not in page.inner_text("#panel-ready").lower()
+
+
+def test_v3_loop_seam_is_continuous_and_run_continues_after_the_loop(page: Page, live_server: str):
+    gh.install_street_routes(page)
+    gh.open_ready(page, live_server)
+    jumps = page.evaluate("""async () => {
+      const { ManifestTrack } = await import('/js/game/track_manifest.js?v=1');
+      const m = await (await fetch('/api/segments/contract-curved-street/manifest.json')).json();
+      const tr = new ManifestTrack(m), L = tr.length, out = [];
+      for (const lane of [0, 1, 2]) {
+        const a = tr.world(L - 0.01, tr.laneLat(L - 0.01, lane)), b = tr.world(L + 0.01, tr.laneLat(0.01, lane));
+        out.push(Math.hypot(a.x - b.x, a.z - b.z));
+      }
+      const h0 = tr.headingDeg(L - 0.01), h1 = tr.headingDeg(L + 0.01);
+      return { out, dh: Math.abs(h1 - h0), pk: tr.pose(L), end: m.loop.end_pose };
+    }""")
+    assert all(j < 1.5 for j in jumps["out"]), jumps          # <= 1.5 m lateral steps per spec (blend baked into the data)
+    assert jumps["dh"] < 3.0
+    assert abs(jumps["pk"]["x"] - jumps["end"]["x"]) < 0.01 and abs(jumps["pk"]["z"] - jumps["end"]["z"]) < 0.01
+    page.click("#start")
+    s = _wait_state(page, "s.loops >= 1 || s.phase !== 'running'", timeout_ms=120_000)
+    assert s["loops"] >= 1, s
+    page.wait_for_timeout(500)
+    assert hero_state_ok(page)
+
+
+def hero_state_ok(page: Page) -> bool:
+    st = _state(page)
+    return st["phase"] in {"running", "crashed", "results"} and st["distance_m"] > 60
+
+
+def test_v3_run_results_use_the_manifest_and_post_a_run(page: Page, live_server: str):
+    seen = _glb_start(page, live_server)
+    s = _wait_state(page, "s.phase === 'results'", timeout_ms=280_000)
+    assert s["health"] == 0
+    page.wait_for_selector("#results:not([hidden])")
+    assert seen["runs"] and seen["runs"][0]["score"] == s["score"]
+    cols = gh.manifest()["colliders"]
+    assert len(page.query_selector_all("#detected li")) == len(cols)               # detected list comes from the manifest
+    assert len(page.query_selector_all("#detected li[data-hazard='true']")) == sum(1 for c in cols if c["action"] != "none")
+    assert page.query_selector("#hazard-map canvas") is not None
+    assert page.query_selector("#run-again") is not None
+    assert not page.hero_errors, page.hero_errors  # type: ignore[attr-defined]

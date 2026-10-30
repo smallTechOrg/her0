@@ -232,11 +232,9 @@ def test_add_imagery_estimate_tracks_headings_and_fetch_only_posts_the_plan(live
     expect(form.locator(".spacing-out")).to_have_text("14 m")
     after = int(re.search(r"≈ (\d+) new", est.inner_text()).group(1))
     assert after < before
-    # Upload is a labelled stub.
-    stub = form.get_by_test_id("upload-stub")
-    expect(stub).to_be_disabled()
-    expect(stub).to_have_attribute("data-stub", "true")
-    expect(form).to_contain_text("Coming in Phase 3")
+    # Phase 2.1: the upload stub is gone (the real upload form lives in the improve panel).
+    expect(page.get_by_test_id("upload-stub")).to_have_count(0)
+    expect(page.get_by_test_id("upload-file")).to_have_count(1)
 
     form.get_by_test_id("fetch-only").click()
     page.wait_for_url(re.compile(rf"/admin/run\.html\?id={RUN_ID}"))
@@ -482,14 +480,14 @@ def test_real_fixture_segment_page_shows_history_coverage_entities_evidence_boxe
             break
     assert opened, "no entity of the fixture street shows a detection box on its evidence photo"
 
-    # Imagery grid + the Add more imagery form: heading, controls, Phase 3 stub.
+    # Imagery grid + the Add more imagery form: heading, controls (no upload stub since Phase 2.1).
     imagery = page.locator("[data-testid=imagery]")
     assert imagery.locator(".obs-grid > *").count() >= 10
     form = page.locator("[data-testid=add-imagery]")
     expect(form.locator("h3")).to_have_text("Add more imagery")
     expect(form.get_by_test_id("estimate")).to_contain_text("new images")
-    expect(form.get_by_test_id("upload-stub")).to_be_disabled()
-    expect(form).to_contain_text("Coming in Phase 3")
+    expect(page.get_by_test_id("upload-stub")).to_have_count(0)
+    expect(page.get_by_test_id("upload-file")).to_have_count(1)
     expect(page.locator("[data-testid=reference-line]")).to_be_visible()
 
     assert page.evaluate("() => document.documentElement.scrollWidth <= window.innerWidth + 1")

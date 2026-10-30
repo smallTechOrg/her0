@@ -28,8 +28,10 @@ from __future__ import annotations
 
 import os
 import socket
+import shutil
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -45,6 +47,17 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 DEV_PORT = 8711
+
+# Isolation: tests never write exports/textures/previews/imagery into the real ``data/`` dir (the dev server's data).
+# Set at import time, before any Settings are built, and inherited by the live-server / e2e subprocesses.
+# (The per-process SQLite test DB keeps its own URL; only the file tree under HERO_DATA_DIR moves.)
+_SESSION_DATA_DIR = Path(tempfile.mkdtemp(prefix="hero-test-data-"))
+os.environ["HERO_DATA_DIR"] = str(_SESSION_DATA_DIR)
+reset_settings()
+
+
+def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
+    shutil.rmtree(_SESSION_DATA_DIR, ignore_errors=True)
 
 pytest_plugins = ["tests.live_gate"]
 

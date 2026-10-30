@@ -20,8 +20,8 @@ function v1Photos(scene) {
 }
 
 /** The panel body (HTML string) for a scene of either schema. */
-export function aboutHtml(scene) {
-  if (scene.schema_version !== 2) {
+export function aboutHtml(scene, manifest = null) {
+  if (scene.schema_version !== 2 && scene.schema_version !== 3) {
     const n = v1Photos(scene);
     return `<p data-testid="about-summary">This street was built with the first-generation model (${n} photo${n === 1 ? '' : 's'}); its position was not verified.</p>
       <p class="about-warning" data-testid="about-warning">Legacy scene, placement unverified</p>`;
@@ -48,7 +48,35 @@ export function aboutHtml(scene) {
     <ul class="fid-legend">${legend}</ul>
     <p data-testid="about-photos">Photos: ${a.photos.street_view} Street View, ${a.photos.satellite} satellite, ${a.photos.user} uploaded${dates} · last updated ${esc(fmtDate(a.last_updated))}</p>
     <h3>Least certain</h3>${lowHtml}
-    ${a.improve_hint ? `<p data-testid="about-improve">${esc(a.improve_hint)}</p>` : ''}`;
+    ${a.improve_hint ? `<p data-testid="about-improve">${esc(a.improve_hint)}</p>` : ''}
+    ${v3Sections(scene, manifest)}`;
+}
+
+// ---- v3 (glb) additions. Low-fidelity labelling lives HERE only, never in the 3D world.
+function interpolatedHtml(scene, manifest) {
+  const parts = (manifest && manifest.interpolated && manifest.interpolated.length ? manifest.interpolated : scene.about.interpolated) || [];
+  if (!parts.length) return '<p class="muted" data-testid="about-interpolated">Every stretch is backed by evidence; nothing was filled in.</p>';
+  const rows = parts.map((p) => `<li data-what="${esc(p.what)}" data-side="${esc(p.side)}">${esc(String(p.what || '').replaceAll('_', ' '))}${p.side && p.side !== 'both' ? `, ${esc(p.side)} side` : ''} ${metres(p.s_from)}–${metres(p.s_to)} m: ${esc(p.note || p.method)}</li>`);
+  return `<ul data-testid="about-interpolated">${rows.join('')}</ul>`;
+}
+
+function lowObjectsHtml(manifest) {
+  const low = ((manifest && manifest.entities) || []).filter((e) => e.confidence < 0.6);
+  if (!low.length) return '';
+  return `<h3>Low-confidence objects</h3><ul data-testid="about-low-objects">${low.map((e) =>
+    `<li data-id="${esc(e.id)}">${esc(String(e.type).replaceAll('_', ' '))} at ${metres(e.s)} m · ${Math.round(e.confidence * 100)}% confidence</li>`).join('')}</ul>`;
+}
+
+function v3Sections(scene, manifest) {
+  if (scene.schema_version !== 3) return '';
+  const a = scene.about;
+  const attribution = manifest && manifest.attribution ? manifest.attribution.lines : [];
+  return `<h3>Filled in from neighbouring stretches</h3>
+    ${a.gap_summary ? `<p data-testid="about-gap-summary">${esc(a.gap_summary)}</p>` : ''}
+    ${interpolatedHtml(scene, manifest)}
+    ${lowObjectsHtml(manifest)}
+    ${a.dynamic_summary ? `<h3>Spawned dynamically</h3><p data-testid="about-dynamic">${esc(a.dynamic_summary)}</p>` : ''}
+    ${attribution.length ? `<p class="muted about-attribution" data-testid="about-attribution">${attribution.map(esc).join(' · ')}</p>` : ''}`;
 }
 
 /**
@@ -56,10 +84,10 @@ export function aboutHtml(scene) {
  * @param {object} scene
  * @param {{onOpen?:Function,onClose?:Function}} hooks
  */
-export function createAbout(root, scene, { onOpen, onClose } = {}) {
+export function createAbout(root, scene, { onOpen, onClose, manifest = null } = {}) {
   let opener = null;
   root.innerHTML = `<div class="about-card"><h2 id="about-title">About this street</h2>
-    <div id="about-body">${aboutHtml(scene)}</div>
+    <div id="about-body">${aboutHtml(scene, manifest)}</div>
     <button type="button" id="about-close" data-testid="about-close">Close</button></div>`;
   root.setAttribute('role', 'dialog');
   root.setAttribute('aria-modal', 'true');

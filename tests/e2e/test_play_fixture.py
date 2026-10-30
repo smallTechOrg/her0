@@ -175,6 +175,10 @@ def test_v1_scene_ready_overlay_about_panel_and_render_budget(page: Page, live_s
     assert "on_strip" not in s  # v2-only debug fields are absent for v1 scenes
     perf = page.evaluate("() => window.__hero.perf")
     assert 0 < perf["draw_calls"] <= 90 and 0 < perf["triangles"] <= 60_000, perf
+    # legacy path: labelled as such, and no "?" badge boxes / in-world text labels any more (sprites = billboards only)
+    h = page.evaluate("() => ({source: window.__hero.source, legacy: window.__hero.legacy_geometry, g: window.__hero.graph()})")
+    assert h["source"] == "legacy" and h["legacy"] is True and h["g"]["sprites"] == 0
+    assert not [m for m in h["g"]["meshes"] if m["name"] in {"badges", "outlines"}]
     assert not page.hero_errors, page.hero_errors  # type: ignore[attr-defined]
 
 
@@ -298,7 +302,8 @@ def test_lane_change_and_repeated_jumps_clear_the_pothole_and_crossing_never_cra
 
     # Next loop: no jump at the pothole -> a hit (health reduced), run continues, loops counter advanced.
     s = _wait_state(page, "s.hits >= 1", timeout_ms=60_000)
-    assert s["phase"] == "running" and s["last_hit"] == {"id": "o3", "type": "pothole", "label": s["last_hit"]["label"]}
+    assert s["phase"] == "running"
+    assert {k: s["last_hit"][k] for k in ("id", "type")} == {"id": "o3", "type": "pothole"}  # (+ label, dynamic: False)
     assert s["health"] > 0 and s["loops"] == 1
     assert 114.0 <= s["distance_m"] <= 116.5  # 74.6 + ~40
     assert s["speed"] > 6.0

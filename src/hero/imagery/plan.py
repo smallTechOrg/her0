@@ -45,6 +45,30 @@ class SRange(BaseModel):
         return self
 
 
+MAX_TARGETS = 200
+TARGET_KINDS = ("streetview", "satellite_crop")
+
+
+class PlanTarget(BaseModel):
+    """One explicitly requested frame (``ImageryPlan.targets``): a Street View frame at station ``station_s``
+    facing ``view`` (relative to travel), or a satellite crop (centred on the line at ``station_s``) at ``zoom``."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    kind: Literal["streetview", "satellite_crop"]
+    station_s: float = Field(ge=0)
+    view: Heading | None = None
+    zoom: int | None = Field(default=None, ge=ZOOM_RANGE[0], le=ZOOM_RANGE[1])
+
+    @model_validator(mode="after")
+    def _kind_fields(self) -> "PlanTarget":
+        if self.kind == "streetview" and self.view is None:
+            raise ValueError("a streetview target needs a view (forward|back|left|right)")
+        if self.kind == "satellite_crop" and self.view is not None:
+            raise ValueError("a satellite_crop target has no view")
+        return self
+
+
 class ImageryPlan(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -56,6 +80,8 @@ class ImageryPlan(BaseModel):
     max_images: int = Field(ge=MAX_IMAGES_RANGE[0], le=MAX_IMAGES_RANGE[1])
     s_range: SRange | None = None
     overview_zoom: int = Field(default=19, ge=14, le=21)
+    sat_extra_zoom: int | None = Field(default=None, ge=ZOOM_RANGE[0], le=ZOOM_RANGE[1])  # overlapping second crop set
+    targets: list[PlanTarget] | None = Field(default=None, max_length=MAX_TARGETS)
 
     @model_validator(mode="after")
     def _dedupe_headings(self) -> "ImageryPlan":
@@ -84,6 +110,10 @@ def merge_plan(base: ImageryPlan, overrides: dict[str, Any]) -> ImageryPlan:
     unknown = sorted(set(overrides) - allowed)
     if unknown:
         raise ValueError(f"unknown imagery field(s): {', '.join(unknown)}")
+    if overrides.get("targets") is not None:
+        clash = sorted(k for k in ("sv_spacing_m", "headings", "s_range") if overrides.get(k) is not None)
+        if clash:
+            raise ValueError(f"targets: cannot be combined with {', '.join(clash)} (targets are planned exactly)")
     data = base.model_dump()
     for key, value in overrides.items():
         if value is not None:
@@ -141,7 +171,45 @@ def overview_zoom_for(length_m: float, lat: float, preferred: int) -> int:
     return zoom
 
 
+def _plan_targets(ref: ReferenceLine, plan: ImageryPlan) -> tuple[list[PlannedImage], PlanInfo]:
+    """Exactly ``plan.targets`` (no grid, no ``max_images`` trimming) plus the overview once."""
+    total = ref.length_s
+    notes: list[str] = []
+    items: list[PlannedImage] = []
+    seen: set[tuple] = set()
+    for t in plan.targets or []:
+        if t.station_s > total + 1e-6:
+            raise ValueError(f"target station {t.station_s:g} m lies outside the line (0..{total:.1f} m)")
+        s = min(t.station_s, total)
+        key = (t.kind, t.view, round(s, 3), t.zoom)
+        if key in seen:
+            notes.append(f"duplicate target at {s:.1f} m ignored")
+            continue
+        seen.add(key)
+        lat, lon = ref.point_at(s, 0.0)
+        if t.kind == "streetview":
+            items.append(PlannedImage("streetview", t.view, s, lat, lon,
+                                      (ref.bearing_deg(s) + HEADING_OFFSET_DEG[t.view or "forward"]) % 360.0, None))
+        else:
+            items.append(PlannedImage("satellite_crop", None, s, lat, lon, None, t.zoom or plan.sat_crop_zoom))
+    n_overview = 1 if plan.include_overview else 0
+    if n_overview:
+        mid = total / 2.0
+        lat, lon = ref.point_at(mid, 0.0)
+        items.append(PlannedImage("satellite_overview", None, mid, lat, lon, None,
+                                  overview_zoom_for(total, lat, plan.overview_zoom)))
+    n_sv = sum(1 for i in items if i.kind == "streetview")
+    n_crop = sum(1 for i in items if i.kind == "satellite_crop")
+    est = n_sv * EST_COST_SV_USD + (n_crop + n_overview) * EST_COST_SAT_USD
+    info = PlanInfo(trimmed=False, effective_spacing_m=0.0,
+                    counts={"streetview": n_sv, "satellite_crop": n_crop, "satellite_overview": n_overview},
+                    requested_spacing_m=plan.sv_spacing_m, est_cost_usd=round(est, 4), notes=notes)
+    return items, info
+
+
 def plan_images(ref: ReferenceLine, plan: ImageryPlan) -> tuple[list[PlannedImage], PlanInfo]:
+    if plan.targets is not None:
+        return _plan_targets(ref, plan)
     total = ref.length_s
     lo, hi = 0.0, total
     if plan.s_range is not None:
@@ -160,8 +228,18 @@ def plan_images(ref: ReferenceLine, plan: ImageryPlan) -> tuple[list[PlannedImag
         n_crops = max(0, non_sv_budget - n_overview)
         notes.append(f"close-up crops reduced to {n_crops} to stay within max_images={plan.max_images}")
 
+    # Overlapping tile set (max quality): crops at ``sat_extra_zoom`` centred on the seams between the primary crops.
+    extra_pos: list[float] = []
+    if plan.sat_extra_zoom is not None and n_crops:
+        extra_pos = [lo + span / 2.0] if n_crops == 1 else [lo + i * span / n_crops for i in range(1, n_crops)]
+        room = max(0, non_sv_budget - n_crops - n_overview)
+        if len(extra_pos) > room:
+            notes.append(f"overlapping crops reduced to {room} to stay within max_images={plan.max_images}")
+            extra_pos = extra_pos[:room]
+    n_extra = len(extra_pos)
+
     requested = _stations(lo, span, plan.sv_spacing_m)
-    sv_budget = plan.max_images - n_crops - n_overview
+    sv_budget = plan.max_images - n_crops - n_extra - n_overview
     n_max = sv_budget // n_head
     trimmed = len(requested) > n_max
     if trimmed:
@@ -184,7 +262,7 @@ def plan_images(ref: ReferenceLine, plan: ImageryPlan) -> tuple[list[PlannedImag
         for name in plan.headings:
             items.append(PlannedImage("streetview", name, s, lat, lon, (bearing + HEADING_OFFSET_DEG[name]) % 360.0, None))
     # Hard clamp: with a tiny max_images even one station x all headings may not fit; never plan more than the cap.
-    sv_allowed = max(0, plan.max_images - n_crops - n_overview)
+    sv_allowed = max(0, plan.max_images - n_crops - n_extra - n_overview)
     if len(items) > sv_allowed:
         items = items[:sv_allowed]
         trimmed = True
@@ -201,6 +279,10 @@ def plan_images(ref: ReferenceLine, plan: ImageryPlan) -> tuple[list[PlannedImag
         lat, lon = ref.point_at(s, 0.0)
         items.append(PlannedImage("satellite_crop", None, s, lat, lon, None, plan.sat_crop_zoom))
 
+    for s in extra_pos:
+        lat, lon = ref.point_at(s, 0.0)
+        items.append(PlannedImage("satellite_crop", None, s, lat, lon, None, plan.sat_extra_zoom))
+    n_crops += n_extra
     counts = {"streetview": sum(1 for i in items if i.kind == "streetview"), "satellite_crop": n_crops, "satellite_overview": n_overview}
     est = counts["streetview"] * EST_COST_SV_USD + (n_crops + n_overview) * EST_COST_SAT_USD
     info = PlanInfo(trimmed=trimmed, effective_spacing_m=round(effective, 3), counts=counts,

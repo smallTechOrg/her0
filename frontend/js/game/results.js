@@ -67,7 +67,7 @@ export function renderResults(root, { scene, snap, post, onRunAgain, onAbout }) 
   const hazards = scene.objects.filter((o) => o.action !== 'none');
   const anyLow = hazards.some((o) => o.confidence < 0.6);
   const crashedId = snap.crashed_into ? snap.crashed_into.id : null;
-  const crashedObj = scene.objects.find((o) => o.id === crashedId);
+  const crashedObj = scene.objects.find((o) => o.id === crashedId) || (snap.crashed_into && snap.crashed_into.dynamic ? snap.crashed_into : null);
   const quality = scene.generation?.quality || 'unknown';
 
   let bestHtml = '';

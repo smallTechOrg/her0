@@ -103,10 +103,10 @@
     ]
   },
   "walkability": {
-    "footpath_coverage_pct": 71.0,
+    "footpath_coverage_pct": 62.5,
     "hazard_count": 5,
-    "crossing_present": false,
-    "score": 55
+    "crossing_present": true,
+    "score": 68
   },
   "about": {
     "model_version": 2,

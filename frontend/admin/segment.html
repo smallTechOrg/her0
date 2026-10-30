@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>#hero · Segment model</title>
   <link rel="stylesheet" href="/css/base.css?v=3">
-  <link rel="stylesheet" href="/css/admin.css?v=4">
+  <link rel="stylesheet" href="/css/admin.css?v=5">
 </head>
 <body>
   <main id="app" data-hero-page="admin-segment" class="page admin-page">
@@ -22,7 +22,10 @@
         <p id="legacy-warning" class="notice error" data-testid="legacy-warning" hidden></p>
       </div>
       <div class="header-actions">
-        <button type="button" id="generate-btn" data-testid="generate" disabled>Generate</button>
+        <div class="gen-group">
+          <button type="button" id="generate-btn" data-testid="generate" disabled>Generate</button>
+          <span id="generate-model" class="model-slot" data-testid="generate-model"></span>
+        </div>
         <a id="play-link" class="button-link" hidden>Open in game</a>
       </div>
     </header>
@@ -44,6 +47,112 @@
         <h2>No model yet</h2>
         <p>This segment has no street model. Check the placement of the reference line first (no cost beyond one map tile), then Generate.</p>
       </div>
+
+      <section class="card sec" id="sec-improve" data-testid="improve" aria-labelledby="improve-title">
+        <div class="improve-head">
+          <h2 id="improve-title">How to improve this model</h2>
+          <span class="chip model-badge" data-testid="improve-badge"></span>
+          <span class="chip" data-testid="improve-scene"></span>
+        </div>
+        <p class="notice busy-note" data-testid="improve-busy" role="status" hidden></p>
+        <p data-state="loading" class="muted">Loading the improvement plan…</p>
+        <div data-state="error" class="error-box"><p class="error"></p><button type="button" class="secondary retry">Retry</button></div>
+        <div data-state="populated" class="improve-weakest" data-testid="improve-weakest"></div>
+
+        <div class="action-grid">
+          <article class="action-card" data-testid="improve-action-fill_gaps">
+            <h3>Fill gaps</h3>
+            <p class="muted">Plans the photos that would help most. Shows a preview first.</p>
+            <p class="fill-range muted" hidden></p>
+            <div class="quality-slot" data-testid="quality-slot-fill"></div>
+            <div class="actions">
+              <button type="button" data-testid="fill-preview">Preview plan</button>
+            </div>
+            <div class="fill-result" data-testid="fill-result" aria-live="polite"></div>
+            <p class="form-msg" role="alert" hidden></p>
+            <div class="actions">
+              <button type="button" data-testid="fill-generate" disabled title="Press Preview plan first.">Fetch + Generate</button>
+              <button type="button" class="secondary" data-testid="fill-fetch" disabled title="Press Preview plan first.">Fetch images only</button>
+              <span class="model-slot"></span>
+            </div>
+          </article>
+
+          <article class="action-card" data-testid="improve-action-add_imagery">
+          <form id="add-imagery" class="add-imagery" data-testid="add-imagery" novalidate>
+            <h3>Add more imagery</h3>
+            <p class="muted head-desc">Fetch more Street View and satellite images yourself: choose the spacing, headings and stretch. Costs about $0.007 per Street View image.</p>
+            <div class="quality-slot" data-testid="quality-slot-imagery"></div>
+            <div class="field"><label for="i-spacing">Street View spacing: <output class="spacing-out"></output> (denser = more images)</label>
+              <input id="i-spacing" name="spacing" type="range" min="4" max="40" step="1" value="10"></div>
+            <fieldset class="field"><legend>Headings</legend>
+              <label class="inline"><input type="checkbox" name="heading" value="forward"> forward</label>
+              <label class="inline"><input type="checkbox" name="heading" value="back"> back</label>
+              <label class="inline"><input type="checkbox" name="heading" value="left"> left</label>
+              <label class="inline"><input type="checkbox" name="heading" value="right"> right</label></fieldset>
+            <fieldset class="field"><legend>Satellite crop zoom</legend>
+              <label class="inline"><input type="radio" name="zoom" value="19"> 19</label>
+              <label class="inline"><input type="radio" name="zoom" value="20"> 20</label>
+              <label class="inline"><input type="radio" name="zoom" value="21"> 21</label></fieldset>
+            <fieldset class="field max-fields" data-testid="max-fields" hidden><legend>Max quality extras (editable)</legend>
+              <label>Overlapping satellite set
+                <select name="extra_zoom" data-testid="extra-zoom"><option value="">none</option><option value="19">zoom 19</option><option value="20">zoom 20</option><option value="21">zoom 21</option></select></label>
+              <label>Max images <input name="max_images" type="number" min="1" max="200" step="1" data-testid="max-images"></label>
+              <label>Frames per station <output class="frames-out" data-testid="frames-per-station"></output></label></fieldset>
+            <fieldset class="field"><legend>Only this stretch (optional, metres along the street)</legend>
+              <label class="inline">from <input name="s_from" type="number" inputmode="decimal" min="0" step="1" aria-label="From metre"></label>
+              <label class="inline">to <input name="s_to" type="number" inputmode="decimal" min="0" step="1" aria-label="To metre"></label>
+              <button type="button" class="secondary small" id="clear-range">Whole street</button></fieldset>
+            <p class="estimate" data-testid="estimate" role="status"></p>
+            <p class="estimate-claude" data-testid="estimate-claude" role="status" aria-live="polite"></p>
+            <p class="active-note notice" hidden></p>
+            <p class="form-msg" role="alert" hidden></p>
+            <div class="actions">
+              <button type="button" data-testid="fetch-only">Fetch images only</button>
+              <button type="button" data-testid="fetch-generate">Fetch + Generate</button>
+              <span class="model-slot" id="imagery-model"></span>
+            </div>
+          </form>
+          </article>
+
+          <article class="action-card" data-testid="improve-action-upload">
+            <div class="upload-form" data-testid="upload-form">
+              <h3>Upload photos</h3>
+              <p class="muted">Your own photos of this street, placed by clicking where each was taken. Uploading is free; fusing them costs a few cents of Claude.</p>
+              <label class="drop-zone" data-testid="upload-drop">
+                <span>Drop photos here or</span>
+                <input type="file" accept="image/jpeg,image/png" multiple data-testid="upload-file" name="file" aria-label="Choose photos to upload">
+              </label>
+              <p class="muted upload-empty">No photos chosen yet.</p>
+              <ul class="upload-rows" aria-label="Photos to upload"></ul>
+              <div class="upload-map" data-testid="upload-map"></div>
+              <p class="upload-summary muted" role="status"></p>
+              <div class="actions"><button type="button" data-testid="upload-submit" disabled title="Choose photos first">Upload photos</button></div>
+              <div class="upload-after notice ok" data-testid="upload-after" hidden>
+                <p class="after-text"></p>
+                <div class="actions">
+                  <button type="button" data-testid="upload-generate">Generate now</button>
+                  <span class="model-slot"></span>
+                  <button type="button" class="secondary" data-testid="upload-later">Fuse later</button>
+                </div>
+                <p class="form-msg" role="alert" hidden></p>
+              </div>
+            </div>
+          </article>
+
+          <article class="action-card" data-testid="improve-action-regenerate">
+            <h3>Regenerate with what we have</h3>
+            <p class="muted">Rebuilds the street from photos and detections already stored. Costs $0: no Google, no Claude.</p>
+            <fieldset class="field"><legend class="sr-only">Regeneration mode</legend>
+              <label class="inline"><input type="radio" name="regen-mode" value="compile" checked> Rebuild scene only (default)</label>
+              <label class="inline"><input type="radio" name="regen-mode" value="remerge"> Also re-merge stored detections</label></fieldset>
+            <p class="regen-hint muted" hidden></p>
+            <div class="actions"><button type="button" data-testid="regenerate" disabled>Regenerate</button></div>
+            <p class="regen-result" data-testid="regenerate-result" aria-live="polite"></p>
+          </article>
+        </div>
+
+        <details open class="improve-help" data-state="populated" data-testid="improve-help"></details>
+      </section>
 
       <section class="card sec" id="sec-versions" data-testid="versions" aria-labelledby="versions-title">
         <h2 id="versions-title">Version history</h2>
@@ -110,35 +219,6 @@
           <div class="obs-grid"></div>
           <p data-role="empty-obs" class="muted" hidden>No imagery matches — use “Add more imagery” below.</p>
         </div>
-
-        <form id="add-imagery" class="add-imagery" data-testid="add-imagery" novalidate>
-          <h3>Add more imagery</h3>
-          <div class="field"><label for="i-spacing">Street View spacing: <output class="spacing-out"></output> (denser = more images)</label>
-            <input id="i-spacing" name="spacing" type="range" min="4" max="40" step="1" value="10"></div>
-          <fieldset class="field"><legend>Headings</legend>
-            <label class="inline"><input type="checkbox" name="heading" value="forward"> forward</label>
-            <label class="inline"><input type="checkbox" name="heading" value="back"> back</label>
-            <label class="inline"><input type="checkbox" name="heading" value="left"> left</label>
-            <label class="inline"><input type="checkbox" name="heading" value="right"> right</label></fieldset>
-          <fieldset class="field"><legend>Satellite crop zoom</legend>
-            <label class="inline"><input type="radio" name="zoom" value="19"> 19</label>
-            <label class="inline"><input type="radio" name="zoom" value="20"> 20</label></fieldset>
-          <fieldset class="field"><legend>Only this stretch (optional, metres along the street)</legend>
-            <label class="inline">from <input name="s_from" type="number" inputmode="decimal" min="0" step="1" aria-label="From metre"></label>
-            <label class="inline">to <input name="s_to" type="number" inputmode="decimal" min="0" step="1" aria-label="To metre"></label>
-            <button type="button" class="secondary small" id="clear-range">Whole street</button></fieldset>
-          <p class="estimate" data-testid="estimate" role="status"></p>
-          <p class="active-note notice" hidden></p>
-          <p class="form-msg" role="alert" hidden></p>
-          <div class="actions">
-            <button type="button" data-testid="fetch-only">Fetch images only</button>
-            <button type="button" data-testid="fetch-generate">Fetch + Generate</button>
-            <span class="stub-wrap">
-              <button type="button" disabled data-stub="true" data-testid="upload-stub" title="Coming in Phase 3: upload your own photo of this street">Upload a photo</button>
-              <small class="muted">Coming in Phase 3</small>
-            </span>
-          </div>
-        </form>
       </section>
 
       <section class="card sec" id="sec-reference" data-testid="reference-line" aria-labelledby="ref-title">
@@ -149,6 +229,6 @@
       </section>
     </div>
   </main>
-  <script type="module" src="/js/admin/segment_view.js?v=4"></script>
+  <script type="module" src="/js/admin/segment_view.js?v=5"></script>
 </body>
 </html>

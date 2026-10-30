@@ -1967,7 +1967,12 @@
         "pothole": 0.15,
         "stall": 0.1,
         "low_branch": 0.1
-      }
+      },
+      "lane_weights": [
+        0.25,
+        0.25,
+        0.5
+      ]
     }
   },
   "fidelity": {

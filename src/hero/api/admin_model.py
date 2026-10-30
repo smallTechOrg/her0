@@ -1,6 +1,6 @@
 """Admin model inspection API (spec/api.md ## Admin: model, versions, diff, coverage, entities, run report).
 
-Read-only over ``hero.db.model_repo``. The only write is the lazy import of a Phase-1 scene as the legacy v0
+Read-only over ``hero.db.model_repo`` (r2: ``scene_schema`` and a gap summary on the head; ``GET .../gaps``). The only write is the lazy import of a Phase-1 scene as the legacy v0
 model on the first ``GET .../model`` of a segment that has a scene and no versions.
 Sibling modules (``hero.model.diff``, ``hero.model.legacy``, ``hero.model.coverage``) are imported lazily.
 """
@@ -86,6 +86,16 @@ def _maybe_import_legacy(seg: repo.SegmentRecord) -> None:
         pass
 
 
+def _gap_summary(gaps: dict[str, Any] | None) -> dict[str, Any] | None:
+    """``{uncovered: {...}, interpolated_m}`` from a stored GapReport (``None`` until the version is recompiled)."""
+    if not gaps:
+        return None
+    from hero.fusion.publish import union_m
+
+    return {"uncovered": gaps.get("uncovered"),
+            "interpolated_m": union_m([(i["s_from"], i["s_to"]) for i in gaps.get("interpolations", [])])}
+
+
 def _simplify(points: list, limit: int = MAX_REF_POINTS) -> list[dict[str, float]]:
     """Uniformly decimate to at most ``limit`` points, always keeping the first and last."""
     n = len(points)
@@ -112,6 +122,7 @@ def model_head(slug: str):
     head_n = model_repo.head_version(seg.id)
     if head_n is None:
         return ok({"slug": slug, "head_version": None, "legacy": False, "placement_verified": False,
+                   "scene_schema": None, "gaps": None,
                    "reference_line": None, "fidelity": None,
                    "counts": {"entities": 0, "removed": 0, "buildings": 0, "observations": 0, "fused_observations": 0},
                    "versions": []})
@@ -122,6 +133,7 @@ def model_head(slug: str):
     ref = m.reference_line
     return ok({
         "slug": slug, "head_version": head_n, "legacy": m.legacy, "placement_verified": m.placement_verified,
+        "scene_schema": head.scene_schema if head.scene else None, "gaps": _gap_summary(head.gaps),
         "reference_line": {"source": ref.source, "osm_way_id": ref.osm_way_id, "name": ref.name,
                            "length_s": ref.length_s, "points": _simplify(ref.points)},
         "fidelity": head.fidelity.model_dump(mode="json"),
@@ -152,6 +164,25 @@ def model_diff(slug: str, from_: int = Query(alias="from"), to: int = Query()):
     except ImportError as exc:
         raise ApiError("internal_error", "Model diff is unavailable (hero.model.diff).") from exc
     return ok(diff_models(a.model, b.model, a.fidelity, b.fidelity).model_dump(mode="json"))
+
+
+# ------------------------------------------------------------------ gaps
+
+
+@router.get("/segments/{slug}/gaps")
+def model_gaps(slug: str, version: int | None = Query(default=None, ge=0)):
+    """The ``GapReport`` of ``version`` (default head): the stored one, else analysed on the fly (nothing is written)."""
+    seg = _segment(slug)
+    rec = _version(seg.id, version, slug=slug)
+    if rec.gaps is not None:
+        return ok(rec.gaps)
+    try:
+        from hero.model.gaps import analyze_gaps
+    except ImportError as exc:
+        raise ApiError("internal_error", "Gap analysis is unavailable (hero.model.gaps).") from exc
+    ids = rec.model.fused_observation_ids
+    observations = {o.id: o for o in model_repo.get_observations(seg.id, ids=ids, limit=max(len(ids), 1))} if ids else {}
+    return ok(analyze_gaps(rec.model, observations, rec.fidelity, None).model_dump(mode="json"))
 
 
 # ------------------------------------------------------------------ coverage

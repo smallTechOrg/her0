@@ -95,6 +95,13 @@ def test_unknown_segment_is_404(app_client, auth, method, path):
 # ---------------------------------------------------------------- upload
 
 
+def huge_png_bytes(size=(10000, 10000)) -> bytes:
+    """A tiny file that declares a huge canvas (a flat colour compresses to a few KB)."""
+    buf = io.BytesIO()
+    Image.new("1", size, 0).save(buf, format="PNG", optimize=True)
+    return buf.getvalue()
+
+
 def test_valid_photo_upload_returns_201_with_view_station_and_is_served_from_media(app_client, auth, tmp_path):
     seg = new_segment("Upload ok")
     data = jpeg_bytes()
@@ -293,6 +300,13 @@ def test_add_imagery_maps_registry_refusals_to_409_and_402(app_client, auth, mon
     monkeypatch.setattr(registry, "start_run", broke)
     resp = app_client.post(f"/api/admin/segments/{seg.slug}/imagery", headers=auth, json={"max_images": 10})
     assert resp.status_code == 402 and resp.json()["error"]["code"] == "budget_exhausted"
+    # do not leak a queued run into the session DB (it would make later tests see an active run)
+    from datetime import UTC, datetime
+
+    from hero.db.repo import RunUpdate
+    from hero.scene.schema import RunStatus
+
+    repo.update_run(active.id, RunUpdate(status=RunStatus.failed, finished_at=datetime.now(UTC)))
 
 
 def test_add_imagery_reports_a_clear_error_while_the_registry_has_no_acquire_mode(app_client, auth, monkeypatch):
@@ -421,3 +435,14 @@ def test_s_range_outside_the_line_is_422_on_add_imagery_and_generate(app_client,
     assert "outside the line" in resp.json()["error"]["message"]
     resp = app_client.post(f"/api/admin/segments/{seg.slug}/generate", headers=auth, json={"imagery": bad})
     assert resp.status_code == 422 and resp.json()["error"]["code"] == "validation_error"
+
+
+@pytest.mark.filterwarnings("ignore::PIL.Image.DecompressionBombWarning")
+def test_upload_with_huge_declared_pixel_count_is_422(app_client, auth):
+    seg = new_segment("Upload bomb")
+    for size in ((10000, 10000), (20000, 20000)):  # 100 MP (over our cap) and 400 MP (Pillow bomb error)
+        data = huge_png_bytes(size)
+        assert len(data) < 1_000_000
+        resp = upload(app_client, seg.slug, auth, data=data, name="p.png", ctype="image/png")
+        assert resp.status_code == 422 and resp.json()["error"]["code"] == "validation_error", size
+        assert "pixel" in resp.json()["error"]["message"].lower() or "megapixel" in resp.json()["error"]["message"]

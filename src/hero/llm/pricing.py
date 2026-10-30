@@ -18,6 +18,8 @@ COST_DECIMALS = 6
 class ModelPrice:
     input_usd_per_mtok: float
     output_usd_per_mtok: float
+    source_url: str | None = None   # rows added in Phase 2.1 carry the authoritative source + verification date
+    verified_on: str | None = None
 
 
 class PriceTable:
@@ -39,6 +41,7 @@ class PriceTable:
                 prices[model] = ModelPrice(
                     input_usd_per_mtok=float(entry["input_usd_per_mtok"]),
                     output_usd_per_mtok=float(entry["output_usd_per_mtok"]),
+                    source_url=entry.get("source_url"), verified_on=entry.get("verified_on"),
                 )
             except (KeyError, TypeError, ValueError) as exc:
                 raise ValueError(
@@ -82,3 +85,12 @@ def estimate_image_tokens(width_px: int, height_px: int) -> int:
 
 def estimate_text_tokens(text: str) -> int:
     return int(round(len(text) / CHARS_PER_TEXT_TOKEN))
+
+
+def price_for(model: str, settings: Settings | None = None, *, table: PriceTable | None = None) -> ModelPrice:
+    """The price row of ``model`` (raises ``UnknownModelError`` when unpriced: the pipeline never runs unpriced)."""
+    if table is None:
+        from hero.config import get_settings
+
+        table = load_price_table(settings or get_settings())
+    return table.require(model)

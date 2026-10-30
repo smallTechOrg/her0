@@ -3,6 +3,7 @@
 // API: GET .../observations (inventory), POST .../imagery (acquire-only), POST .../generate (fetch + generate).
 
 import { el, apost, segPath, fmtUsd } from '/js/admin/auth.js?v=5';
+import { createQuality } from '/js/admin/quality_fields.js?v=1';
 
 export const EST_SV_USD = 0.007;
 export const EST_SAT_USD = 0.002;
@@ -73,12 +74,12 @@ export function renderObservations(root, data, { onAuth } = {}) {
   draw();
 }
 
-export function createImageryForm({ form, slug, getLength, getObservations, limits, activeReason, onAuth }) {
+export function createImageryForm({ form, slug, getLength, getObservations, limits, activeReason, onAuth, getModel, models }) {
   const q = (n) => form.querySelector(`[name=${n}]`);
   const spacing = q('spacing');
   const lim = limits || {};
   spacing.value = String(lim.sv_spacing_m || 10);
-  const zoomDefault = [19, 20].includes(lim.sat_crop_zoom) ? lim.sat_crop_zoom : 20;
+  const zoomDefault = [19, 20, 21].includes(lim.sat_crop_zoom) ? lim.sat_crop_zoom : 20;
   form.querySelector(`[name=zoom][value="${zoomDefault}"]`).checked = true;
   const hdChecks = HEADINGS.map((h) => form.querySelector(`[name=heading][value=${h}]`));
   const defaults = new Set(lim.headings || HEADINGS);
@@ -86,6 +87,30 @@ export function createImageryForm({ form, slug, getLength, getObservations, limi
   const msg = form.querySelector('.form-msg');
   const btnFetch = form.querySelector('[data-testid=fetch-only]');
   const btnGen = form.querySelector('[data-testid=fetch-generate]');
+
+  const maxFields = form.querySelector('[data-testid=max-fields]');
+  const extraZoom = q('extra_zoom');
+  const maxImages = q('max_images');
+  const framesOut = form.querySelector('[data-testid=frames-per-station]');
+  const claudeOut = form.querySelector('[data-testid=estimate-claude]');
+  const quality = models ? createQuality({
+    container: form.querySelector('.quality-slot'), models, testid: 'imagery',
+    // the preset fills the editable fields of this form (the server owns the values)
+    onPreset(preset, on) {
+      maxFields.hidden = !on;
+      if (on) {
+        spacing.value = String(preset.sv_spacing_m);
+        const have = new Set(preset.headings);
+        for (const c of hdChecks) c.checked = have.has(c.value);
+        const z = form.querySelector(`[name=zoom][value="${preset.sat_crop_zoom}"]`);
+        if (z) z.checked = true;
+        extraZoom.value = preset.sat_extra_zoom == null ? '' : String(preset.sat_extra_zoom);
+        maxImages.value = String(preset.max_images);
+      }
+      refresh();
+    },
+    onChange: () => refresh(),
+  }) : null;
 
   function rangeValue() {
     const a = Number.parseFloat(q('s_from').value);
@@ -102,7 +127,40 @@ export function createImageryForm({ form, slug, getLength, getObservations, limi
     };
     const r = rangeValue();
     if (r) body.s_range = r;
+    if (quality && quality.on()) { // max-quality extras are sent only while the preset is on
+      const mi = Number.parseInt(maxImages.value, 10);
+      if (Number.isFinite(mi)) body.max_images = mi;
+      if (extraZoom.value) body.sat_extra_zoom = Number(extraZoom.value);
+    }
     return body;
+  }
+
+  let estTimer = null;
+  let estSeq = 0;
+  /** Server-side estimate (authoritative: it prices passes, review rounds and the overlapping tile set). */
+  function serverEstimate(p) {
+    clearTimeout(estTimer);
+    estTimer = setTimeout(async () => {
+      const seq = ++estSeq;
+      const req = { imagery: p };
+      const q = quality && quality.value();
+      if (q) req.quality = q;
+      if (getModel && getModel()) req.model = getModel();
+      try {
+        const d = await apost(segPath(slug, '/imagery/estimate'), req);
+        if (seq !== estSeq) return;
+        const e = d.est;
+        claudeOut.textContent = `≈ ${d.new} new of ${d.planned} planned images · ≈ ${fmtUsd(e.google_usd)} Google + ≈ ${fmtUsd(e.claude_usd)} Claude `
+          + `(upper bound: ${d.extraction_passes} extraction pass${d.extraction_passes === 1 ? '' : 'es'}, ${d.review_rounds} review round${d.review_rounds === 1 ? '' : 's'}) `
+          + `= ≈ ${fmtUsd(e.total_usd)} total · Model: ${e.model}`;
+        claudeOut.dataset.total = String(e.total_usd);
+        claudeOut.dataset.claude = String(e.claude_usd);
+      } catch (err) {
+        if (seq !== estSeq) return;
+        claudeOut.textContent = '';
+        delete claudeOut.dataset.total;
+      }
+    }, 150);
   }
 
   function refresh() {
@@ -118,6 +176,8 @@ export function createImageryForm({ form, slug, getLength, getObservations, limi
       ? (p.headings.length ? 'Check the stretch: "to" must be greater than "from".' : 'Pick at least one heading.')
       : `≈ ${est.fresh} new images ≈ ${fmtUsd(est.usd).replace('$', '$')} Google (${est.planned} planned, ${est.cached} already cached${est.trimmed ? '; spacing widened to fit the image cap' : ''})`;
     out.dataset.fresh = bad ? '' : String(est.fresh);
+    framesOut.textContent = String(p.headings.length);
+    if (bad) { claudeOut.textContent = ''; } else serverEstimate(p);
     const reason = activeReason();
     const off = bad || !!reason;
     for (const b of [btnFetch, btnGen]) { b.disabled = off; b.title = reason || (bad ? 'Fix the plan first' : ''); }
@@ -130,9 +190,13 @@ export function createImageryForm({ form, slug, getLength, getObservations, limi
     for (const b of [btnFetch, btnGen]) b.disabled = true;
     try {
       const body = plan();
+      const req = { imagery: body };
+      if (getModel && getModel()) req.model = getModel();
+      const q = quality && quality.value();
+      if (q) req.quality = q;
       const data = kind === 'imagery'
         ? await apost(segPath(slug, '/imagery'), body)
-        : await apost(segPath(slug, '/generate'), { imagery: body });
+        : await apost(segPath(slug, '/generate'), req);
       location.href = `/admin/run.html?id=${encodeURIComponent(data.run_id)}`;
     } catch (err) {
       if (onAuth && onAuth(err)) return;
@@ -144,13 +208,14 @@ export function createImageryForm({ form, slug, getLength, getObservations, limi
     }
   }
 
+  if (models) models.selects.add(() => { if (form.isConnected) refresh(); }); // a model switch elsewhere re-prices the estimate
   form.addEventListener('input', refresh);
   form.addEventListener('submit', (e) => e.preventDefault());
   btnFetch.addEventListener('click', () => submit('imagery'));
   btnGen.addEventListener('click', () => submit('generate'));
   refresh();
   return {
-    refresh,
+    refresh, quality,
     setRange(a, b) {
       q('s_from').value = String(a); q('s_to').value = String(b); refresh();
       form.scrollIntoView({ block: 'center' });

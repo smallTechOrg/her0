@@ -13,6 +13,27 @@ function fidBar(hist, label) {
   ]);
 }
 
+function binStrip(bins) {
+  return el('div', { class: 'q-bins', 'data-testid': 'report-bins', role: 'list', 'aria-label': 'Fidelity per 5 m bin, before to after' },
+    bins.map((b) => el('span', { class: `q-bin${b.level_after > b.level_before ? ' up' : ''}`, role: 'listitem',
+      'data-before': `L${b.level_before}`, 'data-after': `L${b.level_after}`, title: `${b.s_from}–${b.s_to} m: L${b.level_before} → L${b.level_after}` },
+    [el('small', { text: `${Number(b.s_from).toFixed(0)}` }), el('span', { text: `L${b.level_before}→L${b.level_after}` })])));
+}
+
+function qualityBlock(q) {
+  if (!q) return null;
+  const ag = q.agreement || {};
+  return el('div', { 'data-testid': 'report-quality' }, [
+    el('h3', { text: q.preset ? 'Max quality' : 'Quality options' }),
+    el('dl', { class: 'kv' }, [
+      el('dt', { text: 'Model' }), el('dd', { text: q.model || '—' }),
+      el('dt', { text: 'Extraction passes' }), el('dd', { text: `${q.extraction_passes} per frame batch${ag.passes ? ` · ${ag.detections_in} detections merged into ${ag.detections_out} (${ag.unanimous} unanimous, ${ag.disputed} disputed, none dropped)` : ''}` }),
+      el('dt', { text: 'Review rounds' }), el('dd', { text: `${q.review_rounds_run} of up to ${q.review_rounds_planned}${q.early_stop ? ` — ${q.early_stop}` : ''}` }),
+      el('dt', { text: 'Model calls / cache hits' }), el('dd', { text: `${q.extraction_calls} paid · ${q.cache_hits} answered from storage at $0${q.passes_skipped ? ` · ${q.passes_skipped} extra pass(es) skipped` : ''}` }),
+    ]),
+  ]);
+}
+
 const num = (x) => (x == null ? '—' : String(x));
 
 export function renderReport(root, r, { slug } = {}) {
@@ -55,7 +76,9 @@ export function renderReport(root, r, { slug } = {}) {
       (fid.improved_intervals || []).length
         ? el('ul', {}, fid.improved_intervals.map((i) => el('li', { text: `${i.from} → ${i.to} over ${Number(i.s_from).toFixed(0)}–${Number(i.s_to).toFixed(0)} m` })))
         : el('p', { class: 'muted', text: 'No stretch improved a level.' }),
+      (fid.bins || []).length ? binStrip(fid.bins) : null,
     ]),
+    qualityBlock(r.quality),
     el('h3', { text: 'Confidence changes' }),
     (r.confidence_changes || []).length
       ? el('div', { class: 'table-wrap' }, el('table', {}, [

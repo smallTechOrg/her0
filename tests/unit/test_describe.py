@@ -139,3 +139,42 @@ def test_version_summary_with_and_without_a_diff():
     full = ModelDiff(from_version=1, to_version=2, is_empty=False, summary_lines=["3 new objects", "Fidelity L1 to L2"])
     assert describe.version_summary(m, full, fid).endswith("Since v1: 3 new objects; Fidelity L1 to L2.")
     assert "map-only prior" in describe.version_summary(model(), None, make_fidelity_map(100.0, 0))
+
+
+# ------------------------------------------------------------------ Phase 2.1: gap / dynamic summaries
+
+
+def _interp(what, side, a, b, method="neighbours"):
+    from hero.model.gap_types import Interpolation
+
+    return Interpolation(what=what, side=side, s_from=a, s_to=b, method=method)
+
+
+def test_gap_summary_is_empty_without_interpolation_and_ignores_furniture_entries():
+    assert describe.gap_summary([]) == ""
+    assert describe.gap_summary([_interp("furniture_unknown", "both", 0, 50, "prior"), _interp("kerb", "left", 0, 10, "prior")]) == ""
+
+
+def test_gap_summary_names_sides_and_lengths_in_the_spec_wording():
+    s = describe.gap_summary([_interp("frontage", "right", 40, 60), _interp("ground_texture", "both", 0, 10)])
+    assert s == ("About 20 m of the right-hand frontage and 10 m of ground texture are interpolated "
+                 "from neighbouring stretches (no photo covers them).")
+
+
+def test_gap_summary_sums_runs_and_mentions_defaults_for_prior_or_procedural():
+    s = describe.gap_summary([_interp("frontage", "left", 0, 10, "prior"), _interp("frontage", "left", 30, 35),
+                              _interp("frontage", "right", 0, 5), _interp("footpath_state", "left", 5, 10)])
+    assert s.startswith("About 15 m of the left-hand frontage, 5 m of the right-hand frontage and 5 m of footpath state are")
+    assert "neutral defaults" in s
+    assert "is interpolated" in describe.gap_summary([_interp("frontage", "left", 0, 10)])
+
+
+def test_dynamic_summary_lists_counts_with_plurals_and_is_empty_for_none():
+    from hero.model.scene_v3 import DynamicTypeStats
+
+    assert describe.dynamic_summary({}) == ""
+    st = lambda n: DynamicTypeStats(count=n, per_100m=float(n))  # noqa: E731
+    out = describe.dynamic_summary({"vendor_stall": st(3), "parked_vehicle": st(35), "debris": st(1), "pothole": st(2)})
+    assert out == ("Seen here but spawned dynamically during play instead of fixed in place: 1 piece of debris, "
+                   "35 parked vehicles, 2 potholes, 3 vendor stalls.")
+    assert describe.dynamic_summary({"parked_vehicle": st(1)}).endswith("1 parked vehicle.")

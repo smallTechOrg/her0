@@ -7,8 +7,9 @@ busts the one-day media cache (files are otherwise stable per id). Pure file wor
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
-from typing import Mapping
+from typing import Any, Mapping
 
 from PIL import Image
 
@@ -21,6 +22,32 @@ THUMB_PX = 480
 
 def crops_dir(data_dir: Path, segment_slug: str) -> Path:
     return Path(data_dir) / "crops" / segment_slug
+
+
+def textures_dir(data_dir: Path, segment_slug: str) -> Path:
+    """Baked, content-addressed textures of a street (``data/textures/<slug>/``; served at ``/media/textures``)."""
+    return Path(data_dir) / "textures" / segment_slug
+
+
+def read_manifest(segment_slug: str, export: Mapping[str, Any] | None, *, data_dir: Path | None = None
+                  ) -> dict[str, Any] | None:
+    """The stored ``street.manifest.json`` of ``model_versions.export_json`` (``None`` when absent/unreadable)."""
+    sha8 = (export or {}).get("sha8")
+    if not sha8:
+        return None
+    from hero.export import store  # local: the export package is heavier than this module's other users need
+
+    if data_dir is None:
+        from hero.config import get_settings
+
+        data_dir = get_settings().data_dir_abs
+    files = store.open_export(Path(data_dir), segment_slug, str(sha8))
+    if files is None:
+        return None
+    try:
+        return json.loads(files.manifest.read_bytes())
+    except (OSError, ValueError):
+        return None
 
 
 def crop_url(segment_slug: str, item_id: str, version: int) -> str:

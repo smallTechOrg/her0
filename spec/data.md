@@ -152,6 +152,9 @@ The raw, schema-validated perception output of each model call, kept so any mode
 |---|---|
 | run_id text pk (fk pipeline_runs); segment_id fk indexed; mode enum `generate|acquire`; base_version int nullable; result_version int nullable; version_created bool; report_json json (`RunReport`, `## Run report`); created_at |
 
+#### Extraction provenance and cache *(slice SQ; no schema change)*
+Every stored extraction (street pass, overhead, critique round) carries `extraction_json._prov = {model, prompt_name, prompt_version (8 hex of the prompt file), pass_index, cost_usd, image_shas, cache_key}`; the perception schemas ignore the extra key. `cache_key = sha256(kind, sorted image shas, model, prompt_version, pass_index[, hash of the model under review])`. A re-run replays an answer whose key matches (pass 0 of a street batch keeps the older "latest paid answer for these photos" rule) and makes no call for it. Records without `_prov` are pass 0. `max quality` merges the N passes of a batch **by agreement** (`hero.fusion.maxquality.agree`): detections within 2 m (s) / 1.5 m (t) of the same type are one object; confidence x (0.5 + 0.5 * seen_in / N); nothing is dropped; the result is one new `model_versions` row.
+
 ## Relationships
 
 segment 1—n pipeline_runs 1—n llm_calls; pipeline_runs 1—n google_requests; segment 1—n game_runs;

@@ -170,3 +170,21 @@ def visible_regions(obs: Observation, ref: ReferenceLine) -> list[VisibleRegion]
             w = range_weight(abs((a + b) / 2.0 - c.station_s))  # distance of the piece midpoint from the camera
             out.append(VisibleRegion(obs.id, round(a, 3), round(b, 3), c.side, round(w, 4)))
     return out
+
+
+def tile_covers(obs: Observation, ref: ReferenceLine, s_from: float, s_to: float, *, offset_m: float = HIRES_OFFSET_M) -> bool:
+    """True when the satellite tile ``obs`` contains ``(s, 0)`` and ``(s, +-offset_m)`` at the start, middle and end of
+    ``[s_from, s_to]`` (used by gap analysis for the overview tile)."""
+    if obs.kind not in (ObservationKind.satellite_overview, ObservationKind.satellite_crop):
+        return False
+    try:
+        half_e, half_n = _crop_extent_m(obs)
+    except ValueError:
+        return False
+    cx, cy = ref.latlon_to_xy(obs.lat, obs.lon)
+    for s in (s_from, (s_from + s_to) / 2.0, s_to):
+        for t in (0.0, offset_m, -offset_m):
+            x, y = ref.latlon_to_xy(*ref.point_at(min(max(s, 0.0), ref.length_s), t))
+            if abs(x - cx) > half_e or abs(y - cy) > half_n:
+                return False
+    return True

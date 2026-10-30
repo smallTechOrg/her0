@@ -38,13 +38,13 @@ def _revision(path: Path) -> str:
         return con.execute("select version_num from alembic_version").fetchone()[0]
 
 
-def test_head_revision_is_0002():
-    assert ScriptDirectory.from_config(_alembic_config()).get_current_head() == "0002"
+def test_head_revision_is_0003():  # 0002 stays the street-model migration; 0003 (scene_schema) is the head
+    assert ScriptDirectory.from_config(_alembic_config()).get_current_head() == "0003"
 
 
-def test_fresh_database_upgrades_to_0002_with_all_tables(db_url, tmp_path):
+def test_fresh_database_upgrades_to_head_with_all_tables(db_url, tmp_path):
     command.upgrade(_alembic_config(), "head")
-    assert _revision(tmp_path / "mig.db") == "0002"
+    assert _revision(tmp_path / "mig.db") == "0003"
     tables = set(inspect(create_engine(db_url)).get_table_names())
     assert PHASE1_TABLES | PHASE2_TABLES <= tables
 
@@ -61,7 +61,7 @@ def test_upgrade_of_a_phase1_database_keeps_rows_and_adds_tables(db_url, tmp_pat
         con.execute("insert into game_runs (id, segment_id, score, distance_m, tokens_collected, loops, duration_s, client,"
                     " created_at) values ('g1','s1',420,70.0,1,0,12.5,'ua','2026-01-02 00:00:00')")
     command.upgrade(_alembic_config(), "head")
-    assert _revision(path) == "0002"
+    assert _revision(path) == "0003"
     with sqlite3.connect(path) as con:
         assert con.execute("select slug, best_score, scene_json from segments").fetchall() == [
             ("legacy-w", 420, '{"schema_version": 1}')]

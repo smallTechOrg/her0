@@ -275,13 +275,10 @@ function laneCenterLat(track, scene, obj, sC) {
   return lats.reduce((a, b) => a + b, 0) / lats.length;
 }
 
-function buildObjects(track, scene, billboardTexs, questionTex) {
+function buildObjects(track, scene, billboardTexs) {
   const v2 = scene.schema_version === 2;
   const boxes = new Buf();
-  const outlines = new Buf();
-  const badges = new Buf(true);
   const extras = [];
-  let labels = 0;
   scene.objects.forEach((obj, i) => {
     const sC = Math.min(track.length - 0.01, obj.x_m + obj.length_m / 2);
     const lat = laneCenterLat(track, scene, obj, sC);
@@ -315,32 +312,11 @@ function buildObjects(track, scene, billboardTexs, questionTex) {
       const hh = Math.max(bh, 0.15);
       const m = new THREE.Matrix4().compose(new THREE.Vector3(w.x, hh / 2, w.z), rot, new THREE.Vector3(bw, hh, bd));
       boxes.geometry(UNIT_BOX, m, col);
-      if (!obj.scenery && labels < MAX_LABELS_PER_COPY) {
-        const label = textSprite(obj.label, { bg: 'rgba(0,0,0,0.65)' });
-        label.position.set(w.x, hh + 0.5, w.z);
-        extras.push(label);
-        labels += 1;
-      }
-    }
-    if (obj.confidence < 0.6) {
-      const oh = top + 0.2;
-      const m = new THREE.Matrix4().compose(new THREE.Vector3(w.x, oh / 2, w.z), rot, new THREE.Vector3(bw + 0.2, oh, bd + 0.2));
-      outlines.geometry(UNIT_BOX, m, colour(0x9aa0a6));
-      // "?" badge: a quad facing back along the path (towards the camera)
-      const bm = new THREE.Matrix4().compose(
-        new THREE.Vector3(w.x + Math.cos(w.theta) * bw / 2, Math.max(top, 0.5) + 0.9, w.z + Math.sin(w.theta) * bw / 2),
-        new THREE.Quaternion().setFromEuler(new THREE.Euler(0, -w.theta, 0)), new THREE.Vector3(0.7, 0.7, 1));
-      badges.geometry(new THREE.PlaneGeometry(1, 1), bm, new THREE.Color(0xffffff));
+      // no in-world text labels or "?" badges: the object name is shown as a toast on a hit
     }
   });
   const out = [];
   if (!boxes.empty) out.push(boxes.mesh(new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }), 'objects'));
-  if (!outlines.empty) {
-    out.push(outlines.mesh(new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.25, depthWrite: false }), 'outlines'));
-  }
-  if (!badges.empty) {
-    out.push(badges.mesh(new THREE.MeshBasicMaterial({ map: questionTex, transparent: true, side: THREE.DoubleSide }), 'badges'));
-  }
   return [...out, ...extras];
 }
 
@@ -391,13 +367,12 @@ export async function buildWorld(scene, onProgress) {
     Promise.all(scene.objects.map((o) => (o.billboard_url ? loadTexture(o.billboard_url, MAX_CROP_PX, tracker) : null))),
   ]);
 
-  const q = textTexture('?', { color: '#000', bg: '#9aa0a6', px: 64 });
   const segment = new THREE.Group();
   segment.name = 'segment';
   segment.add(buildGround(track, tileTex));
   segment.add(buildStrips(track));
   for (const m of buildBuildings(track, scene, facadeTexs)) segment.add(m);
-  for (const m of buildObjects(track, scene, billboardTexs, q.tex)) segment.add(m);
+  for (const m of buildObjects(track, scene, billboardTexs)) segment.add(m);
 
   const coinGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.08, 12);
   const coinMat = new THREE.MeshLambertMaterial({ color: 0xffb100, emissive: 0x553a00 });

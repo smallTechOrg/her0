@@ -21,7 +21,10 @@ Interpretation notes
 from __future__ import annotations
 
 import json
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
+
+if TYPE_CHECKING:
+    from hero.model.scene_v3 import SceneV3
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 

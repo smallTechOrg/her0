@@ -694,10 +694,36 @@ class ReportFidelitySide(_M):
     histogram_m: dict[str, float] = Field(default_factory=dict)
 
 
+class ReportBin(_M):
+    """Fidelity of one bin (5 m) before and after the run (levels 0-3 and the fractional per-bin score)."""
+
+    s_from: float
+    s_to: float
+    level_before: int = Field(ge=0, le=3)
+    level_after: int = Field(ge=0, le=3)
+
+
 class ReportFidelity(_M):
     before: ReportFidelitySide = Field(default_factory=ReportFidelitySide)
     after: ReportFidelitySide = Field(default_factory=ReportFidelitySide)
     improved_intervals: list[FidelityImproved] = Field(default_factory=list)
+    bins: list[ReportBin] = Field(default_factory=list)  # per 5 m bin, before -> after (empty on pre-r3 reports)
+
+
+class ReportQuality(_M):
+    """What a run spent on quality (the "Max quality" preset or explicit passes / review rounds)."""
+
+    preset: bool = False
+    model: str | None = None
+    extraction_passes: int = 1
+    review_rounds_planned: int = 0
+    review_rounds_run: int = 0
+    early_stop: str = ""          # why the review loop ended before its last round ("" = it did not)
+    extraction_calls: int = 0     # paid model calls this run (all kinds)
+    cache_hits: int = 0           # extractions / reviews answered from storage at zero cost
+    passes_skipped: int = 0
+    prompt_versions: dict[str, str] = Field(default_factory=dict)
+    agreement: dict[str, int] = Field(default_factory=dict)  # detections_in / detections_out / unanimous / disputed
 
 
 class ReportConfidenceChange(_M):
@@ -746,6 +772,7 @@ class RunReport(_M):
     fidelity: ReportFidelity = Field(default_factory=ReportFidelity)
     confidence_changes: list[ReportConfidenceChange] = Field(default_factory=list)
     cost: ReportCost = Field(default_factory=ReportCost)
+    quality: ReportQuality | None = None
     warnings: list[str] = Field(default_factory=list)
     degraded: bool = False
     summary: str = ""

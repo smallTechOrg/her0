@@ -15,6 +15,7 @@ from typing import Callable
 from hero.config import Settings
 from hero.db import repo
 from hero.llm.errors import BudgetExceeded
+from hero.llm.pricing import PriceTable, load_price_table
 from hero.logging import get_logger
 
 log = get_logger("hero.llm")
@@ -35,10 +36,23 @@ class BudgetDecision:
 class BudgetGuard:
     def __init__(self, settings: Settings, *,
                  total_spent_fn: Callable[[], float] = repo.total_llm_cost_usd,
-                 run_spent_fn: Callable[[str], float] = repo.run_spend_usd):
+                 run_spent_fn: Callable[[str], float] = repo.run_spend_usd,
+                 prices: PriceTable | None = None):
+        self._settings = settings
+        self._prices = prices
         self.budget_total_usd = float(settings.claude_budget_usd)
         self._total_spent = total_spent_fn
         self._run_spent = run_spent_fn
+
+    def estimate_usd(self, model: str, input_tokens: int, max_output_tokens: int) -> float:
+        """Worst-case price of one call on ``model`` (its own ``prices.json`` row; unpriced raises)."""
+        if self._prices is None:
+            self._prices = load_price_table(self._settings)
+        return self._prices.cost_usd(model, input_tokens, max_output_tokens)
+
+    def check_model_call(self, run_id: str, model: str, input_tokens: int, max_output_tokens: int) -> BudgetDecision:
+        """``check_before_call`` with the estimate priced for the model actually used (global hard stop only)."""
+        return self.check_before_call(run_id, self.estimate_usd(model, input_tokens, max_output_tokens))
 
     def remaining_usd(self) -> float:
         return max(0.0, self.budget_total_usd - self._total_spent())

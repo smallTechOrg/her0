@@ -154,7 +154,7 @@ def test_first_run_publishes_v1_with_evidence_report_and_costs(world):
     for e in head.model.entities:
         assert e.description.strip() and e.provenance, e.id
     seg = world.segment()
-    assert seg.status is SegmentStatus.ready and seg.latest_run_id == run.id and seg.scene.schema_version == 2
+    assert seg.status is SegmentStatus.ready and seg.latest_run_id == run.id and seg.scene.schema_version == 3
     assert seg.scene.model.version == 1 and seg.scene.generation.models["vision"] == get_settings().vision_model
     assert seg.quality is not None and (world.tmp / seg.thumbnail_path).exists()
     # one extraction row per model call, one report, costs add up
@@ -190,7 +190,7 @@ def test_run_row_is_persisted_for_the_admin_view(world):
     ij = run.imagery
     assert len(ij["observation_ids"]) == len(ij["new_observation_ids"]) > 10
     assert ij["reference_line_source"] == "osm_nominatim" and ij["osm_available"] is True
-    assert run.scene is not None and run.scene.schema_version == 2
+    assert run.scene is not None and run.scene.schema_version == 3
     assert run.iterations and run.iterations[0]["n"] == 1 and run.iterations[0]["preview_url"].endswith("critique1.png")
     assert (world.tmp / "previews" / run.id / "critique1.png").exists()
     assert run.input_tokens > 0 and run.cost_usd > 0 and run.google_requests > 0
@@ -470,7 +470,7 @@ def test_overview_failure_fails_the_run_and_the_segment_still_gets_the_labelled_
     assert llm.call_count == 0
     seg = world.segment()
     assert seg.status is SegmentStatus.ready and seg.quality.value == "generic"
-    assert seg.scene.schema_version == 2 and seg.scene.about.degraded and seg.scene.about.fidelity.level == "L0"
+    assert seg.scene.schema_version == 3 and seg.scene.about.degraded and seg.scene.about.fidelity.level == "L0"
     assert report_of(run).degraded
     assert model_repo.head_version(world.seg.id) == 0
 
@@ -534,7 +534,7 @@ def test_phase1_segment_gets_a_legacy_v0_and_a_fresh_lineage(test_db, tmp_path, 
         assert legacy_ids and not (legacy_ids & entity_ids(v1)), "nothing is merged from legacy objects"
         assert all(e.provenance for e in v1.model.entities)
         assert next(s for s in run.steps if s.name == "load_base_model").detail.startswith("imported Phase-1 scene")
-        assert repo.require_segment(seg.slug).scene.schema_version == 2
+        assert repo.require_segment(seg.slug).scene.schema_version == 3
         rep = report_of(run)
         assert rep.base_version == 0 and rep.result_version == 1 and rep.version_created
         assert run.inputs["base_version"] is None
