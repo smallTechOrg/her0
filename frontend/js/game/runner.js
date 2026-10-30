@@ -2,7 +2,7 @@
 export const C = Object.freeze({
   LANE_TWEEN_MS: 150, JUMP_MS: 500, SLIDE_MS: 600,
   SPEED_START: 6, SPEED_PER_LOOP: 0.1, SPEED_MAX: 12,
-  TOKEN_VALUE: 50, HEALTH_MAX: 100, HIT_DAMAGE: 20, INVULN_S: 1.2, RUNNER_HALF_M: 0.3, TOKEN_RADIUS_M: 0.6, JUMP_HEIGHT_M: 1.3,
+  TOKEN_VALUE: 50, HEALTH_MAX: 100, HIT_DAMAGE: 10, INVULN_S: 1.5, START_GRACE_S: 3, RUNNER_HALF_M: 0.3, TOKEN_RADIUS_M: 0.6, JUMP_HEIGHT_M: 1.3,
 });
 
 const LANE_CMDS = { left: -1, right: +1 };
@@ -30,7 +30,7 @@ export class Runner {
     this.crashed = null;      // scene object that took health to 0, or null
     this.health = C.HEALTH_MAX;
     this.hits = 0;
-    this.invulnUntil = 0;     // elapsed-time (s) until which hits are ignored
+    this.invulnUntil = C.START_GRACE_S; // elapsed-time (s) until which hits are ignored (start grace)
     this.hitKeys = new Set(); // `${objId}:${loop}` already damaged this pass
     this.lastHit = null;
     this.elapsed = 0;

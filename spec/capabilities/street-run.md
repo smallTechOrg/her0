@@ -29,7 +29,7 @@ change, jump and slide — collecting civic tokens and crashing on real-image-de
   runner starts in lane 0 (footpath).
 - Lane change by horizontal swipe or ⇠/⇢; jump by swipe-up/⇡; slide by swipe-down/⇣. Inputs
   during a tween are queued (one deep), not dropped.
-- The runner has 100 health. Each hazard hit costs 20 (constants `HEALTH_MAX`, `HIT_DAMAGE`), then 1.2 s of invulnerability (`INVULN_S`, runner blinks) and each object damages at most once per loop pass. The run ends only when health reaches 0; `crashed_into` is the object that took it to 0.
+- The runner has 100 health. Each hazard hit costs 10 (constants `HEALTH_MAX`, `HIT_DAMAGE`), then 1.5 s of invulnerability (`INVULN_S`, runner blinks); a run also starts with 3 s of grace (`START_GRACE_S`) so objects wrapping over the loop seam cannot hit at t=0 and each object damages at most once per loop pass. The run ends only when health reaches 0; `crashed_into` is the object that took it to 0.
 - The segment loops seamlessly until health reaches 0; speed ramps per loop within set bounds
   (constants in `spec/ui.md`).
 - An object is cleared only by its `action`: `jump` objects while airborne, `slide` objects
@@ -47,7 +47,7 @@ change, jump and slide — collecting civic tokens and crashing on real-image-de
 ## Success Criteria
 - [ ] Headless browser (phone viewport 390×844) opens `/`, sees the street card with its name and thumbnail, taps it, taps to start, and the HUD distance increases above 20 m within 5 s.
 - [ ] Driving arrow-key inputs: ArrowLeft/ArrowRight change the HUD lane indicator; ArrowUp sets the runner state to jumping; ArrowDown to sliding (observable via the page's debug state handle, `window.__hero.state`).
-- [ ] With the canonical example scene served via test route interception: giving no input produces a first hit on `o1` (parked_vehicle, lanes 0–1 at 12.5 m, health 100→80, run continues) and the run ends only when health reaches 0 (5 hits); moving to lane 2 before 12 m and jumping at `o3` (pothole, 40 m) survives past 45 m; passing `o5` (crossing, `action = none`) never crashes.
+- [ ] With the canonical example scene served via test route interception: giving no input produces a first hit on `o1` (parked_vehicle, lanes 0–1 at 12.5 m, health 100→90, run continues) and the run ends only when health reaches 0 (10 hits); moving to lane 2 before 12 m and jumping at `o3` (pothole, 40 m) survives past 45 m; passing `o5` (crossing, `action = none`) never crashes.
 - [ ] Against the real generated street: the run ends at health 0 within 180 s without input, and the results overlay shows a numeric score and distance.
 - [ ] Scene with a missing `billboard_url` renders the labelled fallback box (no console errors, no missing-texture crash).
 - [ ] Fetching a non-existent slug shows the error state text "Couldn't load this street" and a working "Back to gallery" link.

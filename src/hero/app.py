@@ -43,6 +43,10 @@ def create_app() -> FastAPI:
         finally:
             latency_ms = round((time.perf_counter() - started) * 1000, 1)
         response.headers["X-Request-Id"] = request_id
+        path = request.url.path
+        if not path.startswith(("/api/", "/media/", "/vendor/")):
+            # Dev/beta: always revalidate HTML/JS/CSS so a refresh picks up new game code.
+            response.headers["Cache-Control"] = "no-cache"
         log.info(
             "http.request",
             method=request.method,
