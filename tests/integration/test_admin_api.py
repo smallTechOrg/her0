@@ -100,7 +100,7 @@ def test_create_segment_too_short_is_422_with_the_reason(client, auth):
 
     assert resp.status_code == 422
     err = resp.json()["error"]
-    assert err["code"] == "validation_error" and "30" in err["message"] and "150" in err["message"]
+    assert err["code"] == "validation_error" and "30" in err["message"] and "200" in err["message"]
 
 
 def test_create_segment_with_missing_field_is_422_validation_error(client, auth):
@@ -264,3 +264,81 @@ def test_recent_runs_list_is_newest_first_with_segment_and_duration(client, auth
 def test_recent_runs_rejects_out_of_range_limit(client, auth):
     resp = client.get("/api/admin/runs?limit=0", headers=auth)
     assert resp.status_code == 422 and resp.json()["error"]["code"] == "validation_error"
+
+
+# ---------------------------------------------------------------- address -> segment
+
+
+def _fake_resolve(monkeypatch, heading=20.0):
+    from hero.imagery import geocode as geocode_mod
+
+    def fake(query, city, **kwargs):
+        return [geocode_mod.Candidate(id="google-0", label=f"{query}, {city}", lat=12.975, lon=77.641, provider="google",
+                                      heading_deg=heading, heading_source="nearest OSM road", road_name="100 Feet Road")]
+
+    monkeypatch.setattr(geocode_mod, "resolve", fake)
+
+
+def test_resolve_returns_candidates_with_heading_and_sides(client, auth, monkeypatch):
+    _fake_resolve(monkeypatch, heading=0.0)
+    resp = client.post("/api/admin/segments/resolve", json={"address": "100 Feet Road", "city": "Bengaluru"}, headers=auth)
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    c = data["candidates"][0]
+    assert c["lat"] == 12.975 and c["travel_compass"] == "north" and c["left_side"] == "west" and c["right_side"] == "east"
+    assert data["half_length_m"] == {"min": 50.0, "max": 100.0}
+
+
+def test_resolve_with_no_match_is_404_with_a_hint(client, auth, monkeypatch):
+    from hero.imagery import geocode as geocode_mod
+
+    monkeypatch.setattr(geocode_mod, "resolve", lambda *a, **k: [])
+    resp = client.post("/api/admin/segments/resolve", json={"address": "zzzzqqq", "city": "Bengaluru"}, headers=auth)
+    assert resp.status_code == 404 and "lat, lon" in resp.json()["error"]["message"]
+
+
+def test_resolve_requires_the_admin_password(client):
+    assert client.post("/api/admin/segments/resolve", json={"address": "x", "city": "y"}).status_code == 401
+
+
+@pytest.mark.parametrize("half,expected", [(50, 100), (75, 150), (100, 200)])
+def test_from_address_builds_a_segment_centred_on_the_point(client, auth, half, expected):
+    body = {"name": f"Addr Test {uuid.uuid4().hex[:6]}", "city": "Bengaluru", "lat": 12.975, "lon": 77.641,
+            "heading_deg": 20.0, "half_length_m": half, "footpath_side": "right"}
+    resp = client.post("/api/admin/segments/from-address", json=body, headers=auth)
+    assert resp.status_code == 201
+    data = resp.json()["data"]
+    assert data["status"] == "draft" and data["length_m"] == pytest.approx(expected, abs=1)
+    assert data["heading_deg"] == pytest.approx(20.0, abs=0.5) and data["footpath_side"] == "right"
+    mid_lat = (data["start"]["lat"] + data["end"]["lat"]) / 2
+    mid_lon = (data["start"]["lon"] + data["end"]["lon"]) / 2
+    assert mid_lat == pytest.approx(12.975, abs=1e-5) and mid_lon == pytest.approx(77.641, abs=1e-5)
+
+
+def test_from_address_normalises_opposite_headings_into_the_same_direction(client, auth):
+    body = {"name": f"Addr Dir {uuid.uuid4().hex[:6]}", "city": "Bengaluru", "lat": 12.975, "lon": 77.641,
+            "heading_deg": 200.0, "half_length_m": 50}
+    data = client.post("/api/admin/segments/from-address", json=body, headers=auth).json()["data"]
+    assert data["heading_deg"] == pytest.approx(20.0, abs=0.5)
+
+
+@pytest.mark.parametrize("half", [10, 49, 101, 500])
+def test_from_address_rejects_half_lengths_outside_50_to_100(client, auth, half):
+    body = {"name": "x", "city": "y", "lat": 12.975, "lon": 77.641, "heading_deg": 0, "half_length_m": half}
+    resp = client.post("/api/admin/segments/from-address", json=body, headers=auth)
+    assert resp.status_code == 422 and resp.json()["error"]["code"] == "validation_error"
+
+
+def test_resolve_live_finds_100_feet_road_with_a_road_direction(client, auth):
+    """Real Google + Nominatim: the Indiranagar candidate must carry a road heading from OSM geometry."""
+    resp = client.post("/api/admin/segments/resolve", json={"address": "100 Feet Road, Indiranagar", "city": "Bengaluru"}, headers=auth)
+    if resp.status_code == 404:
+        pytest.skip("geocoders unreachable")
+    cands = resp.json()["data"]["candidates"]
+    assert cands and all({"lat", "lon", "label", "provider"} <= set(c) for c in cands)
+    with_heading = [c for c in cands if c["heading_deg"] is not None]
+    if not with_heading:
+        pytest.skip("Nominatim/Overpass unreachable: no road geometry")
+    indiranagar = [c for c in with_heading if 12.96 < c["lat"] < 12.99]
+    assert indiranagar, cands
+    assert any(c["heading_deg"] < 25 or c["heading_deg"] > 155 for c in indiranagar)  # runs ~north-south

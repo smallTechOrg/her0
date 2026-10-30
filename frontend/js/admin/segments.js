@@ -156,38 +156,93 @@ async function loadRuns() {
   renderRuns();
 }
 
-function readForm() {
-  const f = $('create-form');
-  const num = (id) => Number.parseFloat(f.querySelector(id).value.trim());
-  const errors = [];
-  const name = f.querySelector('#f-name').value.trim();
-  const city = f.querySelector('#f-city').value.trim();
-  if (!name) errors.push(['#f-name', 'Name is required.']);
-  if (!city) errors.push(['#f-city', 'City is required.']);
-  const coords = { '#f-start-lat': ['lat', num('#f-start-lat')], '#f-start-lon': ['lon', num('#f-start-lon')],
-    '#f-end-lat': ['lat', num('#f-end-lat')], '#f-end-lon': ['lon', num('#f-end-lon')] };
-  for (const [id, [kind, v]] of Object.entries(coords)) {
-    const lim = kind === 'lat' ? 90 : 180;
-    if (!Number.isFinite(v) || Math.abs(v) > lim) errors.push([id, `${id.slice(3).replace('-', ' ')} must be a number within ±${lim}.`]);
+const pick = { candidates: [], selected: null };
+
+function mapsLink(c) { return `https://www.google.com/maps/search/?api=1&query=${c.lat},${c.lon}`; }
+
+function renderCandidates() {
+  const list = $('resolve-list');
+  list.replaceChildren(...pick.candidates.map((c, i) => {
+    const radio = el('input', { type: 'radio', name: 'cand', value: String(i) });
+    radio.checked = i === pick.selected;
+    radio.addEventListener('change', () => selectCandidate(i));
+    const road = c.road_name ? ` · road: ${c.road_name}` : '';
+    const dir = c.heading_deg == null ? 'road direction not found: enter it below'
+      : `road runs ${c.travel_compass} (${c.heading_deg}°)`;
+    const li = el('li', { 'data-selected': String(i === pick.selected) }, [
+      radio,
+      el('label', {}, [
+        el('b', { text: c.label }),
+        el('small', { text: `${c.lat}, ${c.lon} · ${c.provider}${road} · ${dir} · ` }, [
+          el('a', { href: mapsLink(c), target: '_blank', rel: 'noopener', text: 'check on map' })]),
+      ]),
+    ]);
+    li.addEventListener('click', (ev) => { if (ev.target.tagName !== 'A') { radio.checked = true; selectCandidate(i); } });
+    return li;
+  }));
+}
+
+function selectCandidate(i) {
+  pick.selected = i;
+  const c = pick.candidates[i];
+  const side = $('f-side');
+  const keep = side.value || 'left';
+  side.replaceChildren(
+    el('option', { value: 'left', text: c.left_side ? `${c.left_side} side (left of travel)` : 'left' }),
+    el('option', { value: 'right', text: c.right_side ? `${c.right_side} side (right of travel)` : 'right' }),
+  );
+  side.value = keep;
+  $('f-heading').value = c.heading_deg == null ? '' : String(c.heading_deg);
+  renderCandidates();
+  updatePreview();
+}
+
+function updatePreview() {
+  const c = pick.candidates[pick.selected];
+  const half = Number.parseFloat($('f-half').value);
+  const ok = !!c && Number.isFinite(half) && half >= 50 && half <= 100 && Number.isFinite(Number.parseFloat($('f-heading').value));
+  $('segment-preview').textContent = ok ? `Segment: ${half} m either way of this point, ${2 * half} m long.` : '';
+  $('create-btn').disabled = !ok;
+}
+
+async function onFind() {
+  const msg = $('create-msg');
+  const btn = $('find-btn');
+  const address = $('f-address').value.trim();
+  const city = $('f-city').value.trim();
+  if (!address || !city) { msg.className = 'wide error'; msg.textContent = 'Enter an address and a city.'; msg.hidden = false; return; }
+  btn.disabled = true; btn.textContent = 'Finding…'; msg.hidden = true;
+  try {
+    const data = await api.post('/api/admin/segments/resolve', { address, city }, { admin: true });
+    pick.candidates = data.candidates;
+    $('resolve-results').hidden = false;
+    selectCandidate(0);
+  } catch (err) {
+    if (handleAuthError(err)) return;
+    pick.candidates = []; pick.selected = null;
+    $('resolve-results').hidden = true;
+    $('create-btn').disabled = true;
+    msg.className = 'wide error'; msg.textContent = err.message; msg.hidden = false;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Find location';
   }
-  for (const input of f.querySelectorAll('input')) input.removeAttribute('aria-invalid');
-  for (const [id] of errors) f.querySelector(id).setAttribute('aria-invalid', 'true');
-  if (errors.length) return { errors: errors.map((e) => e[1]) };
-  return { body: { name, city, footpath_side: f.querySelector('#f-side').value,
-    start: { lat: coords['#f-start-lat'][1], lon: coords['#f-start-lon'][1] },
-    end: { lat: coords['#f-end-lat'][1], lon: coords['#f-end-lon'][1] } } };
 }
 
 async function onCreate(ev) {
   ev.preventDefault();
   const msg = $('create-msg');
   const btn = $('create-btn');
-  const { body, errors } = readForm();
-  if (errors) { msg.className = 'wide error'; msg.textContent = errors.join(' '); msg.hidden = false; return; }
+  const c = pick.candidates[pick.selected];
+  if (!c) { msg.className = 'wide error'; msg.textContent = 'Press "Find location" and pick a place first.'; msg.hidden = false; return; }
+  const body = {
+    name: $('f-address').value.trim(), city: $('f-city').value.trim(), lat: c.lat, lon: c.lon,
+    heading_deg: Number.parseFloat($('f-heading').value), half_length_m: Number.parseFloat($('f-half').value),
+    footpath_side: $('f-side').value,
+  };
   btn.disabled = true; btn.textContent = 'Creating…';
   msg.hidden = true;
   try {
-    const seg = await api.post('/api/admin/segments', body, { admin: true });
+    const seg = await api.post('/api/admin/segments/from-address', body, { admin: true });
     msg.className = 'wide notice ok';
     msg.textContent = `Created "${seg.name}" (${seg.slug}, ${Number(seg.length_m).toFixed(0)} m). Press Generate to build it.`;
     msg.hidden = false;
@@ -199,7 +254,8 @@ async function onCreate(ev) {
     msg.textContent = err.code === 'validation_error' ? `Not created: ${err.message}` : `Couldn't create the segment — ${err.message}`;
     msg.hidden = false;
   } finally {
-    btn.disabled = false; btn.textContent = 'Create segment';
+    btn.textContent = 'Create segment';
+    updatePreview();
   }
 }
 
@@ -221,6 +277,9 @@ gate({
     $('refresh').addEventListener('click', () => Promise.all([refreshStatus(), loadSegments(), loadRuns()]));
     $('segments-retry').addEventListener('click', loadSegments);
     $('create-form').addEventListener('submit', onCreate);
+    $('find-btn').addEventListener('click', onFind);
+    $('f-address').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); onFind(); } });
+    for (const id of ['f-half', 'f-heading']) $(id).addEventListener('input', updatePreview);
     await Promise.all([loadSegments(), loadRuns()]);
     schedulePoll();
   },

@@ -43,9 +43,10 @@ Open `http://localhost:8711/admin/` and enter the password (`HERO_ADMIN_PASSWORD
 
 1. **Login** - the status bar shows spend `$0.00 / $50.00` (`HERO_CLAUDE_BUDGET_USD`), run
    counts, Google request/cache counts and the model names.
-2. **Create segment** - the form is prefilled with the seed: *100 Feet Road, Indiranagar
-   (west footpath)*, Bengaluru, start `12.97400, 77.64050`, end `12.97467, 77.64058`.
-   Press **Create segment**. Length must be 30-150 m (422 otherwise).
+2. **Create segment** - type an address or place name (prefilled: *100 Feet Road, Indiranagar*, Bengaluru; pasting
+   `lat, lon` works too) and how many metres either way to cover (50-100). Press **Find location**, pick the right
+   candidate (use "check on map" if unsure), choose the footpath side, then **Create segment**. The segment is
+   centred on the address and is 100-200 m long.
 3. **Generate** - press **Generate** on the segment row. The run view
    (`/admin/run.html?id=<run_id>`) opens and polls every 1.5 s while the run is
    `queued|running`: steps with timings (fetch imagery -> detect layout -> detect

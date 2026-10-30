@@ -54,9 +54,21 @@ Also serves as login check (401 on bad password).
 ### `GET /api/admin/segments`
 All segments (any status) with `walkability`, `latest_run_id`, and `latest_run: {id, status, cost_usd, finished_at} | null`.
 
+### `POST /api/admin/segments/resolve`
+Body `{address, city}` (`address` may also be a pasted `"lat, lon"`). Geocodes with Google Geocoding (same key) plus
+Nominatim (OpenStreetMap) as a second opinion, de-duplicated within 60 m, max 3 each, then attaches the road direction of the
+nearest OSM road (Nominatim reverse geometry first, Overpass as fallback; `null` when neither answers).
+`data: {candidates: [{id, label, lat, lon, provider, heading_deg|null, heading_source|null, road_name|null, travel_compass?, left_side?, right_side?}], half_length_m: {min: 50, max: 100}}`.
+404 `not_found` when nothing matches. The admin never types coordinates.
+
+### `POST /api/admin/segments/from-address`
+Body `{name, city, lat, lon, heading_deg, half_length_m (50–100, default 50), footpath_side (default left)}` → 201 `data: segment`.
+The segment is centred on `lat, lon`, running `half_length_m` either way along `heading_deg` (normalised to 0–180°), so its
+length is `2 × half_length_m` (100–200 m). Slug from name + side (suffix `-2` on collision).
+
 ### `POST /api/admin/segments`
-Body `{name, city, start: {lat, lon}, end: {lat, lon}, footpath_side}` → 201 `data: segment`.
-Length outside 30–150 m → 422. Slug generated from name + side (suffix `-2` on collision).
+Body `{name, city, start: {lat, lon}, end: {lat, lon}, footpath_side}` → 201 `data: segment` (explicit endpoints; kept for scripts and tests).
+Length outside 30–200 m → 422. Slug generated from name + side (suffix `-2` on collision).
 
 ### `POST /api/admin/segments/{slug}/generate`
 Starts a pipeline run. 202 `data: {run_id, status: "queued"}`.

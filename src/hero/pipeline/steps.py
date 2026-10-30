@@ -4,10 +4,11 @@ which decides (per step) whether the run continues."""
 
 from __future__ import annotations
 
+import math
 import io
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable
+from typing import Callable
 
 from PIL import Image
 
@@ -122,7 +123,8 @@ def resolve_geometry(state: PipelineState, ctx: PipelineContext) -> str:
 
 def fetch_satellite(state: PipelineState, ctx: PipelineContext) -> str:
     mid = state.frame.midpoint()
-    zoom = ctx.settings.satellite_zoom
+    # A 1280 px tile at zoom 19 spans ~190 m: longer segments need the next zoom out to stay inside the image.
+    zoom = ctx.settings.satellite_zoom if state.frame.length_m <= 110 else ctx.settings.satellite_zoom - 1
     fetched = ctx.google.satellite_tile(mid.lat, mid.lon, zoom)
     with Image.open(fetched.path) as img:
         size = img.size
@@ -152,7 +154,8 @@ def verify_streetview(state: PipelineState, ctx: PipelineContext) -> str:
 
 
 def fetch_streetview(state: PipelineState, ctx: PipelineContext) -> str:
-    samples = max(1, ctx.settings.streetview_samples)
+    # ~one frame per 40 m so a 200 m segment is not described from three photos (Street View is ~$0.007/frame).
+    samples = min(7, max(1, ctx.settings.streetview_samples, math.ceil(state.frame.length_m / 40.0) + 1))
     length = state.frame.length_m
     positions = [0.0] if samples == 1 else [length * i / (samples - 1) for i in range(samples)]
     panos: list[PanoRef] = []

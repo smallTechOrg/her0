@@ -14,7 +14,7 @@ queried by field. Imagery lives on disk under the data dir and is referenced by 
 | slug | text unique | url id, e.g. `100-feet-road-indiranagar-w`. Derived: slugify(name minus any parenthetical) + `-` + compass letter of the footpath side (`n|e|s|w`, from heading + side); `-2`, `-3`… suffix on collision; admin create may pass an explicit `slug` |
 | name | text | "100 Feet Road, Indiranagar (west footpath)" |
 | city | text | "Bengaluru" |
-| start_lat, start_lon, end_lat, end_lon | float | ~50–100 m apart (validated 30–150 m) |
+| start_lat, start_lon, end_lat, end_lon | float | 100–200 m apart when made from an address (validated 30–200 m) |
 | footpath_side | enum `left|right` | side of the modelled footpath relative to travel direction start→end |
 | length_m, heading_deg | float | derived at creation |
 | status | enum `draft|generating|ready|failed` | `ready` iff `scene_json` present |

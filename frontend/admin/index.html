@@ -67,18 +67,26 @@
       <section class="card" aria-labelledby="create-title">
         <h2 id="create-title">New segment</h2>
         <form id="create-form" novalidate class="create-form">
-          <div class="field wide"><label for="f-name">Name</label><input id="f-name" name="name" required value="100 Feet Road, Indiranagar (west footpath)"></div>
+          <div class="field wide"><label for="f-address">Address or place name</label>
+            <input id="f-address" name="address" required autocomplete="off" placeholder="e.g. 100 Feet Road, Indiranagar" value="100 Feet Road, Indiranagar">
+            <small class="muted">No coordinates needed. You can also paste "lat, lon" from Google Maps.</small></div>
           <div class="field"><label for="f-city">City</label><input id="f-city" name="city" required value="Bengaluru"></div>
-          <div class="field"><label for="f-side">Footpath side</label>
-            <select id="f-side" name="footpath_side"><option value="left" selected>left</option><option value="right">right</option></select></div>
-          <div class="field"><label for="f-start-lat">Start lat</label><input id="f-start-lat" name="start_lat" inputmode="decimal" required value="12.97400"></div>
-          <div class="field"><label for="f-start-lon">Start lon</label><input id="f-start-lon" name="start_lon" inputmode="decimal" required value="77.64050"></div>
-          <div class="field"><label for="f-end-lat">End lat</label><input id="f-end-lat" name="end_lat" inputmode="decimal" required value="12.97467"></div>
-          <div class="field"><label for="f-end-lon">End lon</label><input id="f-end-lon" name="end_lon" inputmode="decimal" required value="77.64058"></div>
-          <p class="muted wide">Endpoints must be 30–150 m apart. Footpath side is relative to travel from start to end.</p>
+          <div class="field"><label for="f-half">Metres either way (50–100)</label>
+            <input id="f-half" name="half_length_m" type="number" inputmode="numeric" min="50" max="100" step="5" value="50" required></div>
+          <div class="field actions-inline"><label>&nbsp;</label><button type="button" id="find-btn">Find location</button></div>
+          <div id="resolve-results" class="wide" hidden>
+            <p class="muted" id="resolve-hint">Pick the right place, then choose which side the footpath is on.</p>
+            <ul id="resolve-list" class="resolve-list"></ul>
+            <div class="create-form-inner">
+              <div class="field"><label for="f-side">Footpath side</label><select id="f-side" name="footpath_side"></select></div>
+              <div class="field"><label for="f-heading">Road direction (° from north)</label>
+                <input id="f-heading" name="heading_deg" type="number" inputmode="decimal" min="0" max="359.9" step="0.1"></div>
+            </div>
+            <p class="muted" id="segment-preview"></p>
+          </div>
           <p id="create-msg" class="wide" role="alert" hidden></p>
           <div class="wide actions">
-            <button type="submit" id="create-btn">Create segment</button>
+            <button type="submit" id="create-btn" disabled>Create segment</button>
             <span class="stub-wrap">
               <button type="button" disabled data-stub="true" title="Coming in Phase 2: loads the Bengaluru seed file and creates every segment in it">Seed city — Phase 2</button>
               <small class="muted">Coming in Phase 2</small>

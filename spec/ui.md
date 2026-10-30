@@ -72,8 +72,11 @@ Error state if posting the run fails: results still show from local data with a 
   requests + cache hits, models in use, "Street View last check: available/unavailable".
 - Segment table: name, city, length, status chip, quality, latest run (status, cost, link),
   **Generate** button (disabled with reason when a run is in progress or budget is exhausted).
-- "New segment" form prefilled with the seed (name, city, start lat/lon, end lat/lon,
-  footpath side) → Create. Validation messages inline.
+- "New segment" form is address-based: address or place name (prefilled "100 Feet Road, Indiranagar"; a pasted
+  "lat, lon" also works), city, "metres either way" (50–100, default 50) → **Find location** lists geocoder candidates
+  (label, coordinates, provider, road direction, "check on map" link). Picking one fills the footpath-side choice
+  (named by compass side, e.g. "west side (left of travel)") and the road direction (editable; required when none was
+  found). **Create segment** is enabled only once a candidate and a valid half-length exist. No lat/lon fields.
 - **Seed city** button — Phase 1 stub ("Coming in Phase 2"). Phase 2: real.
 - Recent runs list (status, segment, cost, duration) → run view.
 

@@ -10,11 +10,13 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter, Depends, Query
+from pydantic import BaseModel, Field
 
 from hero.api.auth import require_admin
 from hero.api.envelope import ApiError, ok
 from hero.config import get_settings
 from hero.db import repo
+from hero.imagery import geocode as geocode_mod
 from hero.db.repo import InvalidInputError, NotFoundError, SegmentCreate
 from hero.pipeline import registry
 from hero.scene.schema import FootpathSide, LatLon
@@ -146,6 +148,46 @@ def list_segments():
 
 class SegmentBody(SegmentCreate):
     pass
+
+
+class ResolveBody(BaseModel):
+    address: str = Field(min_length=2, max_length=300)
+    city: str = Field(min_length=1, max_length=120)
+
+
+@router.post("/segments/resolve")
+def resolve_address(body: ResolveBody):
+    """Geocode an address (or pasted "lat, lon") into candidate centres, each with the road heading."""
+    settings = get_settings()
+    cands = geocode_mod.resolve(body.address.strip(), body.city.strip(),
+                                google_key=settings.google_maps_api_key.get_secret_value(),
+                                data_dir=settings.data_dir_abs, overpass_url=settings.overpass_url)
+    if not cands:
+        raise ApiError("not_found", "No match for that address. Try adding the area or city, or paste 'lat, lon'.")
+    return ok({"candidates": [c.to_dict() for c in cands],
+               "half_length_m": {"min": geocode_mod.MIN_HALF_LENGTH_M, "max": geocode_mod.MAX_HALF_LENGTH_M}})
+
+
+class FromAddressBody(BaseModel):
+    name: str = Field(min_length=1, max_length=200)
+    city: str = Field(min_length=1, max_length=120)
+    lat: float = Field(ge=-90, le=90)
+    lon: float = Field(ge=-180, le=180)
+    heading_deg: float = Field(ge=0, lt=360)
+    half_length_m: float = Field(default=50.0, ge=geocode_mod.MIN_HALF_LENGTH_M, le=geocode_mod.MAX_HALF_LENGTH_M)
+    footpath_side: FootpathSide = FootpathSide.left
+
+
+@router.post("/segments/from-address", status_code=201)
+def create_segment_from_address(body: FromAddressBody):
+    """Create a segment centred on the address: ``half_length_m`` either way along the road."""
+    (slat, slon), (elat, elon) = geocode_mod.segment_endpoints(body.lat, body.lon, body.heading_deg % 180.0, body.half_length_m)
+    try:
+        seg = repo.create_segment(SegmentCreate(name=body.name, city=body.city, start=LatLon(lat=slat, lon=slon),
+                                                end=LatLon(lat=elat, lon=elon), footpath_side=body.footpath_side))
+    except InvalidInputError as exc:
+        raise ApiError("validation_error", str(exc), {"field": "half_length_m"})
+    return ok(_segment(seg, None), status_code=201)
 
 
 @router.post("/segments", status_code=201)

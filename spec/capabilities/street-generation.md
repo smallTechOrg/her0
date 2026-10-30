@@ -47,7 +47,7 @@ scene, under a hard spend limit.
 - Low-confidence detections are kept and labelled, never dropped silently.
 - The run view exposes every intermediate artefact: imagery, annotated tile, pass A/B graphs,
   each iteration's preview + critique + patch, final scene JSON, per-call cost table.
-- Segment length must be 30–150 m; otherwise creation is refused with the reason.
+- Segment length must be 30–200 m (address-created segments are 100–200 m: 50–100 m either way of the address); otherwise creation is refused with the reason.
 
 ## Success Criteria
 - [ ] Generating the seed segment with real keys ends `succeeded`, `quality ∈ {full, satellite_only}`,
@@ -61,3 +61,5 @@ scene, under a hard spend limit.
 - [ ] When the Street View metadata returns non-OK for a point with no coverage, the run still succeeds with `quality = satellite_only` and a warning.
 - [ ] Each review iteration's critique is non-empty and its patch has ≤ 10 ops; iteration count ≤ cap.
 - [ ] A `pipeline.step` log line and an `llm.call` log line with `cost_usd` appear for the run.
+- Longer segments scale the imagery: the satellite tile drops one zoom level above 110 m, and Street View frames are
+  sampled about every 40 m (max 7), so a 200 m segment is described from more than three photos.

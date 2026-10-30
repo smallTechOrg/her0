@@ -34,7 +34,7 @@ from hero.scene.geo import LocalFrame
 from hero.scene.schema import FootpathSide, LatLon, Quality, RunStatus, Scene, SegmentStatus
 
 MIN_SEGMENT_LENGTH_M = 30.0
-MAX_SEGMENT_LENGTH_M = 150.0
+MAX_SEGMENT_LENGTH_M = 200.0
 MAX_RUN_DISTANCE_M = 5000.0
 TOKEN_SCORE = 50
 SUMMARY_MAX_CHARS = 500
@@ -412,7 +412,7 @@ def _get_run_row(session: Session, run_id: str) -> models.PipelineRun:
 
 
 def create_segment(data: SegmentCreate, *, session: Session | None = None) -> SegmentRecord:
-    """Create a ``draft`` segment; derives length/heading, validates 30-150 m, generates a unique slug."""
+    """Create a ``draft`` segment; derives length/heading, validates 30-200 m, generates a unique slug."""
     frame = LocalFrame.from_endpoints(data.start.lat, data.start.lon, data.end.lat, data.end.lon, data.footpath_side)
     if not MIN_SEGMENT_LENGTH_M <= frame.length_m <= MAX_SEGMENT_LENGTH_M:
         raise InvalidInputError(

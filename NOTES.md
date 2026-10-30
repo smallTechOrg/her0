@@ -55,3 +55,10 @@ Run start: 2026-10-29 ~19:00 local. Platform: Claude Code (VS Code extension), b
 
 - **Instant game-over on first hit felt broken.** On the real street the first hazard (a low branch over the footpath) ended the run seconds after start, so the player saw nothing of the street. Fix: 100 health, 20 per hit, 1.2 s invulnerability, one hit per object per loop. Lesson: the intake "reliability/difficulty" questions should ask how forgiving collisions are; for a civic-awareness game the street must be seen, so default to health, not one-hit death. Specs that mandate "run ends on first crash" should be questioned when the product goal is exploration.
 - Existing e2e tests encoded the instant-crash rule and had to be rewritten; keep game-rule constants in the spec so tests derive from them.
+
+## Address-based segment creation (2026-10-30)
+
+- **Intake missed that admins don't know lat/lon.** The Phase 1 create form asked for four coordinates. Lesson: for any "location" input, the intake/spec should ask "how will the person enter this?" and default to address/place search with candidate confirmation, never raw coordinates.
+- **Geocoders disagree.** Google resolved "100 Feet Road, Bengaluru" to Koramangala, Nominatim to Indiranagar. Showing candidates plus a "check on map" link beats picking one silently.
+- **Overpass was down again (3 mirrors timed out).** Nominatim `reverse` with `polygon_geojson=1` returns the road's LineString and is a far more dependable source for road direction; Overpass is now only a fallback with a short timeout. Lesson: don't make a user-facing step depend on Overpass.
+- **Sequential vs parallel:** Nominatim's policy is ~1 req/s, so candidate lookups are sequential and cached.

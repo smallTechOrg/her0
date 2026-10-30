@@ -69,14 +69,14 @@ def test_create_segment_honours_explicit_slug(test_db):
     assert repo.create_segment(data).slug == slug
 
 
-def test_create_segment_rejects_length_outside_30_to_150_m(test_db):
+def test_create_segment_rejects_length_outside_30_to_200_m(test_db):
     too_short = SegmentCreate(name="Short", city="X", start=START,
                               end=LatLon(lat=12.97410, lon=77.64050), footpath_side=FootpathSide.left)
     with pytest.raises(InvalidInputError, match="30"):
         repo.create_segment(too_short)
     too_long = SegmentCreate(name="Long", city="X", start=START,
-                             end=LatLon(lat=12.97600, lon=77.64050), footpath_side=FootpathSide.left)
-    with pytest.raises(InvalidInputError, match="150"):
+                             end=LatLon(lat=12.97800, lon=77.64050), footpath_side=FootpathSide.left)
+    with pytest.raises(InvalidInputError, match="200"):
         repo.create_segment(too_long)
 
 
