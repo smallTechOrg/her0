@@ -1,5 +1,5 @@
 // atmosphere.js: sky dome with a horizon band, distance fog matched to the horizon colour, soft light, the
-// ground-AO blob under the runner and the runner avatar. No textures except the 64 px AO gradient.
+// ground-AO blob under the runner (the avatar is runner_avatar.js). No textures except the 64 px AO gradient.
 import * as THREE from 'three';
 
 export const FOG_NEAR_M = 30;
@@ -76,15 +76,4 @@ export function createAoBlob() {
   mesh.renderOrder = 2;
   mesh.name = 'AoBlob';
   return mesh;
-}
-
-/** Runner avatar: a capsule. Group.userData.body is animated (slide squash) by main.js. The AO blob is separate. */
-export function createRunnerAvatar() {
-  const group = new THREE.Group();
-  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.32, 0.7, 2, 8),
-    new THREE.MeshLambertMaterial({ color: 0xffb100, flatShading: true }));
-  body.position.y = 0.67;
-  group.add(body);
-  group.userData.body = body;
-  return group;
 }

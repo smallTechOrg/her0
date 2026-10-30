@@ -13,7 +13,8 @@ import { createHud } from '/js/game/hud.js?v=4';
 import { renderResults } from '/js/game/results.js?v=4';
 import { createAbout } from '/js/game/about.js?v=4';
 import { fromManifest, fromLegacyScene, resultsScene } from '/js/game/play_data.js?v=1';
-import { createAtmosphere, createAoBlob, createRunnerAvatar } from '/js/game/atmosphere.js?v=1';
+import { createAtmosphere, createAoBlob } from '/js/game/atmosphere.js?v=1';
+import { createRunnerAvatar } from '/js/game/runner_avatar.js';
 import { createCameraRig } from '/js/game/camera_rig.js?v=1';
 import { createBudget } from '/js/game/budget.js?v=1';
 
@@ -129,9 +130,7 @@ function placeRunner() {
   const y = runner.jumpY();
   runnerMesh.position.set(w.x, y, w.z);
   runnerMesh.rotation.y = -w.theta;
-  const body = runnerMesh.userData.body;
-  body.scale.y = runner.sliding ? 0.5 : 1;
-  body.position.y = runner.sliding ? 0.4 : 0.67;
+  runnerMesh.userData.pose(runner);
   aoBlob.position.set(w.x, 0.04, w.z);
   aoBlob.rotation.set(-Math.PI / 2, 0, w.theta);
   const bob = reducedMotion || !runner || runner.crashed ? 0 : Math.sin(runner.elapsed * 9) * 0.04;

@@ -61,7 +61,9 @@ def start_server(port: int, scratch: Path) -> subprocess.Popen:
     for sub in ("crops", "geocode", "imagery", "osm", "previews", "uploads"):
         if (src / sub).exists():
             shutil.copytree(src / sub, data / sub)
-    subprocess.run(["sqlite3", str(src / "hero.db"), f".backup '{data / 'hero.db'}'"], check=True)
+    import sqlite3   # consistent online copy without needing the sqlite3 CLI
+    with sqlite3.connect(src / "hero.db") as a, sqlite3.connect(data / "hero.db") as b:
+        a.backup(b)
     env = {**os.environ, "HERO_DATA_DIR": str(data), "HERO_DATABASE_URL": f"sqlite:///{data / 'hero.db'}",
            "HERO_PORT": str(port), "HERO_HOST": "127.0.0.1"}
     subprocess.run(["uv", "run", "alembic", "upgrade", "head"], cwd=ROOT, env=env, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

@@ -2,10 +2,12 @@
 // Consumer rules (spec/portability.md): look nodes up BY NAME, tolerate missing optional nodes, never read
 // geometry from extras, never hard-code a number from gameplay.json.
 // The glb's MeshStandardMaterials are swapped for MeshLambertMaterial (same map / colour / vertex colours): the
-// game has no PBR need and Lambert is much cheaper on phones. mat_flat (furniture) gets the camera-clearance clip.
+// game has no PBR need and Lambert is much cheaper on phones. mat_flat (furniture) gets the camera-clearance clip;
+// the ground nodes get procedural surface detail (surface_detail.js).
 import * as THREE from 'three';
 import { GLTFLoader } from '/vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import { attachClearance } from '/js/game/camera_rig.js?v=1';
+import { applySurfaceDetail } from '/js/game/surface_detail.js';
 
 export const NODE_NAMES = [
   'Footpath', 'Footpath_Opposite', 'Road', 'Kerb', 'Ground_L', 'Ground_R', 'Frontage_L', 'Frontage_R', 'Frontage_Caps',
@@ -101,6 +103,7 @@ export async function loadStreet({ glbUrl, manifestUrl, onProgress }) {
   const shared = new Map();
   lambertise(scene, shared);
   scene.updateMatrixWorld(true);
+  const detailed = applySurfaceDetail(THREE, nodes);   // asphalt / slabs / earth / painted kerb at render time
   group.add(scene);
-  return { group, nodes, manifest, materials: [...shared.values()], bytes: buffer.byteLength, missing: NODE_NAMES.filter((n) => !nodes[n]) };
+  return { group, nodes, manifest, materials: [...shared.values(), ...detailed], bytes: buffer.byteLength, missing: NODE_NAMES.filter((n) => !nodes[n]) };
 }
