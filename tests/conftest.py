@@ -1,18 +1,29 @@
-"""Shared fixtures.
+"""Shared fixtures (Phase 2).
 
-- ``test_db`` (session): points HERO_DATABASE_URL at HERO_TEST_DATABASE_URL, runs
-  ``alembic upgrade head``, yields, then drops the file. Settings + engine are reset.
+- ``free_port`` (session): a free TCP port from ``socket.bind(("127.0.0.1", 0))``; never 8711 (dev server).
+- ``test_db`` (session): a PER-PROCESS SQLite file ``data/hero_test_<pid>.db`` derived from
+  ``HERO_TEST_DATABASE_URL`` (so concurrent slices / sessions never share a file), ``alembic upgrade head``
+  applied, ``HERO_DATABASE_URL`` pointed at it; the file (+ WAL/SHM) is removed at session end.
 - ``client``: FastAPI TestClient on a fresh app bound to the test DB.
-- ``live_server`` (session): uvicorn on port 8712 (subprocess) against the test DB; yields
-  the base URL. Used by tests/e2e (Playwright) and any HTTP-level live test.
-- ``generated_segment`` (session) - PLACEHOLDER SEAM: S2-pipeline implements it here
-  (runs ``run_pipeline`` once against the test DB and returns the ready segment's slug).
-  Until then the name is defined below and fails loudly if used.
+- ``live_server`` (session): uvicorn subprocess on ``free_port`` against the test DB; yields the base URL.
+  Used by tests/e2e (Playwright) and any HTTP-level live test.
+- ``seeded_fixture_segment`` (session): the recorded fixture street (``fixture-curved-street``) seeded into the
+  test DB by ``hero.tools.load_fixture_street.seed_fixture_segment`` - no spend. Yields the slug. Skips (with a
+  reason) until the S1d fixture directory exists.
+- ``seed_fixture`` (session): the seeding callable ``(slug=..., up_to_version=...) -> SegmentRecord`` for tests
+  that need a street at a specific version or under their own slug.
+
+``generated_segment`` (the real-generation fixture) moved to ``tests/live/conftest.py`` (slice S7); the
+integration and e2e tiers use ``seeded_fixture_segment``.
+
+``pytest -m live`` selects the tests that need the network and real keys (marker registered in pyproject.toml).
+The repo root is put on ``sys.path`` so ``from tests.fixtures.street_fixtures import ...`` works.
 """
 
 from __future__ import annotations
 
 import os
+import socket
 import subprocess
 import sys
 import time
@@ -26,7 +37,10 @@ from alembic.config import Config
 from hero.config import PROJECT_ROOT, get_settings, reset_settings
 from hero.db.session import reset_engine
 
-LIVE_PORT = 8712
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+DEV_PORT = 8711
 
 
 def _alembic_config() -> Config:
@@ -40,28 +54,61 @@ def _sqlite_path(url: str) -> Path | None:
     return Path(url[len(prefix):]) if url.startswith(prefix) else None
 
 
+def per_process_url(base_url: str, pid: int | None = None) -> str:
+    """``sqlite:///data/hero_test.db`` -> ``sqlite:///data/hero_test_<pid>.db`` (non-SQLite URLs unchanged)."""
+    pid = os.getpid() if pid is None else pid
+    prefix = "sqlite:///"
+    if not base_url.startswith(prefix):
+        return base_url
+    p = Path(base_url[len(prefix):])
+    return prefix + str(p.with_name(f"{p.stem}_{pid}{p.suffix}"))
+
+
+def find_free_port() -> int:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.bind(("127.0.0.1", 0))
+        port = sock.getsockname()[1]
+    assert port != DEV_PORT
+    return port
+
+
+def _unlink_db(path: Path | None) -> None:
+    if path is None:
+        return
+    for p in (path, path.with_name(path.name + "-wal"), path.with_name(path.name + "-shm")):
+        p.unlink(missing_ok=True)
+
+
+@pytest.fixture(scope="session")
+def free_port() -> int:
+    return find_free_port()
+
+
 @pytest.fixture(scope="session")
 def test_db() -> str:
     reset_settings()
     base = get_settings()
-    test_url = base.resolve_database_url(base.test_database_url)
+    test_url = base.resolve_database_url(per_process_url(base.test_database_url))
     assert test_url != base.resolve_database_url(), "HERO_TEST_DATABASE_URL must differ from HERO_DATABASE_URL"
     path = _sqlite_path(test_url)
+    _unlink_db(path)
     if path is not None:
-        for p in (path, path.with_name(path.name + "-wal"), path.with_name(path.name + "-shm")):
-            p.unlink(missing_ok=True)
         path.parent.mkdir(parents=True, exist_ok=True)
+    previous = os.environ.get("HERO_DATABASE_URL")
     os.environ["HERO_DATABASE_URL"] = test_url
     reset_settings()
     reset_engine()
     command.upgrade(_alembic_config(), "head")
-    yield test_url
-    reset_engine()
-    reset_settings()
-    os.environ.pop("HERO_DATABASE_URL", None)
-    if path is not None:
-        for p in (path, path.with_name(path.name + "-wal"), path.with_name(path.name + "-shm")):
-            p.unlink(missing_ok=True)
+    try:
+        yield test_url
+    finally:
+        reset_engine()
+        if previous is None:
+            os.environ.pop("HERO_DATABASE_URL", None)
+        else:
+            os.environ["HERO_DATABASE_URL"] = previous
+        reset_settings()
+        _unlink_db(path)
 
 
 @pytest.fixture()
@@ -75,14 +122,14 @@ def client(test_db):
 
 
 @pytest.fixture(scope="session")
-def live_server(test_db: str):
-    """uvicorn on 127.0.0.1:8712 against the test DB; yields the base URL."""
-    env = {**os.environ, "HERO_DATABASE_URL": test_db, "HERO_HOST": "127.0.0.1", "HERO_PORT": str(LIVE_PORT)}
+def live_server(test_db: str, free_port: int):
+    """uvicorn on 127.0.0.1:<free port> against the test DB; yields the base URL."""
+    env = {**os.environ, "HERO_DATABASE_URL": test_db, "HERO_HOST": "127.0.0.1", "HERO_PORT": str(free_port)}
     proc = subprocess.Popen(
-        [sys.executable, "-m", "uvicorn", "hero.main:app", "--host", "127.0.0.1", "--port", str(LIVE_PORT)],
+        [sys.executable, "-m", "uvicorn", "hero.main:app", "--host", "127.0.0.1", "--port", str(free_port)],
         cwd=str(PROJECT_ROOT), env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT,
     )
-    base_url = f"http://127.0.0.1:{LIVE_PORT}"
+    base_url = f"http://127.0.0.1:{free_port}"
     deadline = time.time() + 30
     try:
         while True:
@@ -106,27 +153,20 @@ def live_server(test_db: str):
 
 
 @pytest.fixture(scope="session")
-def generated_segment(test_db: str) -> str:
-    """ONE real generation per pytest session: creates the seed segment on the test DB, runs
-    ``run_pipeline`` against the real Anthropic + Google APIs (keys from .env) and returns the
-    ready segment's slug. Reused by the admin, public-API and e2e tests."""
-    from hero.api.admin import SEED_SEGMENT
-    from hero.db import repo
-    from hero.db.repo import SegmentCreate
-    from hero.pipeline.registry import create_queued_run
-    from hero.pipeline.runner import run_pipeline
-    from hero.scene.schema import RunStatus, SegmentStatus
+def seed_fixture(test_db: str):
+    """``seed(slug="fixture-curved-street", up_to_version=None) -> SegmentRecord``; skips until the fixture exists."""
+    from hero.tools.load_fixture_street import FixtureMissingError, seed_fixture_segment
 
-    reset_settings()
-    settings = get_settings()
-    for name in ("anthropic_api_key", "anthropic_workspace_id", "google_maps_api_key"):
-        assert getattr(settings, name).get_secret_value(), f"HERO_{name.upper()} missing in .env (gate is BLOCKED)"
-    segment = repo.get_segment("100-feet-road-indiranagar-w") or repo.create_segment(
-        SegmentCreate.model_validate({**SEED_SEGMENT, "slug": "100-feet-road-indiranagar-w"}))
-    run = create_queued_run(segment)
-    finished = run_pipeline(run.id)
-    assert finished.status is RunStatus.succeeded, (
-        f"seed generation ended {finished.status.value}: {finished.error} steps={[s.model_dump() for s in finished.steps]}")
-    ready = repo.require_segment(segment.slug)
-    assert ready.status is SegmentStatus.ready and ready.scene is not None
-    return ready.slug
+    def seed(slug: str = "fixture-curved-street", *, up_to_version: int | None = None):
+        try:
+            return seed_fixture_segment(slug, up_to_version=up_to_version)
+        except FixtureMissingError as exc:
+            pytest.skip(f"model fixture not generated yet (slice S1d): {exc}")
+
+    return seed
+
+
+@pytest.fixture(scope="session")
+def seeded_fixture_segment(seed_fixture) -> str:
+    """Slug of the fully seeded fixture street (head version = newest fixture version)."""
+    return seed_fixture().slug

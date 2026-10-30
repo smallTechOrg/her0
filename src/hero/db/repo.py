@@ -1,4 +1,6 @@
-"""Typed persistence API over the Phase 1 entities (spec/data.md).
+"""Typed persistence API over the Phase 1 entities (spec/data.md); scenes parse as Scene v1 | SceneV2.
+
+Phase-2 tables (observations, model versions, extractions, run reports) live in ``hero.db.model_repo``.
 
 Every function opens its own session via ``hero.db.session.get_session`` unless a
 ``session`` is passed (compose several writes in one transaction). Inputs and outputs are
@@ -30,6 +32,7 @@ from sqlalchemy.orm import Session
 
 from hero.db import models
 from hero.db.session import get_session
+from hero.model.scene_v2 import SceneV2, load_scene
 from hero.scene.geo import LocalFrame
 from hero.scene.schema import FootpathSide, LatLon, Quality, RunStatus, Scene, SegmentStatus
 
@@ -78,7 +81,7 @@ class SegmentRecord(_Record):
     heading_deg: float
     status: SegmentStatus
     quality: Quality | None
-    scene: Scene | None
+    scene: Scene | SceneV2 | None
     thumbnail_path: str | None
     latest_run_id: str | None
     best_score: int | None
@@ -112,7 +115,7 @@ class PipelineRunRecord(_Record):
     layout: dict[str, Any] | None
     obstacles: dict[str, Any] | None
     iterations: list[dict[str, Any]]
-    scene: Scene | None
+    scene: Scene | SceneV2 | None
     input_tokens: int
     output_tokens: int
     cost_usd: float
@@ -227,7 +230,7 @@ class SegmentUpdate(BaseModel):
 
     status: SegmentStatus | None = None
     quality: Quality | None = None
-    scene: Scene | None = None
+    scene: Scene | SceneV2 | None = None
     thumbnail_path: str | None = None
     latest_run_id: str | None = None
     best_score: int | None = None
@@ -241,7 +244,7 @@ class RunUpdate(BaseModel):
     layout: dict[str, Any] | None = None
     obstacles: dict[str, Any] | None = None
     iterations: list[dict[str, Any]] | None = None
-    scene: Scene | None = None
+    scene: Scene | SceneV2 | None = None
     input_tokens: int | None = None
     output_tokens: int | None = None
     cost_usd: float | None = None
@@ -264,6 +267,8 @@ class LlmCallCreate(BaseModel):
     error: str | None = None
     request_summary: str = ""
     response_summary: str = ""
+    # Phase 2: logged on ``llm.call`` by the caller; deliberately NOT a column (it belongs in request_summary).
+    structured_mode: str | None = None
 
 
 class GoogleRequestCreate(BaseModel):
@@ -312,8 +317,9 @@ def _naive(value: datetime | None) -> datetime | None:
     return value.astimezone(UTC).replace(tzinfo=None) if value.tzinfo is not None else value
 
 
-def _scene_or_none(data: dict | None) -> Scene | None:
-    return Scene.model_validate(data) if data else None
+def _scene_or_none(data: dict | None) -> Scene | SceneV2 | None:
+    """Parse a stored scene, discriminated by ``schema_version`` (1 -> Scene, 2 -> SceneV2)."""
+    return load_scene(data) if data else None
 
 
 def _segment_record(row: models.Segment) -> SegmentRecord:
@@ -477,7 +483,7 @@ def update_segment(segment_id: str, changes: SegmentUpdate, *, session: Session 
         return _segment_record(row)
 
 
-def finalize_segment_scene(segment_id: str, *, run_id: str, scene: Scene, quality: Quality,
+def finalize_segment_scene(segment_id: str, *, run_id: str, scene: Scene | SceneV2, quality: Quality,
                            thumbnail_path: str | None, session: Session | None = None) -> SegmentRecord:
     """Successful run: replace the scene, set ``ready``, quality, thumbnail and latest run."""
     return update_segment(

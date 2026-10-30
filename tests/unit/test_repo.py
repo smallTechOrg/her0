@@ -387,3 +387,44 @@ def test_best_score_survives_engine_reset(ready_segment):
     reset_engine()
 
     assert repo.get_segment(ready_segment.slug).best_score == 77
+
+
+# ---------------------------------------------------------------- Phase 2: scene v1 | v2 discrimination
+
+
+def test_segment_record_scene_parses_v1_and_v2_by_schema_version(segment):
+    from hero.model.scene_v2 import SceneV2
+    from hero.scene.schema import Scene
+    from tests.fixtures.street_fixtures import minimal_scene_v2_dict
+
+    run = repo.create_run(segment.id, inputs={})
+    v1 = repo.finalize_segment_scene(segment.id, run_id=run.id, scene=load_example_scene(), quality=Quality.full,
+                                     thumbnail_path=None)
+    assert isinstance(v1.scene, Scene)
+
+    v2_scene = SceneV2.model_validate(minimal_scene_v2_dict(100.0, slug=segment.slug))
+    v2 = repo.finalize_segment_scene(segment.id, run_id=run.id, scene=v2_scene, quality=Quality.full, thumbnail_path=None)
+    assert isinstance(v2.scene, SceneV2) and v2.scene.about.model_version == 1
+    reloaded = repo.get_segment(segment.slug)
+    assert isinstance(reloaded.scene, SceneV2) and reloaded.scene == v2_scene
+    assert [o.id for o in reloaded.scene.hazards()] == ["ent-0000000001"]
+
+
+def test_run_scene_and_game_run_validation_work_with_a_v2_scene(segment):
+    from hero.model.scene_v2 import SceneV2
+    from tests.fixtures.street_fixtures import minimal_scene_v2_dict
+
+    scene = SceneV2.model_validate(minimal_scene_v2_dict(100.0, slug=segment.slug))
+    run = repo.create_run(segment.id, inputs={})
+    assert isinstance(repo.update_run(run.id, RunUpdate(scene=scene)).scene, SceneV2)
+    repo.finalize_segment_scene(segment.id, run_id=run.id, scene=scene, quality=Quality.full, thumbnail_path=None)
+    result = repo.record_game_run(segment.slug, _game_run(90, distance_m=60.0, tokens=1, loops=0), "pytest")
+    assert result.is_new_best and result.best_score == 90   # token count validated from the v2 scene's tokens
+
+
+def test_llm_call_create_accepts_structured_mode_without_persisting_it(segment):
+    run = repo.create_run(segment.id, inputs={})
+    rec = repo.record_llm_call(LlmCallCreate(run_id=run.id, step="perceive_streetlevel", model="claude-sonnet-4-5",
+                                             input_tokens=10, output_tokens=5, cost_usd=0.01, latency_ms=3, ok=True,
+                                             structured_mode="auto_tool"))
+    assert rec.step == "perceive_streetlevel" and not hasattr(rec, "structured_mode")

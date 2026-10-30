@@ -13,11 +13,16 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-from pydantic import SecretStr, ValidationInfo, field_validator, model_validator
+from pydantic import Field, SecretStr, ValidationInfo, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from hero.llm.defaults import DEFAULT_REVIEW_MODEL, DEFAULT_VISION_MODEL
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 ENV_FILE = PROJECT_ROOT / ".env"
+
+STRUCTURED_MODES = ("auto", "forced_tool", "auto_tool", "json_text")
+HEADING_NAMES = ("forward", "back", "left", "right")
 
 REQUIRED_SECRETS = (
     "anthropic_api_key",
@@ -58,7 +63,7 @@ class Settings(BaseSettings):
     admin_password: SecretStr = SecretStr("")
 
     claude_budget_usd: float = 50.0
-    run_budget_usd: float = 2.00
+    run_budget_usd: float = 1.00  # Phase 2 lowers the Phase-1 default (2.00)
 
     host: str = "0.0.0.0"
     port: int = 8711
@@ -67,14 +72,24 @@ class Settings(BaseSettings):
     test_database_url: str = "sqlite:///data/hero_test.db"
     data_dir: Path = Path("data")
 
-    vision_model: str = "claude-sonnet-4-5"
-    review_model: str = "claude-sonnet-4-5"
-    max_review_iterations: int = 2
+    vision_model: str = DEFAULT_VISION_MODEL
+    review_model: str = DEFAULT_REVIEW_MODEL
+    max_review_iterations: int = 1  # Phase 2 default (Phase 1 was 2)
     llm_price_table: Path = Path("src/hero/llm/prices.json")
 
     overpass_url: str = "https://overpass-api.de/api/interpreter"
     satellite_zoom: int = 19
-    streetview_samples: int = 3
+    streetview_samples: int = 3  # Phase-1 legacy pipeline only
+
+    # ---- Phase 2 (imagery plan, perception, uploads)
+    sv_spacing_m: float = Field(default=10.0, ge=4.0, le=40.0)
+    sv_headings: str = "forward,back,left,right"  # comma list; see ``sv_headings_list``
+    sat_crop_zoom: int = Field(default=20, ge=18, le=21)
+    sat_crop_spacing_m: float = Field(default=40.0, gt=0)
+    max_images_per_run: int = Field(default=60, ge=1, le=200)
+    perception_batch_images: int = Field(default=8, ge=1, le=20)
+    structured_mode: str = "auto"
+    upload_max_mb: float = Field(default=10.0, gt=0)
 
     log_level: str = "INFO"
 
@@ -84,6 +99,24 @@ class Settings(BaseSettings):
         if info.field_name in REQUIRED_SECRETS:
             return value
         return strip_inline_comment(value)
+
+    @field_validator("structured_mode")
+    @classmethod
+    def _structured_mode_known(cls, value: str) -> str:
+        value = value.strip().lower()
+        if value not in STRUCTURED_MODES:
+            raise ValueError(f"HERO_STRUCTURED_MODE must be one of {', '.join(STRUCTURED_MODES)} (got {value!r})")
+        return value
+
+    @field_validator("sv_headings")
+    @classmethod
+    def _headings_known(cls, value: str) -> str:
+        names = [h.strip().lower() for h in value.split(",") if h.strip()]
+        bad = [h for h in names if h not in HEADING_NAMES]
+        if not names or bad:
+            raise ValueError(
+                f"HERO_SV_HEADINGS must be a comma list of {'|'.join(HEADING_NAMES)} (got {value!r})")
+        return ",".join(dict.fromkeys(names))
 
     @model_validator(mode="after")
     def _require_secrets(self) -> "Settings":
@@ -99,6 +132,15 @@ class Settings(BaseSettings):
                 + f". Fill them in {ENV_FILE} (see .env.example)."
             )
         return self
+
+    @property
+    def sv_headings_list(self) -> list[str]:
+        """``sv_headings`` as a de-duplicated list in the order given."""
+        return self.sv_headings.split(",")
+
+    @property
+    def upload_max_bytes(self) -> int:
+        return int(self.upload_max_mb * 1024 * 1024)
 
     @property
     def data_dir_abs(self) -> Path:

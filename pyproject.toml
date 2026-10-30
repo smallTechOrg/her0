@@ -38,3 +38,6 @@ packages = ["src/hero"]
 testpaths = ["tests"]
 timeout = 600
 addopts = "-p no:cacheprovider --tb=short"
+markers = [
+    "live: needs the network and real API keys (the Phase-2 live gate in tests/live)",
+]
