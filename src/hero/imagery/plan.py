@@ -183,6 +183,12 @@ def plan_images(ref: ReferenceLine, plan: ImageryPlan) -> tuple[list[PlannedImag
         bearing = ref.bearing_deg(s)
         for name in plan.headings:
             items.append(PlannedImage("streetview", name, s, lat, lon, (bearing + HEADING_OFFSET_DEG[name]) % 360.0, None))
+    # Hard clamp: with a tiny max_images even one station x all headings may not fit; never plan more than the cap.
+    sv_allowed = max(0, plan.max_images - n_crops - n_overview)
+    if len(items) > sv_allowed:
+        items = items[:sv_allowed]
+        trimmed = True
+        notes.append(f"Street View frames limited to {sv_allowed} to stay within max_images={plan.max_images}")
     if n_overview:
         mid = lo + span / 2.0
         lat, lon = ref.point_at(mid, 0.0)
@@ -195,7 +201,7 @@ def plan_images(ref: ReferenceLine, plan: ImageryPlan) -> tuple[list[PlannedImag
         lat, lon = ref.point_at(s, 0.0)
         items.append(PlannedImage("satellite_crop", None, s, lat, lon, None, plan.sat_crop_zoom))
 
-    counts = {"streetview": len(stations) * n_head, "satellite_crop": n_crops, "satellite_overview": n_overview}
+    counts = {"streetview": sum(1 for i in items if i.kind == "streetview"), "satellite_crop": n_crops, "satellite_overview": n_overview}
     est = counts["streetview"] * EST_COST_SV_USD + (n_crops + n_overview) * EST_COST_SAT_USD
     info = PlanInfo(trimmed=trimmed, effective_spacing_m=round(effective, 3), counts=counts,
                     requested_spacing_m=plan.sv_spacing_m, est_cost_usd=round(est, 4), notes=notes)

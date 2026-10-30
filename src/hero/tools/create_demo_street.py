@@ -1,6 +1,7 @@
 """Create the canonical Phase-2 demo street through the admin API and write the placement evidence image.
 
-    uv run python -m hero.tools.create_demo_street [--base-url http://127.0.0.1:PORT] [--out docs/evidence/placement.png]
+    uv run python -m hero.tools.create_demo_street [--db data/hero.db] [--base-url http://127.0.0.1:PORT]
+                                                   [--out docs/evidence/placement.png]
 
 Flow (the same calls the admin UI makes): resolve "100 Feet Road, Indiranagar" -> the candidate within 400 m of
 12.9711, 77.6413 that carries a road heading -> ``from-address`` (half length 50 m, west footpath) -> ``placement-preview``
@@ -8,13 +9,16 @@ Flow (the same calls the admin UI makes): resolve "100 Feet Road, Indiranagar" -
 Idempotent: an existing segment with the demo name is reused.
 
 By default the API runs in-process (``fastapi.testclient``) against the configured database, so no dev server is
-needed; ``--base-url`` talks to a running server instead. Costs: geocoding + one cached Static Maps tile; no Claude.
+needed; ``--db PATH`` points that in-process API at a specific SQLite file (migrated to head first; the file is
+created if missing), which is how the demo placement is persisted separately from the live gate; ``--base-url`` talks to a
+running server instead (``--db`` and ``--base-url`` are mutually exclusive). Costs: geocoding + one cached Static Maps tile; no Claude.
 Exit codes: 0 ok, 1 error, 2 the reference line is not verified against OSM road geometry.
 """
 
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -125,6 +129,26 @@ def create_demo_street(client: _Client, *, out_path: Path = DEFAULT_OUT, say=pri
     return DemoResult(slug=slug, created=created, image_path=out_path, placement=placement, problems=problems)
 
 
+def use_database(path: Path) -> str:
+    """Point this process at the SQLite file ``path`` (``HERO_DATABASE_URL``), then ``alembic upgrade head`` on it."""
+    from alembic import command
+    from alembic.config import Config
+
+    from hero.config import reset_settings
+    from hero.db.session import reset_engine
+
+    path = Path(path).expanduser().resolve()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    url = f"sqlite:///{path}"  # an absolute path gives four slashes, which resolve_database_url leaves alone
+    os.environ["HERO_DATABASE_URL"] = url
+    reset_settings()
+    reset_engine()
+    cfg = Config(str(PROJECT_ROOT / "alembic.ini"))
+    cfg.set_main_option("script_location", str(PROJECT_ROOT / "src" / "hero" / "db" / "migrations"))
+    command.upgrade(cfg, "head")
+    return url
+
+
 def _default_client() -> _Client:
     from fastapi.testclient import TestClient
 
@@ -138,9 +162,14 @@ def _default_client() -> _Client:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Create the canonical demo street and write the placement evidence image.")
     ap.add_argument("--base-url", default=None, help="talk to a running server instead of running the API in-process")
+    ap.add_argument("--db", type=Path, default=None, help="SQLite file to create the street in (in-process mode only)")
     ap.add_argument("--out", type=Path, default=DEFAULT_OUT)
     args = ap.parse_args(argv)
+    if args.db is not None and args.base_url:
+        ap.error("--db and --base-url are mutually exclusive")
     try:
+        if args.db is not None:
+            print(f"database: {use_database(args.db)}")
         if args.base_url:
             import httpx
 

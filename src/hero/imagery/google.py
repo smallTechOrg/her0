@@ -34,7 +34,10 @@ PANO_SIZE = "640x640"
 PANO_FOV = 90
 PANO_PITCH = 0
 PANO_RADIUS_M = 50
-EST_COST_USD = {"satellite": 0.002, "streetview": 0.007, "streetview_metadata": 0.0}
+EST_COST_USD = {"satellite": 0.002, "streetview": 0.007, "streetview_metadata": 0.0, "geocode": 0.005}
+# Google "status" values that are a stable answer about the place (safe to cache). Everything else
+# (REQUEST_DENIED, OVER_QUERY_LIMIT, UNKNOWN_ERROR, INVALID_REQUEST, ...) is transient/config and must never be cached.
+CACHEABLE_STATUSES = frozenset({"OK", "ZERO_RESULTS", "NOT_FOUND"})
 RETRY_STATUSES = {429, 500, 502, 503, 504}
 
 
@@ -64,6 +67,21 @@ class StreetViewMeta:
 
 def _fmt(value: float) -> str:
     return f"{value:.6f}"
+
+
+def satellite_params(lat: float, lon: float, zoom: int) -> dict[str, Any]:
+    """Canonical cache params of a satellite tile request (no key)."""
+    return {"center": f"{_fmt(lat)},{_fmt(lon)}", "zoom": zoom, "size": TILE_SIZE, "scale": TILE_SCALE,
+            "maptype": "satellite"}
+
+
+def metadata_params(lat: float, lon: float) -> dict[str, Any]:
+    return {"location": f"{_fmt(lat)},{_fmt(lon)}", "radius": PANO_RADIUS_M, "source": "outdoor"}
+
+
+def pano_frame_params(pano_id: str, heading_deg: float, *, fov: int = PANO_FOV, pitch: int = PANO_PITCH) -> dict[str, Any]:
+    return {"pano": pano_id, "heading": round(heading_deg, 1), "fov": fov, "pitch": pitch, "size": PANO_SIZE,
+            "return_error_code": "true"}
 
 
 class SpendCapExceeded(UpstreamError):
@@ -101,8 +119,7 @@ class GoogleImagery:
     # ------------------------------------------------------------ public
 
     def satellite_tile(self, lat: float, lon: float, zoom: int) -> FetchedImage:
-        params = {"center": f"{_fmt(lat)},{_fmt(lon)}", "zoom": zoom, "size": TILE_SIZE, "scale": TILE_SCALE,
-                  "maptype": "satellite"}
+        params = satellite_params(lat, lon, zoom)
         return self._cached_image("satellite", STATIC_MAPS_URL, params, suffix="png")
 
     def satellite_crop(self, lat: float, lon: float, zoom: int) -> FetchedImage:
@@ -110,7 +127,7 @@ class GoogleImagery:
         return self.satellite_tile(lat, lon, zoom)
 
     def streetview_metadata(self, lat: float, lon: float) -> StreetViewMeta:
-        params = {"location": f"{_fmt(lat)},{_fmt(lon)}", "radius": PANO_RADIUS_M, "source": "outdoor"}
+        params = metadata_params(lat, lon)
         entry = self._cache.get_or_fetch(
             "streetview_metadata", params,
             lambda: self._get(STREETVIEW_META_URL, params, kind="streetview_metadata", expect_image=False),
@@ -135,8 +152,7 @@ class GoogleImagery:
     def streetview_image_pano(self, pano_id: str, heading_deg: float, *, fov: int = PANO_FOV,
                               pitch: int = PANO_PITCH) -> FetchedImage:
         """Street View frame by panorama id (so two stations on the same pano are one cached request)."""
-        params = {"pano": pano_id, "heading": round(heading_deg, 1), "fov": fov, "pitch": pitch, "size": PANO_SIZE,
-                  "return_error_code": "true"}
+        params = pano_frame_params(pano_id, heading_deg, fov=fov, pitch=pitch)
         return self._cached_image("streetview", STREETVIEW_URL, params, suffix="jpg")
 
     # ------------------------------------------------------------ internals
@@ -144,7 +160,12 @@ class GoogleImagery:
     def _cached_image(self, kind: str, url: str, params: dict[str, Any], *, suffix: str) -> FetchedImage:
         def fetch() -> bytes:
             self._charge(kind)
-            return self._get(url, params, kind=kind, expect_image=True)
+            try:
+                return self._get(url, params, kind=kind, expect_image=True)
+            except UpstreamError:
+                # the request was sent (and may be billed): keep it in the ledger even though nothing is cached
+                self._record(kind, self._cache.key(kind, params), False, EST_COST_USD[kind], None, ok=False)
+                raise
 
         entry = self._cache.get_or_fetch(kind, params, fetch, suffix=suffix)
         self._count(kind, entry.key, entry.hit, entry.path)
@@ -153,16 +174,17 @@ class GoogleImagery:
                             cache_hit=entry.hit, params=dict(params))
 
     def _count(self, kind: str, cache_key: str, hit: bool, path) -> None:
-        rel = None
         try:
             rel = path.relative_to(self._data_dir).as_posix()
         except ValueError:
             rel = str(path)
+        self._record(kind, cache_key, hit, 0.0 if hit else EST_COST_USD[kind], rel)
+
+    def _record(self, kind: str, cache_key: str, hit: bool, cost: float, rel: str | None, *, ok: bool = True) -> None:
         repo.record_google_request(repo.GoogleRequestCreate(
-            run_id=self._run_id, kind=kind, cache_key=cache_key, cache_hit=hit,
-            est_cost_usd=0.0 if hit else EST_COST_USD[kind], path=rel,
+            run_id=self._run_id, kind=kind, cache_key=cache_key, cache_hit=hit, est_cost_usd=cost, path=rel,
         ))
-        log.info("google.request", run_id=self._run_id, kind=kind, cache_hit=hit)
+        log.info("google.request", run_id=self._run_id, kind=kind, cache_hit=hit, ok=ok)
 
     def _get(self, url: str, params: dict[str, Any], *, kind: str, expect_image: bool) -> bytes:
         query = {**params, "key": self._key}
@@ -203,4 +225,15 @@ class GoogleImagery:
                 f"Google {kind} returned a non-image response ({content_type or 'no content-type'}): "
                 f"{resp.text[:200]}", kind=kind, status=resp.status_code,
             )
+        if not expect_image and kind == "streetview_metadata":
+            try:
+                status = str(json.loads(resp.content).get("status", "UNKNOWN"))
+            except (ValueError, AttributeError):
+                status = "INVALID_RESPONSE"
+            if status not in CACHEABLE_STATUSES:
+                raise UpstreamError(
+                    f"Google Street View Static API metadata returned status {status}; not cached. "
+                    "Check HERO_GOOGLE_MAPS_API_KEY, quota and that the API is enabled.",
+                    kind=kind, status=resp.status_code, detail={"google_status": status},
+                )
         return resp.content

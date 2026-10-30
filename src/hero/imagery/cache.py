@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import uuid
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
@@ -56,6 +57,6 @@ class ImageryCache:
 
     @staticmethod
     def _atomic_write(path: Path, data: bytes) -> None:
-        tmp = path.with_name(path.name + f".tmp{os.getpid()}")
+        tmp = path.with_name(path.name + f".tmp{os.getpid()}.{uuid.uuid4().hex}")
         tmp.write_bytes(data)
         os.replace(tmp, path)

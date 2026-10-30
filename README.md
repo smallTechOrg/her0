@@ -86,7 +86,8 @@ the not-yet-fused ones to Claude (batched), merges the result into the model, an
 1. **Create the street from an address** (as above), then **Check placement** on the segment page
    (`/admin/segment.html?slug=<slug>`): the line must sit on the road. The canonical demo street is created with
    `uv run python -m hero.tools.create_demo_street` (100 Feet Road, Indiranagar, 50 m either way, west footpath) and writes the
-   placement image to `docs/evidence/placement.png`. The Phase-1 street stays as a *legacy* segment ("placement unverified").
+   placement image to `docs/evidence/placement.png`; `--db data/hero.db` creates it in a specific SQLite file (migrated to head first;
+   default: the configured `HERO_DATABASE_URL`), exit code 2 = the line is not verified against OSM road geometry. The Phase-1 street stays as a *legacy* segment ("placement unverified").
 2. **Generate** (segment page or run list). The imagery plan comes from the env defaults (below) and can be overridden per run on the
    segment page ("Add more imagery"): spacing, headings (`forward back left right`), close-up crop zoom, an `s` range.
    Costs per run: Street View ≈ $0.007/frame (cached frames are free), one Claude call per ≤ 8 frames, hard stop `HERO_RUN_BUDGET_USD`
@@ -209,6 +210,7 @@ uv run pytest tests/unit -q                                 # fast, no network
 uv run pytest tests/integration -q                          # recorded fixtures; Google/Nominatim live where marked; no Anthropic beyond 3 tiny probes
 uv run pytest tests/e2e -q                                  # Playwright, phone viewport, fixture street (no generation)
 uv run pytest tests/live -q -s 2>&1 | tee docs/evidence/phase2-gate.log   # Phase-2 live gate: exactly 2 real generations (+1 free no-op)
+# evidence written by tests/live: docs/evidence/{placement.png,phase2-gate.json,phase2-server.log}; REAL spend (about $0.3-0.6 per generation)
 ```
 
 The Phase-2 live gate performs **two real full generations** on the 100 m demo street (forward+back, then all four
@@ -250,7 +252,7 @@ src/hero/            backend package (entry: hero.main:serve -> `hero-serve`)
   prompts/           detect_layout.md, detect_obstacles.md, review_scene.md (legacy); perceive_overhead.md, perceive_streetlevel.md, critique_model.md
   tools/             check_keys.py, vendor_three.py
 frontend/            zero-build static app served at / (index, play/, admin/, js/, css/, vendor/)
-tests/               unit/ (no network), integration/ (real APIs), e2e/ (Playwright), conftest.py
+tests/               unit/ (no network), integration/ (real APIs), e2e/ (Playwright), live/ (Phase-2 gate, real spend), conftest.py
 data/                hero.db, hero_test.db, imagery/, osm/, previews/, crops/ (git-ignored)
 spec/                the contract: roadmap, architecture, api, data, ui, agent
 ```

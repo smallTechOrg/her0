@@ -366,3 +366,58 @@ def test_placement_preview_with_a_rejected_google_key_is_502_upstream_error(app_
     resp = app_client.post(f"/api/admin/segments/{seg.slug}/placement-preview", headers=auth)
     assert resp.status_code == 502 and resp.json()["error"]["code"] == "upstream_error"
     assert "HERO_GOOGLE_MAPS_API_KEY" in resp.json()["error"]["message"]
+
+
+# ---------------------------------------------------------------- QA hardening
+
+
+def test_chunked_upload_without_content_length_is_read_with_a_byte_limit(app_client, auth, monkeypatch):
+    from starlette.requests import Request
+
+    monkeypatch.setenv("HERO_UPLOAD_MAX_MB", "0.001")
+    reset_settings()
+    seg = new_segment("Upload chunked")
+
+    async def no_unbounded_read(self):  # the handler must stream, never slurp
+        raise AssertionError("request.body() must not be used")
+
+    monkeypatch.setattr(Request, "body", no_unbounded_read)
+    sent = []
+
+    def body():
+        for _ in range(200):  # 200 x 64 KB = 12.8 MB, far over the ~1 KB limit + form overhead
+            sent.append(1)
+            yield b"x" * 65536
+
+    resp = app_client.post(f"/api/admin/segments/{seg.slug}/observations/upload",
+                           headers={**auth, "Content-Type": "multipart/form-data; boundary=zz"}, content=body())
+    assert resp.status_code == 422 and resp.json()["error"]["code"] == "validation_error"
+    assert "HERO_UPLOAD_MAX_MB" in resp.json()["error"]["message"]
+    assert model_repo.get_observations(seg.id) == []
+
+
+def test_chunked_upload_within_the_limit_still_works(app_client, auth):
+    seg = new_segment("Upload chunked ok")
+    boundary = "zzboundary"
+    parts = b"".join(
+        f'--{boundary}\r\nContent-Disposition: form-data; name="{k}"\r\n\r\n{v}\r\n'.encode()
+        for k, v in {"lat": "12.97420", "lon": "77.64050", "heading_deg": "0"}.items())
+    parts += (f'--{boundary}\r\nContent-Disposition: form-data; name="file"; filename="p.jpg"\r\n'
+              "Content-Type: image/jpeg\r\n\r\n").encode() + jpeg_bytes() + f"\r\n--{boundary}--\r\n".encode()
+    resp = app_client.post(f"/api/admin/segments/{seg.slug}/observations/upload",
+                           headers={**auth, "Content-Type": f"multipart/form-data; boundary={boundary}"},
+                           content=(parts[i:i + 100] for i in range(0, len(parts), 100)))
+    assert resp.status_code == 201, resp.text
+
+
+def test_s_range_outside_the_line_is_422_on_add_imagery_and_generate(app_client, auth, monkeypatch):
+    from hero.pipeline import registry
+
+    monkeypatch.setattr(registry, "run_fusion", lambda run_id: pytest.fail("no run may start"))
+    seg = new_segment("S range outside")
+    bad = {"s_range": {"s_from": 500, "s_to": 600}}
+    resp = app_client.post(f"/api/admin/segments/{seg.slug}/imagery", headers=auth, json=bad)
+    assert resp.status_code == 422 and resp.json()["error"]["code"] == "validation_error"
+    assert "outside the line" in resp.json()["error"]["message"]
+    resp = app_client.post(f"/api/admin/segments/{seg.slug}/generate", headers=auth, json={"imagery": bad})
+    assert resp.status_code == 422 and resp.json()["error"]["code"] == "validation_error"

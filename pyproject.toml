@@ -39,5 +39,5 @@ testpaths = ["tests"]
 timeout = 600
 addopts = "-p no:cacheprovider --tb=short"
 markers = [
-    "live: needs the network and real API keys (the Phase-2 live gate in tests/live)",
+    "live: needs the network and real API keys; skipped unless `-m live` is given or the invocation path includes tests/live (see tests/conftest.py)",
 ]

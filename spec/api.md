@@ -79,7 +79,7 @@ Optional JSON body (an empty body = all defaults): `{imagery?: {sv_spacing_m?, h
 fields override the env defaults for this run only and are echoed in `run.inputs.imagery_plan`. Out-of-range values → 422 (`sv_spacing_m` 4–40, `max_images` 1–200, `sat_crop_zoom` 18–21, ≥ 1 heading, `run_budget_usd` 0.05–5).
 202 `data: {run_id, status: "queued", mode: "generate"}`.
 409 `run_in_progress` if any run is queued/running; 402 `budget_exhausted` if `remaining_usd <= 0`.
-Stale-run self-heal: a `queued|running` run with no live worker that is older than 15 min is marked `failed` on the next generate call before the 409 check.
+Stale-run self-heal: single-process: a queued/running row with no live worker thread is retired immediately (marked `failed` before the 409 check).
 A run with nothing new to fuse succeeds as a **no-op** (`version_created: false`, $0.00 Anthropic, 0 new Google requests when the plan is fully cached).
 
 ### `POST /api/admin/segments/{slug}/imagery`

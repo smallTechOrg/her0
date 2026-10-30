@@ -13,11 +13,13 @@ import json
 import math
 import re
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Callable
 
 import httpx
 
 from hero.imagery.cache import ImageryCache
+from hero.imagery.google import CACHEABLE_STATUSES
+from hero.llm.errors import UpstreamError
 from hero.scene.geo import METERS_PER_DEG_LAT, haversine_m
 
 USER_AGENT = "hero-street-runner/0.1 (+local; contact via repo)"
@@ -73,9 +75,16 @@ def _fetch_json(cache: ImageryCache, kind: str, params: dict[str, Any], do_fetch
     return json.loads(entry.path.read_text(encoding="utf-8"))
 
 
+GoogleRecorder = Callable[[str, bool, str | None], None]  # (cache_key, cache_hit, path)
+
+
 def geocode(query: str, city: str, *, google_key: str, cache: ImageryCache, http: httpx.Client | None = None,
-            limit: int = 3) -> list[Candidate]:
-    """Candidates for ``query`` (+ ``city`` when the query does not already contain it)."""
+            limit: int = 3, record_google: GoogleRecorder | None = None) -> list[Candidate]:
+    """Candidates for ``query`` (+ ``city`` when the query does not already contain it).
+
+    ``record_google`` is told about every Google Geocoding call (hit, miss or failed) for the ``google_requests`` ledger.
+    Only OK / ZERO_RESULTS / NOT_FOUND answers are cached; any other Google status raises ``UpstreamError`` inside the
+    Google branch (nothing cached) and the Nominatim candidates are still returned."""
     coords = parse_coords(query)
     if coords:
         return [Candidate(id="coords", label=f"{coords[0]:.6f}, {coords[1]:.6f}", lat=coords[0], lon=coords[1],
@@ -86,17 +95,31 @@ def geocode(query: str, city: str, *, google_key: str, cache: ImageryCache, http
     found: list[Candidate] = []
     try:
         if google_key:
+            gkey = cache.key("geocode_google", {"q": text})
+
             def g() -> bytes:
-                r = client.get(GOOGLE_GEOCODE_URL, params={"address": text, "key": google_key, "region": "in"})
-                r.raise_for_status()
+                try:
+                    r = client.get(GOOGLE_GEOCODE_URL, params={"address": text, "key": google_key, "region": "in"})
+                    r.raise_for_status()
+                    status = str(r.json().get("status", "UNKNOWN"))
+                    if status not in CACHEABLE_STATUSES:
+                        raise UpstreamError(f"Google Geocoding returned status {status}; not cached.",
+                                            kind="geocode", detail={"google_status": status})
+                except (httpx.HTTPError, ValueError, UpstreamError):
+                    if record_google is not None:
+                        record_google(gkey, False, None)  # a request was sent even though nothing is cached
+                    raise
                 return r.content
             try:
-                body = _fetch_json(cache, "geocode_google", {"q": text}, g)
+                entry = cache.get_or_fetch("geocode_google", {"q": text}, g, suffix="json")
+                if record_google is not None:
+                    record_google(entry.key, entry.hit, entry.path.name)
+                body = json.loads(entry.path.read_text(encoding="utf-8"))
                 for i, res in enumerate(body.get("results", [])[:limit]):
                     loc = res["geometry"]["location"]
                     found.append(Candidate(id=f"google-{i}", label=res.get("formatted_address", text),
                                            lat=loc["lat"], lon=loc["lng"], provider="google"))
-            except (httpx.HTTPError, ValueError, KeyError):
+            except (httpx.HTTPError, ValueError, KeyError, UpstreamError):
                 pass
         def n() -> bytes:
             r = client.get(NOMINATIM_URL, params={"q": text, "format": "json", "limit": limit})
@@ -222,11 +245,20 @@ def segment_endpoints(lat: float, lon: float, heading_deg: float, half_length_m:
     return ((lat - dn / METERS_PER_DEG_LAT, lon - de / per_lon), (lat + dn / METERS_PER_DEG_LAT, lon + de / per_lon))
 
 
+def _record_geocode(cache_key: str, cache_hit: bool, path: str | None) -> None:
+    from hero.db import repo
+    from hero.imagery.google import EST_COST_USD
+
+    repo.record_google_request(repo.GoogleRequestCreate(
+        run_id=None, kind="geocode", cache_key=cache_key, cache_hit=cache_hit,
+        est_cost_usd=0.0 if cache_hit else EST_COST_USD["geocode"], path=path))
+
+
 def resolve(query: str, city: str, *, google_key: str, data_dir, overpass_url: str, limit: int = 3) -> list[Candidate]:
     """Geocode and attach the road heading to every candidate."""
     geo_cache = ImageryCache(data_dir / "geocode")
     osm_cache = ImageryCache(data_dir / "osm")
-    cands = geocode(query, city, google_key=google_key, cache=geo_cache, limit=limit)
+    cands = geocode(query, city, google_key=google_key, cache=geo_cache, limit=limit, record_google=_record_geocode)
     for c in cands:  # sequential: Nominatim's usage policy allows ~1 request/second (results are cached)
         got = reverse_heading(c.lat, c.lon, cache=geo_cache)
         source = "nearest OSM road"

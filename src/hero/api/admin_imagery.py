@@ -146,7 +146,16 @@ async def upload_observation(slug: str, request: Request):
     declared = request.headers.get("content-length")
     if declared and declared.isdigit() and int(declared) > limit + MAX_FORM_OVERHEAD_BYTES:
         raise ApiError("validation_error", f"The photo is larger than HERO_UPLOAD_MAX_MB ({settings.upload_max_mb:g} MB).")
-    body = await request.body()
+    too_big = ApiError("validation_error", f"The photo is larger than HERO_UPLOAD_MAX_MB ({settings.upload_max_mb:g} MB).",
+                       {"field": "file", "max_bytes": limit})
+    chunks: list[bytes] = []
+    received = 0
+    async for chunk in request.stream():  # bounded read: a missing/lying Content-Length cannot buffer an unbounded body
+        received += len(chunk)
+        if received > limit + MAX_FORM_OVERHEAD_BYTES:
+            raise too_big
+        chunks.append(chunk)
+    body = b"".join(chunks)
     try:
         form = parse_multipart(request.headers.get("content-type", ""), body)
     except ValueError as exc:
@@ -245,6 +254,8 @@ def add_imagery(slug: str, raw: dict[str, Any] = Body(default_factory=dict)):
         raise ApiError("internal_error", "Acquire-only runs are not wired into the run registry yet.")
     try:
         run = registry.start_run(seg.slug, mode="acquire", plan_overrides=overrides)
+    except registry.PlanError as exc:
+        raise ApiError("validation_error", f"Invalid imagery plan: {exc}", {"field": "s_range"}) from None
     except registry.RunInProgress as exc:
         raise ApiError("run_in_progress", "A run is already in progress; wait for it to finish.",
                        {"run_id": exc.run.id, "status": exc.run.status.value}) from None

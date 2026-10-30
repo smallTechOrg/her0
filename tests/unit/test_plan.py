@@ -89,9 +89,17 @@ def test_overview_can_be_switched_off_and_single_heading_plan_is_small():
     assert info.counts["satellite_overview"] == 0
 
 
-def test_degenerate_max_images_below_one_full_station_is_left_to_the_acquire_hard_cap():
-    items, info = plan_images(straight_reference_line(100.0), plan(max_images=4))
-    assert info.trimmed and info.counts["streetview"] == 4  # headings are never dropped; acquire enforces the cap
+@pytest.mark.parametrize("max_images", [1, 2, 3, 4, 5, 7])
+@pytest.mark.parametrize("overview", [True, False])
+def test_degenerate_max_images_is_hard_clamped_and_info_matches_items(max_images, overview):
+    items, info = plan_images(straight_reference_line(100.0), plan(max_images=max_images, include_overview=overview))
+    assert len(items) <= max_images
+    assert info.paid_total == len(items) == sum(counts(items).values())
+    assert info.counts["streetview"] == counts(items).get("streetview", 0)
+    assert info.est_cost_usd == pytest.approx(round(info.counts["streetview"] * 0.007
+                                                    + (info.counts["satellite_crop"] + info.counts["satellite_overview"]) * 0.002, 4))
+    if max_images < 4 + (1 if overview else 0):
+        assert info.trimmed
 
 
 def test_tiny_max_images_reduces_crops_before_dropping_headings():

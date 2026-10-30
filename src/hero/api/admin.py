@@ -332,6 +332,8 @@ def generate(slug: str, raw: dict[str, Any] | None = Body(default=None)):
         run = registry.start_run(slug, mode="generate", plan_overrides=overrides, run_budget_usd=body.run_budget_usd)
     except NotFoundError as exc:
         raise ApiError("not_found", str(exc))
+    except registry.PlanError as exc:
+        raise ApiError("validation_error", f"Invalid imagery plan: {exc}", {"field": "imagery"})
     except registry.RunInProgress as exc:
         raise ApiError("run_in_progress", "A run is already in progress; wait for it to finish.",
                        {"run_id": exc.run.id, "status": exc.run.status.value})

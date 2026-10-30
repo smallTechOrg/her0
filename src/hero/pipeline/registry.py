@@ -7,7 +7,7 @@ when nothing remains of ``HERO_CLAUDE_BUDGET_USD``, and an ``acquire`` run (no C
 ``GoogleBudgetExceeded`` (a ``BudgetExhausted``) when the Google estimate for the NEW images exceeds the run cap.
 A queued/running row with no live worker thread in this process (left behind by a crashed/restarted server) can
 never progress in this single-process design, so ``active_run`` retires it immediately as ``failed`` and the admin is
-never locked out (stricter than the 15-minute rule of ``spec/api.md``, which is only needed across processes).
+never locked out (``spec/api.md``: single-process, retired immediately).
 """
 
 from __future__ import annotations
@@ -88,8 +88,11 @@ class GoogleBudgetExceeded(BudgetExhausted):
 MODES = ("generate", "acquire")
 
 
-def _google_estimate_usd(segment: repo.SegmentRecord, settings, plan_overrides: dict[str, Any] | None) -> float:
-    """Upper bound of the Google spend for the NEW images of a plan: the plan's cost minus what is already stored."""
+class PlanError(ValueError):
+    """The imagery plan cannot be applied to this segment (e.g. ``s_range`` lies outside the reference line)."""
+
+
+def _planned_items(segment: repo.SegmentRecord, settings, plan_overrides: dict[str, Any] | None):
     from hero.imagery.plan import default_plan, merge_plan, plan_images
     from hero.model.refline import ReferenceLine
 
@@ -98,13 +101,70 @@ def _google_estimate_usd(segment: repo.SegmentRecord, settings, plan_overrides: 
     plan = merge_plan(default_plan(settings), dict(plan_overrides or {}))
     ref = (ReferenceLine.from_model(rec.model.reference_line) if rec is not None and not rec.model.legacy else
            ReferenceLine.from_latlons([(segment.start.lat, segment.start.lon), (segment.end.lat, segment.end.lon)]))
-    _items, info = plan_images(ref, plan)
-    stored = model_repo.observation_counts(segment.id)
-    stored_paid = sum(n for kind, n in stored.items() if kind != "user_photo")
-    paid = sum(info.counts.values())
-    if paid <= 0:
-        return 0.0
-    return round(info.est_cost_usd * max(0, paid - stored_paid) / paid, 4)
+    try:
+        return plan_images(ref, plan)
+    except ValueError as exc:
+        raise PlanError(str(exc)) from exc
+
+
+def _google_estimate_usd(segment: repo.SegmentRecord, settings, plan_overrides: dict[str, Any] | None) -> float:
+    """Upper bound of the Google spend for the NEW images of a plan (not yet stored / cached)."""
+    items, _info = _planned_items(segment, settings, plan_overrides)
+    return _new_paid_cost(segment, settings, items)
+
+
+def _new_paid_cost(segment: repo.SegmentRecord, settings, items) -> float:
+    """Cost of the planned items whose frame is neither stored for the segment (``obs_key``) nor already in the
+    imagery cache. Satellite keys are exact; a Street View frame's key needs its pano id, read from the CACHED
+    (free) metadata - a station without cached metadata is assumed new (upper bound), a cached non-OK one costs 0."""
+    import json
+
+    from hero.imagery.acquire import quantize_heading
+    from hero.imagery.cache import ImageryCache
+    from hero.imagery.google import (EST_COST_USD, PANO_FOV, PANO_PITCH, metadata_params, pano_frame_params,
+                                     satellite_params)
+
+    cache = ImageryCache(settings.data_dir_abs / "imagery")
+    stored = {o.obs_key for o in model_repo.get_observations(segment.id, limit=100_000)}
+
+    def known(kind: str, params: dict, suffix: str) -> bool:
+        key = cache.key(kind, params)
+        if key in stored:
+            return True
+        path = cache.path_for(kind, params, suffix)
+        return path.exists() and path.stat().st_size > 0
+
+    seen: set[tuple[str, float]] = set()
+    total = 0.0
+    for item in items:
+        if item.kind in ("satellite_overview", "satellite_crop"):
+            sat = satellite_params(item.lat, item.lon, item.zoom or 19)
+            skey = (cache.key("satellite", sat), -1.0)
+            if skey in seen:
+                continue
+            seen.add(skey)
+            if not known("satellite", sat, "png"):
+                total += EST_COST_USD["satellite"]
+            continue
+        meta_path = cache.path_for("streetview_metadata", metadata_params(item.lat, item.lon), "meta.json")
+        pano_id = None
+        if meta_path.exists():
+            try:
+                body = json.loads(meta_path.read_text(encoding="utf-8"))
+            except ValueError:
+                body = {}
+            if body.get("status") != "OK" or not body.get("pano_id"):
+                continue  # no panorama here: free metadata call, no frame will be bought
+            pano_id = str(body["pano_id"])
+        heading = quantize_heading(item.heading_deg or 0.0)
+        if pano_id is not None:
+            if (pano_id, heading) in seen:
+                continue
+            seen.add((pano_id, heading))
+            if known("streetview", pano_frame_params(pano_id, heading, fov=PANO_FOV, pitch=PANO_PITCH), "jpg"):
+                continue
+        total += EST_COST_USD["streetview"]
+    return round(total, 4)
 
 
 def start_run(slug: str, *, mode: str = "generate", plan_overrides: dict[str, Any] | None = None,
@@ -117,6 +177,7 @@ def start_run(slug: str, *, mode: str = "generate", plan_overrides: dict[str, An
         prices = load_price_table(settings)
         prices.require(settings.vision_model)
         prices.require(settings.review_model)
+    _planned_items(segment, settings, plan_overrides)  # PlanError (a ValueError) before anything is queued
     with _lock:
         current = active_run()
         if current is not None:

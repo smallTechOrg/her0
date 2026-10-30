@@ -13,8 +13,12 @@
 - ``seed_fixture`` (session): the seeding callable ``(slug=..., up_to_version=...) -> SegmentRecord`` for tests
   that need a street at a specific version or under their own slug.
 
-``generated_segment`` (the real-generation fixture) moved to ``tests/live/conftest.py`` (slice S7); the
-integration and e2e tiers use ``seeded_fixture_segment``.
+``generated_segment`` (the real-generation fixture) lives in ``tests/live_gate.py``, registered below as a plugin so it
+resolves from tests/live AND from the live-marked tests under tests/e2e (it is only ever instantiated by a live test).
+The integration and e2e tiers otherwise use ``seeded_fixture_segment``.
+
+Live gating: ``live``-marked tests are SKIPPED unless ``-m`` selects live explicitly or an argument path is in tests/live
+(the gate runs ``uv run pytest tests/live -q -s``). So a bare ``uv run pytest`` never spends money.
 
 ``pytest -m live`` selects the tests that need the network and real keys (marker registered in pyproject.toml).
 The repo root is put on ``sys.path`` so ``from tests.fixtures.street_fixtures import ...`` works.
@@ -41,6 +45,32 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 DEV_PORT = 8711
+
+pytest_plugins = ["tests.live_gate"]
+
+
+def live_requested(config: pytest.Config) -> bool:
+    """True when the invocation explicitly asks for live tests: ``-m`` mentions ``live`` (and not only ``not live``)
+    or a command-line path points into ``tests/live``."""
+    expr = (config.getoption("markexpr", default="") or "").replace("not live", "")
+    if "live" in expr:
+        return True
+    live_dir = (PROJECT_ROOT / "tests" / "live").resolve()
+    for arg in config.invocation_params.args:
+        path = Path(str(arg).split("::", 1)[0])
+        path = (config.invocation_params.dir / path).resolve() if not path.is_absolute() else path.resolve()
+        if path == live_dir or live_dir in path.parents:
+            return True
+    return False
+
+
+def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
+    if live_requested(config):
+        return
+    skip = pytest.mark.skip(reason="live test (real network/keys): run `uv run pytest tests/live` or `-m live`")
+    for item in items:
+        if item.get_closest_marker("live"):
+            item.add_marker(skip)
 
 
 def _alembic_config() -> Config:

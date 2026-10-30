@@ -43,7 +43,7 @@ TOKEN_SCORE = 50
 SUMMARY_MAX_CHARS = 500
 CLIENT_MAX_CHARS = 120
 
-GoogleKind = Literal["satellite", "streetview", "streetview_metadata"]
+GoogleKind = Literal["satellite", "streetview", "streetview_metadata", "geocode"]
 ACTIVE_RUN_STATUSES = (RunStatus.queued.value, RunStatus.running.value)
 
 
