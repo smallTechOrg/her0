@@ -13,9 +13,10 @@ import { createHud } from '/js/game/hud.js?v=4';
 import { renderResults } from '/js/game/results.js?v=4';
 import { createAbout } from '/js/game/about.js?v=4';
 import { fromManifest, fromLegacyScene, resultsScene } from '/js/game/play_data.js?v=1';
-import { createAtmosphere, createAoBlob } from '/js/game/atmosphere.js?v=1';
+import { createAtmosphere, createAoBlob } from '/js/game/atmosphere.js?v=2';
 import { createRunnerAvatar } from '/js/game/runner_avatar.js';
-import { createCameraRig } from '/js/game/camera_rig.js?v=1';
+import { createCameraRig, CAM_BACK_M } from '/js/game/camera_rig.js?v=1';
+import { createPanoBackdrop, fetchPanoramas } from '/js/game/pano_backdrop.js?v=1';
 import { createBudget } from '/js/game/budget.js?v=1';
 
 const MAX_DT_S = 0.1;
@@ -35,6 +36,7 @@ const state = {
 };
 let scene = null, playData = null, manifest = null, runner = null, view = null, layer = null, gameplay = null;
 let source = null;   // 'glb' | 'legacy'
+let pano = null;     // the Street View backdrop (glb streets with panoramas), see pano_backdrop.js
 
 // ----------------------------------------------------------------- renderer + atmosphere
 
@@ -76,6 +78,8 @@ window.__hero = {
     return { sprites, lights, meshes, fog: three.fog ? { near: three.fog.near, far: three.fog.far, color: three.fog.color.getHex() } : null,
       camera: { x: p.x, y: p.y, z: p.z, near: camera.near, far: camera.far, fov: camera.fov } };
   },
+  /** The Street View backdrop: null when the street has no panoramas (baked textures are shown instead). */
+  get pano() { return pano ? pano.state : null; },
   get dynamic() {
     if (!runner) return null;
     return { run_number: runner.runNumber ?? null, seed: runner.seed ?? null, obstacles: runner.activeObstacles(), rules: gameplay ? gameplay.spawner : null };
@@ -136,6 +140,7 @@ function placeRunner() {
   const bob = reducedMotion || !runner || runner.crashed ? 0 : Math.sin(runner.elapsed * 9) * 0.04;
   rig.update(sw, lat, bob);
   atmosphere.follow(camera);
+  if (pano) pano.update(sw, camera);
   if (scene.schema_version !== 1) updateCorridorState(sw, lat, w);   // v1 scenes have no corridor debug fields
 }
 
@@ -330,7 +335,15 @@ async function buildGlbWorld(sc) {
   const pd = fromManifest(loaded.manifest);
   const sv = createStreetView(loaded, pd.track, pd.tokens);
   budget.perf.glb_bytes = loaded.bytes;
-  return { playData: pd, manifest: loaded.manifest, view: sv, gp: loaded.manifest.gameplay };
+  // the real street: Street View panoramas projected onto the geometry (when the export stitched some)
+  let backdrop = null;
+  const pm = await fetchPanoramas(slug);
+  if (pm) {
+    $('loading-progress').textContent = 'Loading the street photos…';
+    backdrop = createPanoBackdrop(pm, pd.track, sv, { camBackM: CAM_BACK_M });
+    if (!(await backdrop.prime(0))) { backdrop.dispose(); backdrop = null; }
+  }
+  return { playData: pd, manifest: loaded.manifest, view: sv, gp: loaded.manifest.gameplay, pano: backdrop };
 }
 
 async function buildLegacyWorld(sc) {
@@ -383,9 +396,13 @@ async function boot() {
   }
   // Commit: nothing below can fail for data reasons, and nothing above touched the page's scene graph.
   if (view) three.remove(view.root);
+  if (pano) { three.remove(pano.dome); pano.dispose(); }
   scene = sc; playData = built.playData; manifest = built.manifest; view = built.view; gameplay = built.gp;
+  pano = built.pano || null;
   source = glb ? 'glb' : 'legacy';
   three.add(view.root);
+  if (pano) three.add(pano.dome);
+  atmosphere.setPhoto(!!pano);
 
   if (!runnerMesh) {
     runnerMesh = createRunnerAvatar();

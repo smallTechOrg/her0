@@ -4,6 +4,8 @@ import * as THREE from 'three';
 
 export const FOG_NEAR_M = 30;
 export const FOG_FAR_M = 90;
+export const PHOTO_FOG_NEAR_M = 110;   // with a Street View backdrop the photo carries its own haze: fog nearly off
+export const PHOTO_FOG_FAR_M = 300;
 export const SKY_ZENITH = 0x5d93cf;
 export const SKY_MID = 0x9cc3e6;
 export const SKY_HORIZON = 0xdde8ef;
@@ -64,6 +66,12 @@ export function createAtmosphere(scene) {
   return {
     sky, hemi, sun,
     follow(camera) { sky.position.copy(camera.position); },
+    /** Photo mode: the Street View dome replaces the gradient sky and the fog backs off (the photo has its own haze). */
+    setPhoto(on) {
+      sky.visible = !on;
+      scene.fog.near = on ? PHOTO_FOG_NEAR_M : FOG_NEAR_M;
+      scene.fog.far = on ? PHOTO_FOG_FAR_M : FOG_FAR_M;
+    },
   };
 }
 

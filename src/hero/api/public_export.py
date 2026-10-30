@@ -1,6 +1,6 @@
 """Public export endpoints (spec/api.md -> *Phase 2.1 r2 - export endpoints*).
 
-``GET /api/segments/{slug}/model.glb | manifest.json | street.xodr`` and ``GET /api/gameplay.json``. These are files
+``GET /api/segments/{slug}/model.glb | manifest.json | street.xodr | panoramas.json`` and ``GET /api/gameplay.json``. These are files
 (not enveloped): content type, strong ``ETag`` (first 32 hex of the file's sha256), ``If-None-Match`` -> 304,
 ``?v=<sha8>`` -> immutable one-year cache, otherwise ``max-age=60, must-revalidate``. CORS-safe: any origin may read
 them (``Access-Control-Allow-Origin: *`` with ETag exposed; ``OPTIONS`` preflight answered). 404 envelope when the
@@ -120,6 +120,25 @@ def get_gameplay(request: Request) -> Response:
 
 
 
+NO_PANORAMAS_MESSAGE = "no panoramas yet: run Regenerate or recompile after fetching Street View imagery"
+
+
+@router.api_route("/segments/{slug}/panoramas.json", methods=["GET", "HEAD"], include_in_schema=False)
+def get_panoramas(slug: str, request: Request) -> Response:
+    """The stitched Street View panoramas of a ready street (``hero-panoramas/1``; built by the export step)."""
+    from hero.imagery.panorama import MANIFEST_NAME, panoramas_dir
+
+    seg = repo.get_segment(slug) if store.valid_slug(slug) else None
+    if seg is None or seg.status != "ready":
+        raise ApiError("not_found", f"No street {slug!r}.")
+    path = panoramas_dir(data_dir(), slug) / MANIFEST_NAME
+    if not path.is_file():
+        raise ApiError("not_found", NO_PANORAMAS_MESSAGE)
+    return file_response(request, path.read_bytes(), content_type="application/json", cache_control=REVALIDATE,
+                         log_fields={"slug": slug, "file": "panoramas.json", "sha8": None})
+
+
 for _name in FILES:
     _make_file_route(_name)
+router.add_api_route("/segments/{slug}/panoramas.json", preflight, methods=["OPTIONS"], include_in_schema=False)
 router.add_api_route("/gameplay.json", preflight, methods=["OPTIONS"], include_in_schema=False)

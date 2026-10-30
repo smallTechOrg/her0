@@ -243,6 +243,25 @@ def _bake(tc: Toolchain, model: CanonicalModel, observations: Mapping[str, Obser
     return refs
 
 
+def _build_panoramas(model: CanonicalModel, observations: Mapping[str, Observation], data_dir: Path,
+                     warnings: list[str]) -> None:
+    """Stitch the Street View panoramas the play page walks through (never blocks the street)."""
+    from hero.imagery.panorama import build_panoramas
+    from hero.model.refline import ReferenceLine
+
+    started = time.perf_counter()
+    try:
+        ref = ReferenceLine.from_model(model.reference_line)
+        manifest = build_panoramas(model.segment_slug, model.reference_line.length_s, list(observations.values()),
+                                   data_dir, ref)
+    except Exception as exc:  # noqa: BLE001 - the game falls back to the baked textures
+        warnings.append(f"panoramas unavailable: the stitch failed ({str(exc)[:120]})")
+        log.warning("panorama.build_failed", slug=model.segment_slug, error=repr(exc)[:200])
+        return
+    log.info("panorama.built", slug=model.segment_slug, count=len(manifest["panoramas"]),
+             latency_ms=round((time.perf_counter() - started) * 1000, 1))
+
+
 def assets_for(slug: str, rec: Any) -> Assets:
     """``scene.assets`` from an ``ExportRecord`` (URLs carry ``?v=<sha8>``, so a changed bundle busts the cache)."""
     v = f"?v={rec.sha8}"
@@ -282,6 +301,7 @@ def derive_scene(model: CanonicalModel, *, observations: Mapping[str, Observatio
                             observations=observations, data_dir=data_dir)
             export_json = rec.to_json()
             scene = scene.model_copy(update={"assets": assets_for(model.segment_slug, rec)})
+            _build_panoramas(model, observations, data_dir, warnings)
     gaps_json = gaps.model_dump(mode="json") if gaps is not None else None
     interpolated = union_m([(i.s_from, i.s_to) for i in gaps.interpolations]) if gaps is not None else 0.0
     dynamic = scene.dynamic_context.excluded_count if isinstance(scene, SceneV3) else 0

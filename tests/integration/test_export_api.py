@@ -230,3 +230,27 @@ def test_admin_zip_404_for_unknown_segment(env):
     client, _ = env
     r = client.get("/api/admin/segments/nope-nope/export.zip", headers=_admin())
     assert r.status_code == 404
+
+
+# ------------------------------------------------------------------ panoramas (the Street View backdrop)
+
+
+def test_panoramas_json_is_served_once_the_export_stitched_it(exported):
+    client, data_dir, slug, _ = exported
+    r = client.get(f"/api/segments/{slug}/panoramas.json")
+    assert r.status_code == 404 and "Regenerate" in r.json()["error"]["message"]
+    folder = data_dir / "panoramas" / slug
+    folder.mkdir(parents=True)
+    (folder / "abc_deadbeef.jpg").write_bytes(b"\xff\xd8\xff\xd9")
+    manifest = {"schema": "hero-panoramas/1", "slug": slug, "key": "deadbeef", "length_s": 100.0, "camera_height_m": 2.5,
+                "bearing0_deg": 90.0, "panoramas": [{"pano_id": "abc", "s": 5.0, "t": 3.0, "lat": 12.9, "lon": 77.6,
+                                                     "frames": 4, "capture_date": "2026-04",
+                                                     "url": f"/media/panoramas/{slug}/abc_deadbeef.jpg", "width": 2048, "height": 1024}]}
+    (folder / "panoramas.json").write_text(json.dumps(manifest))
+    r = client.get(f"/api/segments/{slug}/panoramas.json")
+    assert r.status_code == 200 and r.headers["content-type"].startswith("application/json")
+    assert r.json() == manifest and r.headers["cache-control"] == "public, max-age=60, must-revalidate"
+    assert r.headers["access-control-allow-origin"] == "*"
+    img = client.get(manifest["panoramas"][0]["url"])
+    assert img.status_code == 200 and img.content == b"\xff\xd8\xff\xd9"
+    assert client.get("/api/segments/no-such-street/panoramas.json").status_code == 404
