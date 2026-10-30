@@ -1,4 +1,4 @@
-"""Dynamic obstacle layer: instanced low-poly models in a real WebGL render, draw-call / triangle budget, placement,
+"""Dynamic obstacle layer: instanced detailed models in a real WebGL render, draw-call / triangle budget, placement,
 reset / dispose, and the hit object shape (``dynamic: true``)."""
 
 from __future__ import annotations
@@ -56,8 +56,10 @@ def test_layer_budget_draw_calls_and_triangles_in_a_real_render(hpage):  # noqa:
       return { maxCalls, maxTris, maxVisible, kinds: [...kinds].sort(), instanced, children: layer.group.children.length, isGroup: layer.group.isGroup };
     }""")
     assert res["isGroup"] and res["children"] <= 8 and res["instanced"] == res["children"]
-    assert 1 <= res["maxCalls"] <= 8, res
-    assert 0 < res["maxTris"] <= 6000, res
+    # one InstancedMesh per type, up to 3 material groups each (matte, gloss, contact shadow)
+    assert 1 <= res["maxCalls"] <= 3 * res["children"], res
+    # detailed models (~0.4-4.6k triangles each); the whole frame stays inside test_render_budget's 60k
+    assert 0 < res["maxTris"] <= 20000, res
     assert res["maxVisible"] >= 3 and len(res["kinds"]) >= 5, f"render must really show a mix of types: {res}"
     assert not hpage.hero_errors
 

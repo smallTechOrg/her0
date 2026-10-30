@@ -24,7 +24,7 @@ from hero.llm.models import ModelChoiceError
 from hero.imagery.plan import Heading, SRange, default_plan, merge_plan
 from hero.model.types import ObservationKind
 from hero.pipeline import registry
-from hero.scene.schema import FootpathSide, LatLon
+from hero.scene.schema import FootpathSide, LatLon, SegmentStatus
 
 router = APIRouter(prefix="/api/admin", tags=["admin"], dependencies=[Depends(require_admin)])
 
@@ -231,7 +231,7 @@ def status():
 
 @router.get("/segments")
 def list_segments():
-    segments = repo.list_segments()
+    segments = [s for s in repo.list_segments() if s.status is not SegmentStatus.archived]
     return ok([_segment(seg, repo.latest_run_for_segment(seg.id)) for seg in segments])
 
 

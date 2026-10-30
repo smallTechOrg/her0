@@ -158,6 +158,8 @@ def recompile_slugs(*, include_legacy: bool = False) -> list[str]:
     (scene only / legacy v0) only with ``include_legacy``."""
     out: list[str] = []
     for seg in repo.list_segments():
+        if seg.status == "archived":
+            continue
         if model_repo.head_version(seg.id) is None and seg.scene is None:
             continue
         if include_legacy or not is_legacy(seg):

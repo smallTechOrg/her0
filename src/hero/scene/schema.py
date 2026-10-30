@@ -39,6 +39,7 @@ class SegmentStatus(StrEnum):
     generating = "generating"
     ready = "ready"
     failed = "failed"
+    archived = "archived"   # hidden from the gallery, admin list and recompile; rows kept (spend history stays)
 
 
 class RunStatus(StrEnum):
