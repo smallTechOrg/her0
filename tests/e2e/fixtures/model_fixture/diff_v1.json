@@ -1,0 +1,141 @@
+{
+ "from_version": 0,
+ "to_version": 1,
+ "is_empty": false,
+ "entities": {
+  "added": [
+   {
+    "id": "ent-4616aa5970",
+    "type": "parked_vehicle",
+    "s": 11.95,
+    "t": 5.55,
+    "confidence": 0.871,
+    "description": "Yellow auto-rickshaw parked half on the footpath."
+   },
+   {
+    "id": "ent-49a38189ef",
+    "type": "tree",
+    "s": 37.91,
+    "t": 6.09,
+    "confidence": 0.793,
+    "description": "Tree with low branches hanging over the footpath."
+   },
+   {
+    "id": "ent-7ab2051f05",
+    "type": "pole",
+    "s": 26.21,
+    "t": 6.94,
+    "confidence": 0.704,
+    "description": "Concrete utility pole at the outer edge of the footpath."
+   },
+   {
+    "id": "ent-99e751ab0b",
+    "type": "pothole",
+    "s": 47.0,
+    "t": 1.18,
+    "confidence": 0.709,
+    "description": "Pothole in the carriageway near the centre line."
+   },
+   {
+    "id": "ent-9a00ae6937",
+    "type": "signboard",
+    "s": 58.03,
+    "t": 6.22,
+    "confidence": 0.676,
+    "description": "Shop signboard standing on the footpath."
+   },
+   {
+    "id": "ent-9db1e6c792",
+    "type": "drain",
+    "s": 66.02,
+    "t": 5.78,
+    "confidence": 0.657,
+    "description": "Open drain where the footpath slab is broken."
+   },
+   {
+    "id": "ent-fcb7f6b1ce",
+    "type": "debris",
+    "s": 78.07,
+    "t": 5.53,
+    "confidence": 0.724,
+    "description": "Rubble heap where the footpath is missing."
+   }
+  ],
+  "removed": [],
+  "revived": [],
+  "changed": [],
+  "unchanged": 0
+ },
+ "profile": {
+  "changed_intervals": [
+   {
+    "s_from": 0.0,
+    "s_to": 30.0,
+    "what": "footpath_state unknown → intact; carriageway (centre) material unknown → asphalt; carriageway (centre) condition unknown → fair; footpath (left) edge moved 0.5 m; footpath (left) material unknown → paver; footpath (left) condition unknown → good"
+   },
+   {
+    "s_from": 30.0,
+    "s_to": 40.0,
+    "what": "footpath_state unknown → intact; carriageway (centre) material unknown → asphalt; carriageway (centre) condition unknown → fair; footpath (left) edge moved 0.3 m; footpath (left) material unknown → paver; footpath (left) condition unknown → good"
+   },
+   {
+    "s_from": 40.0,
+    "s_to": 50.0,
+    "what": "footpath_state unknown → intact; carriageway (centre) material unknown → asphalt; carriageway (centre) condition unknown → fair; footpath (left) edge moved 0.3 m; footpath (left) material unknown → paver; footpath (left) condition unknown → fair"
+   },
+   {
+    "s_from": 50.0,
+    "s_to": 60.0,
+    "what": "footpath_state unknown → intact; carriageway (centre) material unknown → asphalt; carriageway (centre) condition unknown → fair; footpath (left) edge moved 0.6 m; footpath (left) material unknown → paver; footpath (left) condition unknown → fair"
+   },
+   {
+    "s_from": 60.0,
+    "s_to": 72.5,
+    "what": "footpath_state unknown → broken; carriageway (centre) material unknown → asphalt; carriageway (centre) condition unknown → fair; footpath (left) edge moved 0.8 m; footpath (left) material unknown → paver; footpath (left) condition unknown → fair"
+   },
+   {
+    "s_from": 72.5,
+    "s_to": 85.0,
+    "what": "footpath_state unknown → missing; carriageway (centre) material unknown → asphalt; carriageway (centre) condition unknown → fair; footpath (left) removed"
+   },
+   {
+    "s_from": 85.0,
+    "s_to": 100.0,
+    "what": "footpath_state unknown → intact; carriageway (centre) material unknown → asphalt; carriageway (centre) condition unknown → fair; footpath (left) edge moved 0.3 m; footpath (left) material unknown → paver; footpath (left) condition unknown → good"
+   }
+  ]
+ },
+ "buildings": {
+  "added": [],
+  "changed": [],
+  "removed": []
+ },
+ "fidelity": {
+  "improved": [
+   {
+    "s_from": 0.0,
+    "s_to": 100.0,
+    "from": "L0",
+    "to": "L1"
+   }
+  ],
+  "unchanged_len_m": 0.0,
+  "overall": [
+   0.0,
+   1.0
+  ]
+ },
+ "contradictions": {
+  "opened": [],
+  "resolved": []
+ },
+ "observations": {
+  "fused_added": 26
+ },
+ "summary_lines": [
+  "26 new photos fused",
+  "7 new objects: 1 debris, 1 drain, 1 parked_vehicle, 1 pole, 1 pothole, 1 signboard, 1 tree",
+  "7 stretchs of the cross-section changed",
+  "Fidelity L0 → L1 over 100 m"
+ ]
+}

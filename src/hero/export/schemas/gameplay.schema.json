@@ -1,0 +1,561 @@
+{
+  "$defs": {
+    "DefaultSpawnHints": {
+      "additionalProperties": false,
+      "properties": {
+        "density": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Density",
+          "type": "number"
+        },
+        "type_weights": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Type Weights",
+          "type": "object"
+        }
+      },
+      "required": [
+        "density",
+        "type_weights"
+      ],
+      "title": "DefaultSpawnHints",
+      "type": "object"
+    },
+    "GpLanes": {
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "const": 3,
+          "title": "Count",
+          "type": "integer"
+        },
+        "names": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Names",
+          "type": "array"
+        },
+        "road_edge_inset_m": {
+          "exclusiveMinimum": 0,
+          "title": "Road Edge Inset M",
+          "type": "number"
+        },
+        "road_lane_gap_m": {
+          "exclusiveMinimum": 0,
+          "title": "Road Lane Gap M",
+          "type": "number"
+        },
+        "min_footpath_to_edge_m": {
+          "exclusiveMinimum": 0,
+          "title": "Min Footpath To Edge M",
+          "type": "number"
+        },
+        "default_footpath_width_m": {
+          "exclusiveMinimum": 0,
+          "title": "Default Footpath Width M",
+          "type": "number"
+        },
+        "widths_m": {
+          "$ref": "#/$defs/LaneWidths"
+        }
+      },
+      "required": [
+        "count",
+        "names",
+        "road_edge_inset_m",
+        "road_lane_gap_m",
+        "min_footpath_to_edge_m",
+        "default_footpath_width_m",
+        "widths_m"
+      ],
+      "title": "GpLanes",
+      "type": "object"
+    },
+    "GpRunner": {
+      "additionalProperties": false,
+      "properties": {
+        "speed_start_mps": {
+          "exclusiveMinimum": 0,
+          "title": "Speed Start Mps",
+          "type": "number"
+        },
+        "speed_per_loop_mps": {
+          "minimum": 0,
+          "title": "Speed Per Loop Mps",
+          "type": "number"
+        },
+        "speed_max_mps": {
+          "exclusiveMinimum": 0,
+          "title": "Speed Max Mps",
+          "type": "number"
+        },
+        "lane_tween_ms": {
+          "exclusiveMinimum": 0,
+          "title": "Lane Tween Ms",
+          "type": "integer"
+        },
+        "jump_ms": {
+          "exclusiveMinimum": 0,
+          "title": "Jump Ms",
+          "type": "integer"
+        },
+        "slide_ms": {
+          "exclusiveMinimum": 0,
+          "title": "Slide Ms",
+          "type": "integer"
+        },
+        "jump_height_m": {
+          "exclusiveMinimum": 0,
+          "title": "Jump Height M",
+          "type": "number"
+        },
+        "runner_half_m": {
+          "exclusiveMinimum": 0,
+          "title": "Runner Half M",
+          "type": "number"
+        },
+        "health_max": {
+          "exclusiveMinimum": 0,
+          "title": "Health Max",
+          "type": "integer"
+        },
+        "hit_damage": {
+          "exclusiveMinimum": 0,
+          "title": "Hit Damage",
+          "type": "integer"
+        },
+        "invuln_s": {
+          "minimum": 0,
+          "title": "Invuln S",
+          "type": "number"
+        },
+        "start_grace_s": {
+          "minimum": 0,
+          "title": "Start Grace S",
+          "type": "number"
+        }
+      },
+      "required": [
+        "speed_start_mps",
+        "speed_per_loop_mps",
+        "speed_max_mps",
+        "lane_tween_ms",
+        "jump_ms",
+        "slide_ms",
+        "jump_height_m",
+        "runner_half_m",
+        "health_max",
+        "hit_damage",
+        "invuln_s",
+        "start_grace_s"
+      ],
+      "title": "GpRunner",
+      "type": "object"
+    },
+    "GpScoring": {
+      "additionalProperties": false,
+      "properties": {
+        "distance_unit_m": {
+          "exclusiveMinimum": 0,
+          "title": "Distance Unit M",
+          "type": "number"
+        },
+        "walkability": {
+          "$ref": "#/$defs/GpWalkability"
+        }
+      },
+      "required": [
+        "distance_unit_m",
+        "walkability"
+      ],
+      "title": "GpScoring",
+      "type": "object"
+    },
+    "GpSpawner": {
+      "additionalProperties": false,
+      "properties": {
+        "seed_rule": {
+          "title": "Seed Rule",
+          "type": "string"
+        },
+        "prng": {
+          "const": "mulberry32",
+          "title": "Prng",
+          "type": "string"
+        },
+        "hash": {
+          "const": "fnv1a32",
+          "title": "Hash",
+          "type": "string"
+        },
+        "free_start_loop0_m": {
+          "minimum": 0,
+          "title": "Free Start Loop0 M",
+          "type": "number"
+        },
+        "free_start_later_m": {
+          "minimum": 0,
+          "title": "Free Start Later M",
+          "type": "number"
+        },
+        "seam_free_m": {
+          "minimum": 0,
+          "title": "Seam Free M",
+          "type": "number"
+        },
+        "keepout_margin_m": {
+          "minimum": 0,
+          "title": "Keepout Margin M",
+          "type": "number"
+        },
+        "footpath_missing_margin_m": {
+          "minimum": 0,
+          "title": "Footpath Missing Margin M",
+          "type": "number"
+        },
+        "row_gap_min_m": {
+          "exclusiveMinimum": 0,
+          "title": "Row Gap Min M",
+          "type": "number"
+        },
+        "row_gap_base_m": {
+          "exclusiveMinimum": 0,
+          "title": "Row Gap Base M",
+          "type": "number"
+        },
+        "row_gap_per_loop_m": {
+          "minimum": 0,
+          "title": "Row Gap Per Loop M",
+          "type": "number"
+        },
+        "jitter_max_m": {
+          "minimum": 0,
+          "title": "Jitter Max M",
+          "type": "number"
+        },
+        "spawn_p_base": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Spawn P Base",
+          "type": "number"
+        },
+        "spawn_p_per_loop": {
+          "minimum": 0,
+          "title": "Spawn P Per Loop",
+          "type": "number"
+        },
+        "spawn_p_max": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Spawn P Max",
+          "type": "number"
+        },
+        "density_floor": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Density Floor",
+          "type": "number"
+        },
+        "density_gain": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Density Gain",
+          "type": "number"
+        },
+        "second_obstacle_from_loop": {
+          "minimum": 0,
+          "title": "Second Obstacle From Loop",
+          "type": "integer"
+        },
+        "second_obstacle_prob": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Second Obstacle Prob",
+          "type": "number"
+        },
+        "gap_zone_m": {
+          "minimum": 0,
+          "title": "Gap Zone M",
+          "type": "number"
+        },
+        "clear_lane_until_loop": {
+          "minimum": 0,
+          "title": "Clear Lane Until Loop",
+          "type": "integer"
+        },
+        "action_gap_m": {
+          "minimum": 0,
+          "title": "Action Gap M",
+          "type": "number"
+        },
+        "variants": {
+          "exclusiveMinimum": 0,
+          "title": "Variants",
+          "type": "integer"
+        },
+        "type_boost": {
+          "minimum": 0,
+          "title": "Type Boost",
+          "type": "number"
+        },
+        "lane_weights": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object"
+          },
+          "title": "Lane Weights",
+          "type": "object"
+        },
+        "default_spawn_hints": {
+          "$ref": "#/$defs/DefaultSpawnHints"
+        },
+        "window_behind_m": {
+          "minimum": 0,
+          "title": "Window Behind M",
+          "type": "number"
+        },
+        "window_ahead_m": {
+          "exclusiveMinimum": 0,
+          "title": "Window Ahead M",
+          "type": "number"
+        }
+      },
+      "required": [
+        "seed_rule",
+        "prng",
+        "hash",
+        "free_start_loop0_m",
+        "free_start_later_m",
+        "seam_free_m",
+        "keepout_margin_m",
+        "footpath_missing_margin_m",
+        "row_gap_min_m",
+        "row_gap_base_m",
+        "row_gap_per_loop_m",
+        "jitter_max_m",
+        "spawn_p_base",
+        "spawn_p_per_loop",
+        "spawn_p_max",
+        "density_floor",
+        "density_gain",
+        "second_obstacle_from_loop",
+        "second_obstacle_prob",
+        "gap_zone_m",
+        "clear_lane_until_loop",
+        "action_gap_m",
+        "variants",
+        "type_boost",
+        "lane_weights",
+        "default_spawn_hints",
+        "window_behind_m",
+        "window_ahead_m"
+      ],
+      "title": "GpSpawner",
+      "type": "object"
+    },
+    "GpTokens": {
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "exclusiveMinimum": 0,
+          "title": "Value",
+          "type": "integer"
+        },
+        "radius_m": {
+          "exclusiveMinimum": 0,
+          "title": "Radius M",
+          "type": "number"
+        },
+        "per_intact_m": {
+          "exclusiveMinimum": 0,
+          "title": "Per Intact M",
+          "type": "number"
+        },
+        "max_per_street": {
+          "exclusiveMinimum": 0,
+          "title": "Max Per Street",
+          "type": "integer"
+        },
+        "crossing_lane": {
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Crossing Lane",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "value",
+        "radius_m",
+        "per_intact_m",
+        "max_per_street",
+        "crossing_lane"
+      ],
+      "title": "GpTokens",
+      "type": "object"
+    },
+    "GpWalkability": {
+      "additionalProperties": false,
+      "properties": {
+        "coverage_weight": {
+          "title": "Coverage Weight",
+          "type": "number"
+        },
+        "crossing_bonus": {
+          "title": "Crossing Bonus",
+          "type": "number"
+        },
+        "hazard_weight": {
+          "title": "Hazard Weight",
+          "type": "number"
+        },
+        "hazard_norm": {
+          "exclusiveMinimum": 0,
+          "title": "Hazard Norm",
+          "type": "number"
+        }
+      },
+      "required": [
+        "coverage_weight",
+        "crossing_bonus",
+        "hazard_weight",
+        "hazard_norm"
+      ],
+      "title": "GpWalkability",
+      "type": "object"
+    },
+    "LaneWidths": {
+      "additionalProperties": false,
+      "properties": {
+        "road_edge": {
+          "exclusiveMinimum": 0,
+          "title": "Road Edge",
+          "type": "number"
+        },
+        "road": {
+          "exclusiveMinimum": 0,
+          "title": "Road",
+          "type": "number"
+        }
+      },
+      "required": [
+        "road_edge",
+        "road"
+      ],
+      "title": "LaneWidths",
+      "type": "object"
+    },
+    "ObstacleType": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "enum": [
+            "dodge",
+            "jump",
+            "slide"
+          ],
+          "title": "Action",
+          "type": "string"
+        },
+        "length_m": {
+          "exclusiveMinimum": 0,
+          "title": "Length M",
+          "type": "number"
+        },
+        "size_m": {
+          "$ref": "#/$defs/SizeM"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "length_m",
+        "size_m",
+        "label"
+      ],
+      "title": "ObstacleType",
+      "type": "object"
+    },
+    "SizeM": {
+      "additionalProperties": false,
+      "properties": {
+        "w": {
+          "exclusiveMinimum": 0,
+          "title": "W",
+          "type": "number"
+        },
+        "h": {
+          "exclusiveMinimum": 0,
+          "title": "H",
+          "type": "number"
+        },
+        "d": {
+          "exclusiveMinimum": 0,
+          "title": "D",
+          "type": "number"
+        }
+      },
+      "required": [
+        "w",
+        "h",
+        "d"
+      ],
+      "title": "SizeM",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "hero-gameplay/1",
+      "title": "Schema",
+      "type": "string"
+    },
+    "version": {
+      "title": "Version",
+      "type": "integer"
+    },
+    "lanes": {
+      "$ref": "#/$defs/GpLanes"
+    },
+    "runner": {
+      "$ref": "#/$defs/GpRunner"
+    },
+    "tokens": {
+      "$ref": "#/$defs/GpTokens"
+    },
+    "scoring": {
+      "$ref": "#/$defs/GpScoring"
+    },
+    "obstacle_types": {
+      "additionalProperties": {
+        "$ref": "#/$defs/ObstacleType"
+      },
+      "title": "Obstacle Types",
+      "type": "object"
+    },
+    "spawner": {
+      "$ref": "#/$defs/GpSpawner"
+    }
+  },
+  "required": [
+    "schema",
+    "version",
+    "lanes",
+    "runner",
+    "tokens",
+    "scoring",
+    "obstacle_types",
+    "spawner"
+  ],
+  "title": "GameplayV1",
+  "type": "object"
+}

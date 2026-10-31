@@ -1,0 +1,286 @@
+{
+ "run_id": "fx-run-1",
+ "segment_slug": "fixture-curved-street",
+ "mode": "generate",
+ "model": null,
+ "base_version": 0,
+ "result_version": 1,
+ "version_created": true,
+ "started_at": "2026-10-30T10:00:00Z",
+ "finished_at": "2026-10-30T10:02:00Z",
+ "duration_s": 120.0,
+ "images": {
+  "planned": 26,
+  "used_total": 26,
+  "new": 26,
+  "cached": 0,
+  "fused_this_run": 26,
+  "by_source": {
+   "google_static_maps": 4,
+   "google_streetview": 22
+  },
+  "by_kind": {
+   "satellite_crop": 3,
+   "satellite_overview": 1,
+   "streetview": 22
+  },
+  "by_view": {
+   "back": 11,
+   "forward": 11
+  },
+  "new_observation_ids": [
+   "obs-fx-001",
+   "obs-fx-002",
+   "obs-fx-003",
+   "obs-fx-004",
+   "obs-fx-005",
+   "obs-fx-006",
+   "obs-fx-007",
+   "obs-fx-008",
+   "obs-fx-009",
+   "obs-fx-010",
+   "obs-fx-011",
+   "obs-fx-012",
+   "obs-fx-013",
+   "obs-fx-014",
+   "obs-fx-015",
+   "obs-fx-016",
+   "obs-fx-017",
+   "obs-fx-018",
+   "obs-fx-019",
+   "obs-fx-020",
+   "obs-fx-021",
+   "obs-fx-022",
+   "obs-fx-023",
+   "obs-fx-024",
+   "obs-fx-025",
+   "obs-fx-026"
+  ],
+  "skipped": []
+ },
+ "detections": {
+  "new": [
+   {
+    "id": "ent-4616aa5970",
+    "type": "parked_vehicle",
+    "description": "Yellow auto-rickshaw parked half on the footpath.",
+    "confidence": 0.871
+   },
+   {
+    "id": "ent-49a38189ef",
+    "type": "tree",
+    "description": "Tree with low branches hanging over the footpath.",
+    "confidence": 0.793
+   },
+   {
+    "id": "ent-7ab2051f05",
+    "type": "pole",
+    "description": "Concrete utility pole at the outer edge of the footpath.",
+    "confidence": 0.704
+   },
+   {
+    "id": "ent-99e751ab0b",
+    "type": "pothole",
+    "description": "Pothole in the carriageway near the centre line.",
+    "confidence": 0.709
+   },
+   {
+    "id": "ent-9a00ae6937",
+    "type": "signboard",
+    "description": "Shop signboard standing on the footpath.",
+    "confidence": 0.676
+   },
+   {
+    "id": "ent-9db1e6c792",
+    "type": "drain",
+    "description": "Open drain where the footpath slab is broken.",
+    "confidence": 0.657
+   },
+   {
+    "id": "ent-fcb7f6b1ce",
+    "type": "debris",
+    "description": "Rubble heap where the footpath is missing.",
+    "confidence": 0.724
+   }
+  ],
+  "changed": [],
+  "removed": [],
+  "contradicted": [],
+  "unchanged_count": 0
+ },
+ "profile_changes": [
+  "0-30 m: footpath_state unknown → intact; carriageway (centre) material unknown → asphalt; carriageway (centre) condition unknown → fair; footpath (left) edge moved 0.5 m; footpath (left) material unknown → paver; footpath (left) condition unknown → good",
+  "30-40 m: footpath_state unknown → intact; carriageway (centre) material unknown → asphalt; carriageway (centre) condition unknown → fair; footpath (left) edge moved 0.3 m; footpath (left) material unknown → paver; footpath (left) condition unknown → good",
+  "40-50 m: footpath_state unknown → intact; carriageway (centre) material unknown → asphalt; carriageway (centre) condition unknown → fair; footpath (left) edge moved 0.3 m; footpath (left) material unknown → paver; footpath (left) condition unknown → fair",
+  "50-60 m: footpath_state unknown → intact; carriageway (centre) material unknown → asphalt; carriageway (centre) condition unknown → fair; footpath (left) edge moved 0.6 m; footpath (left) material unknown → paver; footpath (left) condition unknown → fair",
+  "60-72 m: footpath_state unknown → broken; carriageway (centre) material unknown → asphalt; carriageway (centre) condition unknown → fair; footpath (left) edge moved 0.8 m; footpath (left) material unknown → paver; footpath (left) condition unknown → fair",
+  "72-85 m: footpath_state unknown → missing; carriageway (centre) material unknown → asphalt; carriageway (centre) condition unknown → fair; footpath (left) removed",
+  "85-100 m: footpath_state unknown → intact; carriageway (centre) material unknown → asphalt; carriageway (centre) condition unknown → fair; footpath (left) edge moved 0.3 m; footpath (left) material unknown → paver; footpath (left) condition unknown → good"
+ ],
+ "fidelity": {
+  "before": {
+   "overall": 0.0,
+   "histogram_m": {
+    "L0": 100.0
+   }
+  },
+  "after": {
+   "overall": 1.0,
+   "histogram_m": {
+    "L1": 100.0
+   }
+  },
+  "improved_intervals": [
+   {
+    "s_from": 0.0,
+    "s_to": 100.0,
+    "from": "L0",
+    "to": "L1"
+   }
+  ],
+  "bins": [
+   {
+    "s_from": 0.0,
+    "s_to": 5.0,
+    "level_before": 0,
+    "level_after": 1
+   },
+   {
+    "s_from": 5.0,
+    "s_to": 10.0,
+    "level_before": 0,
+    "level_after": 1
+   },
+   {
+    "s_from": 10.0,
+    "s_to": 15.0,
+    "level_before": 0,
+    "level_after": 1
+   },
+   {
+    "s_from": 15.0,
+    "s_to": 20.0,
+    "level_before": 0,
+    "level_after": 1
+   },
+   {
+    "s_from": 20.0,
+    "s_to": 25.0,
+    "level_before": 0,
+    "level_after": 1
+   },
+   {
+    "s_from": 25.0,
+    "s_to": 30.0,
+    "level_before": 0,
+    "level_after": 1
+   },
+   {
+    "s_from": 30.0,
+    "s_to": 35.0,
+    "level_before": 0,
+    "level_after": 1
+   },
+   {
+    "s_from": 35.0,
+    "s_to": 40.0,
+    "level_before": 0,
+    "level_after": 1
+   },
+   {
+    "s_from": 40.0,
+    "s_to": 45.0,
+    "level_before": 0,
+    "level_after": 1
+   },
+   {
+    "s_from": 45.0,
+    "s_to": 50.0,
+    "level_before": 0,
+    "level_after": 1
+   },
+   {
+    "s_from": 50.0,
+    "s_to": 55.0,
+    "level_before": 0,
+    "level_after": 1
+   },
+   {
+    "s_from": 55.0,
+    "s_to": 60.0,
+    "level_before": 0,
+    "level_after": 1
+   },
+   {
+    "s_from": 60.0,
+    "s_to": 65.0,
+    "level_before": 0,
+    "level_after": 1
+   },
+   {
+    "s_from": 65.0,
+    "s_to": 70.0,
+    "level_before": 0,
+    "level_after": 1
+   },
+   {
+    "s_from": 70.0,
+    "s_to": 75.0,
+    "level_before": 0,
+    "level_after": 1
+   },
+   {
+    "s_from": 75.0,
+    "s_to": 80.0,
+    "level_before": 0,
+    "level_after": 1
+   },
+   {
+    "s_from": 80.0,
+    "s_to": 85.0,
+    "level_before": 0,
+    "level_after": 1
+   },
+   {
+    "s_from": 85.0,
+    "s_to": 90.0,
+    "level_before": 0,
+    "level_after": 1
+   },
+   {
+    "s_from": 90.0,
+    "s_to": 95.0,
+    "level_before": 0,
+    "level_after": 1
+   },
+   {
+    "s_from": 95.0,
+    "s_to": 100.0,
+    "level_before": 0,
+    "level_after": 1
+   }
+  ]
+ },
+ "confidence_changes": [],
+ "cost": {
+  "anthropic_usd": 0.31,
+  "anthropic_calls": 5,
+  "input_tokens": 61200,
+  "output_tokens": 8100,
+  "google_new_requests": 26,
+  "google_cached": 0,
+  "google_est_usd": 0.162,
+  "total_usd": 0.472,
+  "global_budget_usd": 50.0,
+  "budget_remaining_usd": 49.69,
+  "share_of_global_budget": 0.0
+ },
+ "quality": null,
+ "warnings": [],
+ "degraded": false,
+ "summary": "Run added 26 new images (0 of 26 images were already cached) and created model v1 from v0: 7 new objects, 0 changed, 0 removed, 0 newly contradicted; fidelity L0 -> L1. Cost $0.47.",
+ "suggestions": [
+  "Metres 0-100 are the least certain (seen from one viewpoint only).",
+  "A photo facing left or right from another spot around 0-100 m would raise it to L2."
+ ]
+}

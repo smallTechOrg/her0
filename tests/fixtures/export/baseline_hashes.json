@@ -1,0 +1,15 @@
+{
+  "built_with": {
+    "pygltflib": "1.16.5",
+    "pillow": "13.0.0",
+    "python": "3.12.5"
+  },
+  "sha8": "5f96f652",
+  "mesh_sha256": "04d01b64a12f285b74375b2480fa4c9f22fe826f0fa96dca690dd815f74b9912",
+  "manifest_sha256": "6770aeba64048f8803ac9ff5dbfaaac8681461648c5b3bb77dce2b2f4f1a9f7e",
+  "xodr_sha256": "804dd70c9f9c6b67cdc0fa1af32f4ce37fed5ee51edbded7a623d68fe68cf6a0",
+  "zip_sha256": "3d0fa43657a732ed80e7eccff63bf032a4106aeed20e1d7bbf1c6e11efdfa316",
+  "glb_bytes": 160252,
+  "triangles": 1598,
+  "primitives": 14
+}

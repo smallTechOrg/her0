@@ -1,0 +1,1 @@
+Model v1 (fused from photos): 7 objects, 3 buildings, fidelity L1 (score 1.00) from 26 photos. Since v0: 26 new photos fused; 7 new objects: 1 debris, 1 drain, 1 parked_vehicle, 1 pole, 1 pothole, 1 signboard, 1 tree; 7 stretchs of the cross-section changed; Fidelity L0 → L1 over 100 m.

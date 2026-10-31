@@ -1,0 +1,260 @@
+{
+  "schema_version": 3,
+  "segment": {
+    "slug": "contract-curved-street",
+    "name": "Contract Curved Road, Indiranagar (stand-in export)",
+    "city": "Bengaluru",
+    "start": {
+      "lat": 12.9706,
+      "lon": 77.6413
+    },
+    "end": {
+      "lat": 12.971139592218234,
+      "lon": 77.6413
+    },
+    "length_m": 60.0,
+    "heading_deg": 0.0,
+    "footpath_side": "left"
+  },
+  "ground": {
+    "tile_url": "/media/imagery/s4-curved-tile.png",
+    "size_px": [
+      1280,
+      1280
+    ],
+    "zoom": 19,
+    "scale": 2,
+    "center": {
+      "lat": 12.970863,
+      "lon": 77.641351
+    },
+    "meters_per_px": 0.1455,
+    "frame_to_px": {
+      "origin_px": [
+        601.79,
+        841.395
+      ],
+      "along_px_per_m": [
+        0.0,
+        -6.87
+      ],
+      "across_px_per_m": [
+        -6.87,
+        0.0
+      ]
+    }
+  },
+  "cross_section": {
+    "road_width_m": 9.0,
+    "lanes": [
+      {
+        "index": 0,
+        "name": "footpath",
+        "kind": "footpath",
+        "lat_m": 5.8,
+        "width_m": 1.8
+      },
+      {
+        "index": 1,
+        "name": "road_edge",
+        "kind": "road_edge",
+        "lat_m": 3.8,
+        "width_m": 1.6
+      },
+      {
+        "index": 2,
+        "name": "road",
+        "kind": "road",
+        "lat_m": 2.0,
+        "width_m": 2.0
+      }
+    ],
+    "footpath_coverage": [
+      {
+        "from_m": 0.0,
+        "to_m": 15.0,
+        "state": "intact",
+        "confidence": 0.8
+      },
+      {
+        "from_m": 15.0,
+        "to_m": 20.0,
+        "state": "blocked",
+        "confidence": 0.8
+      },
+      {
+        "from_m": 20.0,
+        "to_m": 30.0,
+        "state": "broken",
+        "confidence": 0.8
+      },
+      {
+        "from_m": 30.0,
+        "to_m": 37.5,
+        "state": "missing",
+        "confidence": 0.8
+      },
+      {
+        "from_m": 37.5,
+        "to_m": 60.0,
+        "state": "intact",
+        "confidence": 0.8
+      }
+    ]
+  },
+  "walkability": {
+    "footpath_coverage_pct": 62.5,
+    "hazard_count": 5,
+    "crossing_present": true,
+    "score": 68
+  },
+  "about": {
+    "model_version": 2,
+    "fidelity": {
+      "level": "L2",
+      "score": 1.667,
+      "label": "Multi-view",
+      "histogram_m": {
+        "L0": 0.0,
+        "L1": 20.0,
+        "L2": 40.0,
+        "L3": 0.0
+      }
+    },
+    "photos": {
+      "total": 48,
+      "street_view": 44,
+      "satellite": 4,
+      "user": 0
+    },
+    "last_updated": "2026-10-30",
+    "capture_dates": {
+      "oldest": "2023-04",
+      "newest": "2024-02"
+    },
+    "low_confidence_parts": [
+      {
+        "s_from": 40.0,
+        "s_to": 55.0,
+        "reason": "2 objects below 60 % confidence; footpath state seen from one side only"
+      }
+    ],
+    "summary": "This street is modelled at fidelity L2 (multi-view) from 48 photos (model v2) - 60 m of Contract Curved Road, Indiranagar.",
+    "improve_hint": "A close-up photo around 40-55 m would raise it to L3.",
+    "legacy": false,
+    "placement_verified": true,
+    "degraded": false,
+    "interpolated": [
+      {
+        "what": "frontage",
+        "side": "left",
+        "s_from": 0.0,
+        "s_to": 2.5,
+        "method": "prior",
+        "from_s": [],
+        "note": "No footprint or photo here; a neutral facade is used."
+      },
+      {
+        "what": "frontage",
+        "side": "left",
+        "s_from": 52.5,
+        "s_to": 60.0,
+        "method": "prior",
+        "from_s": [],
+        "note": "No footprint or photo here; a neutral facade is used."
+      },
+      {
+        "what": "frontage",
+        "side": "right",
+        "s_from": 0.0,
+        "s_to": 5.0,
+        "method": "prior",
+        "from_s": [],
+        "note": "No footprint or photo covers the right-hand side here; a neutral facade is used."
+      },
+      {
+        "what": "frontage",
+        "side": "right",
+        "s_from": 35.0,
+        "s_to": 60.0,
+        "method": "prior",
+        "from_s": [],
+        "note": "No footprint or photo covers the right-hand side here; a neutral facade is used."
+      },
+      {
+        "what": "ground_texture",
+        "side": "both",
+        "s_from": 40.0,
+        "s_to": 45.0,
+        "method": "neighbours",
+        "from_s": [
+          35.0,
+          45.0
+        ],
+        "note": "No hi-res satellite crop covers 40-45 m; blended from the neighbouring stretches."
+      }
+    ],
+    "gap_summary": "About 10 m of the left-hand frontage, 30 m of the right-hand frontage and 5 m of ground texture are interpolated from neighbouring stretches (no photo covers them).",
+    "dynamic_summary": "Seen here but spawned dynamically during play instead of fixed in place: 1 parked vehicle, 1 carriageway pothole."
+  },
+  "dynamic_context": {
+    "excluded_count": 2,
+    "entity_ids": [
+      "ent-0000000001",
+      "ent-0000000004"
+    ],
+    "by_type": {
+      "parked_vehicle": {
+        "count": 1,
+        "per_100m": 1.67,
+        "subtypes": {
+          "auto-rickshaw": 1
+        },
+        "lane_share": [
+          0.5,
+          0.5,
+          0.0
+        ],
+        "mean_confidence": 0.86
+      },
+      "pothole": {
+        "count": 1,
+        "per_100m": 1.67,
+        "subtypes": {},
+        "lane_share": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "mean_confidence": 0.7
+      }
+    }
+  },
+  "generation": {
+    "run_id": "run-0001",
+    "quality": "full",
+    "confidence_overall": 0.7,
+    "review_iterations": 1,
+    "models": {
+      "vision": "claude-sonnet-4-5",
+      "review": "claude-sonnet-4-5"
+    },
+    "warnings": []
+  },
+  "model": {
+    "version": 2,
+    "model_hash": "4c89d6ba344c75f699f3360a268921f56e01c9fb6be546f3057ee059820930fb",
+    "compiled_by": "hero.model.compile/2"
+  },
+  "assets": {
+    "mesh_sha256": "abc938705a72581d502cac045e46aa4e8972ffcb9d420614c6a44abaee92e390",
+    "sha8": "13bbece5",
+    "glb_url": "/api/segments/contract-curved-street/model.glb?v=13bbece5",
+    "manifest_url": "/api/segments/contract-curved-street/manifest.json?v=13bbece5",
+    "xodr_url": "/api/segments/contract-curved-street/street.xodr?v=13bbece5",
+    "gameplay_url": "/api/gameplay.json",
+    "glb_bytes": 104860,
+    "triangles": 754,
+    "primitives": 14
+  }
+}

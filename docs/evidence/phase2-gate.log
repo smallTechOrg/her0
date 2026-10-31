@@ -1,0 +1,41 @@
+INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0000, init - empty initial revision (schema arrives in 0001_phase1, slice S1-data)
+INFO  [alembic.runtime.migration] Running upgrade 0000 -> 0001, phase1 - segments, pipeline_runs, llm_calls, google_requests, game_runs (spec/data.md)
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, street_model - observations, model_versions, observation_extractions, run_reports (spec/data.md, Phase 2)
+[demo street] resolved '100 Feet Road, Indiranagar, Bengaluru Central City Corporation, Bengaluru, Bangalore East, Bengaluru Urban, Karnataka, 560038, India' at 12.97114, 77.64128 (heading 177 deg, nearest OSM road)
+[demo street] created segment '100-feet-road-indiranagar-canonical-demo-e' (100.0 m)
+[demo street] placement: source=osm_nominatim way=543470376 name=100 Feet Road length=100.0 m snap=0.04 m verified=True; image -> /Users/sai/Workspace/her0/docs/evidence/placement.png
+.
+[gate] run 1: {'headings': ['forward', 'back'], 'sv_spacing_m': 10}
+  run a097f27d: running 
+  run a097f27d: running fetch_osm_context
+  run a097f27d: running acquire_imagery
+  run a097f27d: running perceive_overhead
+  run a097f27d: running perceive_streetlevel
+  run a097f27d: running critique_1
+  run a097f27d: running publish
+  run a097f27d: succeeded report
+[gate] run 1 done: $0.3215; run 2: {'headings': ['forward', 'back', 'left', 'right'], 'sv_spacing_m': 10}
+  run ca4b6153: running 
+  run ca4b6153: running acquire_imagery
+  run ca4b6153: running perceive_streetlevel
+  run ca4b6153: running critique_1
+  run ca4b6153: succeeded report
+[gate] run 2 done: $0.2591; run 3 (no-op)
+  run 41fd12e7: running 
+  run 41fd12e7: succeeded report
+[gate] total Anthropic spend $0.5806; evidence -> /Users/sai/Workspace/her0/docs/evidence/phase2-gate.json
+...........
+[gate] TOTAL Anthropic spend (app llm_calls): $0.5806
+...F..
+=================================== FAILURES ===================================
+___________ test_admin_segment_page_shows_coverage_entities_and_diff ___________
+tests/live/test_phase2_ui.py:71: in test_admin_segment_page_shows_coverage_entities_and_diff
+    assert cells.evaluate_all("els => els.filter(e => e.dataset.level === '2').length") >= 0.8 * n_bins
+E   assert 0 >= (0.8 * 20)
+E    +  where 0 = evaluate_all("els => els.filter(e => e.dataset.level === '2').length")
+E    +    where evaluate_all = <Locator frame=<Frame name= url='http://127.0.0.1:58680/admin/segment.html?slug=100-feet-road-indiranagar-canonical-demo-e'> selector='[data-testid=coverage] .cov-cell'>.evaluate_all
+=========================== short test summary info ============================
+FAILED tests/live/test_phase2_ui.py::test_admin_segment_page_shows_coverage_entities_and_diff
+1 failed, 17 passed in 258.32s (0:04:18)

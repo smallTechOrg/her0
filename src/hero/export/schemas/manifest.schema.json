@@ -1,0 +1,1286 @@
+{
+  "$defs": {
+    "AttributionM": {
+      "additionalProperties": false,
+      "properties": {
+        "lines": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Lines",
+          "type": "array"
+        },
+        "notice": {
+          "default": "Textures derive from Google imagery and are provided for evaluation; check the Google Maps Platform terms before redistributing.",
+          "title": "Notice",
+          "type": "string"
+        }
+      },
+      "title": "AttributionM",
+      "type": "object"
+    },
+    "Build": {
+      "additionalProperties": false,
+      "properties": {
+        "generator": {
+          "title": "Generator",
+          "type": "string"
+        },
+        "segment_slug": {
+          "title": "Segment Slug",
+          "type": "string"
+        },
+        "model_version": {
+          "minimum": 0,
+          "title": "Model Version",
+          "type": "integer"
+        },
+        "model_hash": {
+          "title": "Model Hash",
+          "type": "string"
+        },
+        "mesh_sha256": {
+          "title": "Mesh Sha256",
+          "type": "string"
+        },
+        "glb_bytes": {
+          "minimum": 0,
+          "title": "Glb Bytes",
+          "type": "integer"
+        },
+        "xodr_sha256": {
+          "title": "Xodr Sha256",
+          "type": "string"
+        },
+        "pygltflib": {
+          "title": "Pygltflib",
+          "type": "string"
+        },
+        "pillow": {
+          "title": "Pillow",
+          "type": "string"
+        },
+        "python": {
+          "title": "Python",
+          "type": "string"
+        },
+        "compiled_by": {
+          "title": "Compiled By",
+          "type": "string"
+        }
+      },
+      "required": [
+        "generator",
+        "segment_slug",
+        "model_version",
+        "model_hash",
+        "mesh_sha256",
+        "glb_bytes",
+        "xodr_sha256",
+        "pygltflib",
+        "pillow",
+        "python",
+        "compiled_by"
+      ],
+      "title": "Build",
+      "type": "object"
+    },
+    "ColliderM": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "entity_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Entity Id"
+        },
+        "type": {
+          "title": "Type",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "s": {
+          "title": "S",
+          "type": "number"
+        },
+        "length_m": {
+          "minimum": 0,
+          "title": "Length M",
+          "type": "number"
+        },
+        "lanes": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Lanes",
+          "type": "array"
+        },
+        "action": {
+          "enum": [
+            "dodge",
+            "jump",
+            "slide",
+            "none"
+          ],
+          "title": "Action",
+          "type": "string"
+        },
+        "size_m": {
+          "$ref": "#/$defs/SizeMM"
+        },
+        "confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "latlon": {
+          "$ref": "#/$defs/LatLonM"
+        },
+        "tile_px": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tile Px"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "label",
+        "s",
+        "length_m",
+        "lanes",
+        "action",
+        "size_m",
+        "confidence",
+        "latlon"
+      ],
+      "title": "ColliderM",
+      "type": "object"
+    },
+    "CrossSectionM": {
+      "additionalProperties": false,
+      "properties": {
+        "stations": {
+          "items": {
+            "$ref": "#/$defs/CrossStation"
+          },
+          "minItems": 2,
+          "title": "Stations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "stations"
+      ],
+      "title": "CrossSectionM",
+      "type": "object"
+    },
+    "CrossStation": {
+      "additionalProperties": false,
+      "properties": {
+        "s": {
+          "title": "S",
+          "type": "number"
+        },
+        "strips": {
+          "items": {
+            "$ref": "#/$defs/CrossStrip"
+          },
+          "title": "Strips",
+          "type": "array"
+        }
+      },
+      "required": [
+        "s",
+        "strips"
+      ],
+      "title": "CrossStation",
+      "type": "object"
+    },
+    "CrossStrip": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "title": "Kind",
+          "type": "string"
+        },
+        "side": {
+          "enum": [
+            "left",
+            "right",
+            "centre"
+          ],
+          "title": "Side",
+          "type": "string"
+        },
+        "t_lo": {
+          "title": "T Lo",
+          "type": "number"
+        },
+        "t_hi": {
+          "title": "T Hi",
+          "type": "number"
+        },
+        "material": {
+          "title": "Material",
+          "type": "string"
+        },
+        "condition": {
+          "title": "Condition",
+          "type": "string"
+        },
+        "height_m": {
+          "title": "Height M",
+          "type": "number"
+        },
+        "confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Confidence",
+          "type": "number"
+        }
+      },
+      "required": [
+        "kind",
+        "side",
+        "t_lo",
+        "t_hi",
+        "material",
+        "condition",
+        "height_m",
+        "confidence"
+      ],
+      "title": "CrossStrip",
+      "type": "object"
+    },
+    "EndPose": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "z": {
+          "title": "Z",
+          "type": "number"
+        },
+        "yaw_rad": {
+          "title": "Yaw Rad",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "z",
+        "yaw_rad"
+      ],
+      "title": "EndPose",
+      "type": "object"
+    },
+    "EntityM": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "type": {
+          "title": "Type",
+          "type": "string"
+        },
+        "variant": {
+          "default": "",
+          "title": "Variant",
+          "type": "string"
+        },
+        "s": {
+          "title": "S",
+          "type": "number"
+        },
+        "t": {
+          "title": "T",
+          "type": "number"
+        },
+        "yaw_deg": {
+          "default": 0.0,
+          "title": "Yaw Deg",
+          "type": "number"
+        },
+        "size_m": {
+          "$ref": "#/$defs/SizeMM"
+        },
+        "length_m": {
+          "minimum": 0,
+          "title": "Length M",
+          "type": "number"
+        },
+        "colour_hex": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Colour Hex"
+        },
+        "canopy_hex": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Canopy Hex"
+        },
+        "confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "fidelity_level": {
+          "maximum": 3,
+          "minimum": 0,
+          "title": "Fidelity Level",
+          "type": "integer"
+        },
+        "node": {
+          "title": "Node",
+          "type": "string"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "s",
+        "t",
+        "size_m",
+        "length_m",
+        "confidence",
+        "fidelity_level",
+        "node"
+      ],
+      "title": "EntityM",
+      "type": "object"
+    },
+    "FidelityBinM": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "minimum": 0,
+          "title": "Index",
+          "type": "integer"
+        },
+        "s_from": {
+          "title": "S From",
+          "type": "number"
+        },
+        "s_to": {
+          "title": "S To",
+          "type": "number"
+        },
+        "level": {
+          "maximum": 3,
+          "minimum": 0,
+          "title": "Level",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "index",
+        "s_from",
+        "s_to",
+        "level"
+      ],
+      "title": "FidelityBinM",
+      "type": "object"
+    },
+    "FootpathStationM": {
+      "additionalProperties": false,
+      "properties": {
+        "t_lo": {
+          "title": "T Lo",
+          "type": "number"
+        },
+        "t_hi": {
+          "title": "T Hi",
+          "type": "number"
+        },
+        "state": {
+          "title": "State",
+          "type": "string"
+        },
+        "material": {
+          "title": "Material",
+          "type": "string"
+        },
+        "height_m": {
+          "title": "Height M",
+          "type": "number"
+        },
+        "confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Confidence",
+          "type": "number"
+        }
+      },
+      "required": [
+        "t_lo",
+        "t_hi",
+        "state",
+        "material",
+        "height_m",
+        "confidence"
+      ],
+      "title": "FootpathStationM",
+      "type": "object"
+    },
+    "FrameM": {
+      "additionalProperties": false,
+      "properties": {
+        "units": {
+          "const": "metres",
+          "default": "metres",
+          "title": "Units",
+          "type": "string"
+        },
+        "up_axis": {
+          "const": "+Y",
+          "default": "+Y",
+          "title": "Up Axis",
+          "type": "string"
+        },
+        "handedness": {
+          "const": "right",
+          "default": "right",
+          "title": "Handedness",
+          "type": "string"
+        },
+        "travel_at_s0": {
+          "const": "-Z",
+          "default": "-Z",
+          "title": "Travel At S0",
+          "type": "string"
+        },
+        "origin": {
+          "$ref": "#/$defs/LatLonM"
+        },
+        "heading_deg": {
+          "title": "Heading Deg",
+          "type": "number"
+        },
+        "world_from_st": {
+          "const": "hero-st-world/1",
+          "default": "hero-st-world/1",
+          "title": "World From St",
+          "type": "string"
+        }
+      },
+      "required": [
+        "origin",
+        "heading_deg"
+      ],
+      "title": "FrameM",
+      "type": "object"
+    },
+    "FrontageM": {
+      "additionalProperties": false,
+      "properties": {
+        "s_from": {
+          "title": "S From",
+          "type": "number"
+        },
+        "s_to": {
+          "title": "S To",
+          "type": "number"
+        },
+        "type": {
+          "enum": [
+            "building",
+            "wall",
+            "gate"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "t_from": {
+          "title": "T From",
+          "type": "number"
+        },
+        "t_to": {
+          "title": "T To",
+          "type": "number"
+        },
+        "height_m": {
+          "exclusiveMinimum": 0,
+          "title": "Height M",
+          "type": "number"
+        },
+        "colour_hex": {
+          "pattern": "^#[0-9a-fA-F]{6}$",
+          "title": "Colour Hex",
+          "type": "string"
+        },
+        "source": {
+          "enum": [
+            "osm",
+            "vision",
+            "entity",
+            "interpolated",
+            "prior"
+          ],
+          "title": "Source",
+          "type": "string"
+        },
+        "interpolated": {
+          "title": "Interpolated",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "s_from",
+        "s_to",
+        "type",
+        "t_from",
+        "t_to",
+        "height_m",
+        "colour_hex",
+        "source",
+        "interpolated"
+      ],
+      "title": "FrontageM",
+      "type": "object"
+    },
+    "FrontageSides": {
+      "additionalProperties": false,
+      "properties": {
+        "left": {
+          "items": {
+            "$ref": "#/$defs/FrontageM"
+          },
+          "title": "Left",
+          "type": "array"
+        },
+        "right": {
+          "items": {
+            "$ref": "#/$defs/FrontageM"
+          },
+          "title": "Right",
+          "type": "array"
+        }
+      },
+      "required": [
+        "left",
+        "right"
+      ],
+      "title": "FrontageSides",
+      "type": "object"
+    },
+    "InterpolatedM": {
+      "additionalProperties": false,
+      "properties": {
+        "what": {
+          "title": "What",
+          "type": "string"
+        },
+        "side": {
+          "title": "Side",
+          "type": "string"
+        },
+        "s_from": {
+          "title": "S From",
+          "type": "number"
+        },
+        "s_to": {
+          "title": "S To",
+          "type": "number"
+        },
+        "method": {
+          "title": "Method",
+          "type": "string"
+        },
+        "note": {
+          "default": "",
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "what",
+        "side",
+        "s_from",
+        "s_to",
+        "method"
+      ],
+      "title": "InterpolatedM",
+      "type": "object"
+    },
+    "KerbM": {
+      "additionalProperties": false,
+      "properties": {
+        "t": {
+          "title": "T",
+          "type": "number"
+        },
+        "height_m": {
+          "minimum": 0,
+          "title": "Height M",
+          "type": "number"
+        },
+        "width_m": {
+          "minimum": 0,
+          "title": "Width M",
+          "type": "number"
+        }
+      },
+      "required": [
+        "t",
+        "height_m",
+        "width_m"
+      ],
+      "title": "KerbM",
+      "type": "object"
+    },
+    "LaneDef": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Index",
+          "type": "integer"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "kind": {
+          "title": "Kind",
+          "type": "string"
+        },
+        "width_m": {
+          "exclusiveMinimum": 0,
+          "title": "Width M",
+          "type": "number"
+        }
+      },
+      "required": [
+        "index",
+        "name",
+        "kind",
+        "width_m"
+      ],
+      "title": "LaneDef",
+      "type": "object"
+    },
+    "LaneStation": {
+      "additionalProperties": false,
+      "properties": {
+        "s": {
+          "title": "S",
+          "type": "number"
+        },
+        "lane_t": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Lane T",
+          "type": "array"
+        },
+        "footpath": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FootpathStationM"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "kerb": {
+          "$ref": "#/$defs/KerbM"
+        }
+      },
+      "required": [
+        "s",
+        "lane_t",
+        "kerb"
+      ],
+      "title": "LaneStation",
+      "type": "object"
+    },
+    "LanesM": {
+      "additionalProperties": false,
+      "properties": {
+        "defs": {
+          "items": {
+            "$ref": "#/$defs/LaneDef"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "title": "Defs",
+          "type": "array"
+        },
+        "stations": {
+          "items": {
+            "$ref": "#/$defs/LaneStation"
+          },
+          "minItems": 2,
+          "title": "Stations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "defs",
+        "stations"
+      ],
+      "title": "LanesM",
+      "type": "object"
+    },
+    "LatLonM": {
+      "additionalProperties": false,
+      "properties": {
+        "lat": {
+          "title": "Lat",
+          "type": "number"
+        },
+        "lon": {
+          "title": "Lon",
+          "type": "number"
+        }
+      },
+      "required": [
+        "lat",
+        "lon"
+      ],
+      "title": "LatLonM",
+      "type": "object"
+    },
+    "LoopM": {
+      "additionalProperties": false,
+      "properties": {
+        "seam_blend_m": {
+          "default": 6.0,
+          "title": "Seam Blend M",
+          "type": "number"
+        },
+        "end_pose": {
+          "$ref": "#/$defs/EndPose"
+        },
+        "chain": {
+          "const": "rigid_end_to_start",
+          "default": "rigid_end_to_start",
+          "title": "Chain",
+          "type": "string"
+        }
+      },
+      "required": [
+        "end_pose"
+      ],
+      "title": "LoopM",
+      "type": "object"
+    },
+    "ManifestFidelity": {
+      "additionalProperties": false,
+      "properties": {
+        "overall_level": {
+          "maximum": 3,
+          "minimum": 0,
+          "title": "Overall Level",
+          "type": "integer"
+        },
+        "score": {
+          "maximum": 3,
+          "minimum": 0,
+          "title": "Score",
+          "type": "number"
+        },
+        "bins": {
+          "items": {
+            "$ref": "#/$defs/FidelityBinM"
+          },
+          "title": "Bins",
+          "type": "array"
+        }
+      },
+      "required": [
+        "overall_level",
+        "score",
+        "bins"
+      ],
+      "title": "ManifestFidelity",
+      "type": "object"
+    },
+    "MeshNodeStat": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "triangles": {
+          "minimum": 0,
+          "title": "Triangles",
+          "type": "integer"
+        },
+        "material": {
+          "title": "Material",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "triangles",
+        "material"
+      ],
+      "title": "MeshNodeStat",
+      "type": "object"
+    },
+    "MeshStatsM": {
+      "additionalProperties": false,
+      "properties": {
+        "primitives": {
+          "minimum": 0,
+          "title": "Primitives",
+          "type": "integer"
+        },
+        "triangles": {
+          "minimum": 0,
+          "title": "Triangles",
+          "type": "integer"
+        },
+        "vertices": {
+          "minimum": 0,
+          "title": "Vertices",
+          "type": "integer"
+        },
+        "materials": {
+          "minimum": 0,
+          "title": "Materials",
+          "type": "integer"
+        },
+        "textures": {
+          "minimum": 0,
+          "title": "Textures",
+          "type": "integer"
+        },
+        "nodes": {
+          "items": {
+            "$ref": "#/$defs/MeshNodeStat"
+          },
+          "title": "Nodes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "primitives",
+        "triangles",
+        "vertices",
+        "materials",
+        "textures",
+        "nodes"
+      ],
+      "title": "MeshStatsM",
+      "type": "object"
+    },
+    "RefPointM": {
+      "additionalProperties": false,
+      "properties": {
+        "s": {
+          "title": "S",
+          "type": "number"
+        },
+        "lat": {
+          "title": "Lat",
+          "type": "number"
+        },
+        "lon": {
+          "title": "Lon",
+          "type": "number"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "z": {
+          "title": "Z",
+          "type": "number"
+        },
+        "bearing_deg": {
+          "title": "Bearing Deg",
+          "type": "number"
+        }
+      },
+      "required": [
+        "s",
+        "lat",
+        "lon",
+        "x",
+        "z",
+        "bearing_deg"
+      ],
+      "title": "RefPointM",
+      "type": "object"
+    },
+    "ReferenceLineM": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "title": "Source",
+          "type": "string"
+        },
+        "osm_way_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Osm Way Id"
+        },
+        "name": {
+          "default": "",
+          "title": "Name",
+          "type": "string"
+        },
+        "length_s": {
+          "exclusiveMinimum": 0,
+          "title": "Length S",
+          "type": "number"
+        },
+        "step_m": {
+          "exclusiveMinimum": 0,
+          "title": "Step M",
+          "type": "number"
+        },
+        "points": {
+          "items": {
+            "$ref": "#/$defs/RefPointM"
+          },
+          "minItems": 2,
+          "title": "Points",
+          "type": "array"
+        }
+      },
+      "required": [
+        "source",
+        "length_s",
+        "step_m",
+        "points"
+      ],
+      "title": "ReferenceLineM",
+      "type": "object"
+    },
+    "SegmentM": {
+      "additionalProperties": false,
+      "properties": {
+        "slug": {
+          "title": "Slug",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "city": {
+          "default": "",
+          "title": "City",
+          "type": "string"
+        },
+        "length_s": {
+          "exclusiveMinimum": 0,
+          "title": "Length S",
+          "type": "number"
+        },
+        "footpath_side": {
+          "enum": [
+            "left",
+            "right"
+          ],
+          "title": "Footpath Side",
+          "type": "string"
+        },
+        "fidelity": {
+          "$ref": "#/$defs/ManifestFidelity"
+        }
+      },
+      "required": [
+        "slug",
+        "name",
+        "length_s",
+        "footpath_side",
+        "fidelity"
+      ],
+      "title": "SegmentM",
+      "type": "object"
+    },
+    "SizeMM": {
+      "additionalProperties": false,
+      "properties": {
+        "w": {
+          "title": "W",
+          "type": "number"
+        },
+        "h": {
+          "title": "H",
+          "type": "number"
+        },
+        "d": {
+          "title": "D",
+          "type": "number"
+        }
+      },
+      "required": [
+        "w",
+        "h",
+        "d"
+      ],
+      "title": "SizeMM",
+      "type": "object"
+    },
+    "SpawnHintsM": {
+      "additionalProperties": false,
+      "properties": {
+        "density": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Density",
+          "type": "number"
+        },
+        "type_weights": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Type Weights",
+          "type": "object"
+        }
+      },
+      "required": [
+        "density",
+        "type_weights"
+      ],
+      "title": "SpawnHintsM",
+      "type": "object"
+    },
+    "TokenM": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "s": {
+          "title": "S",
+          "type": "number"
+        },
+        "lane": {
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Lane",
+          "type": "integer"
+        },
+        "reason": {
+          "enum": [
+            "intact_footpath",
+            "crossing",
+            "ramp"
+          ],
+          "title": "Reason",
+          "type": "string"
+        },
+        "latlon": {
+          "$ref": "#/$defs/LatLonM"
+        },
+        "tile_px": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tile Px"
+        }
+      },
+      "required": [
+        "id",
+        "s",
+        "lane",
+        "reason",
+        "latlon"
+      ],
+      "title": "TokenM",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "hero-street-manifest/1",
+      "default": "hero-street-manifest/1",
+      "title": "Schema",
+      "type": "string"
+    },
+    "build": {
+      "$ref": "#/$defs/Build"
+    },
+    "segment": {
+      "$ref": "#/$defs/SegmentM"
+    },
+    "frame": {
+      "$ref": "#/$defs/FrameM"
+    },
+    "reference_line": {
+      "$ref": "#/$defs/ReferenceLineM"
+    },
+    "lanes": {
+      "$ref": "#/$defs/LanesM"
+    },
+    "cross_section": {
+      "$ref": "#/$defs/CrossSectionM"
+    },
+    "frontage": {
+      "$ref": "#/$defs/FrontageSides"
+    },
+    "entities": {
+      "items": {
+        "$ref": "#/$defs/EntityM"
+      },
+      "title": "Entities",
+      "type": "array"
+    },
+    "colliders": {
+      "items": {
+        "$ref": "#/$defs/ColliderM"
+      },
+      "title": "Colliders",
+      "type": "array"
+    },
+    "tokens": {
+      "items": {
+        "$ref": "#/$defs/TokenM"
+      },
+      "title": "Tokens",
+      "type": "array"
+    },
+    "spawn_hints": {
+      "$ref": "#/$defs/SpawnHintsM"
+    },
+    "interpolated": {
+      "items": {
+        "$ref": "#/$defs/InterpolatedM"
+      },
+      "title": "Interpolated",
+      "type": "array"
+    },
+    "loop": {
+      "$ref": "#/$defs/LoopM"
+    },
+    "mesh_stats": {
+      "$ref": "#/$defs/MeshStatsM"
+    },
+    "attribution": {
+      "$ref": "#/$defs/AttributionM"
+    },
+    "gameplay": {
+      "additionalProperties": true,
+      "title": "Gameplay",
+      "type": "object"
+    },
+    "gameplay_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Gameplay Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "build",
+    "segment",
+    "frame",
+    "reference_line",
+    "lanes",
+    "cross_section",
+    "frontage",
+    "entities",
+    "colliders",
+    "tokens",
+    "spawn_hints",
+    "interpolated",
+    "loop",
+    "mesh_stats",
+    "attribution",
+    "gameplay",
+    "gameplay_sha256"
+  ],
+  "title": "ManifestV1",
+  "type": "object"
+}

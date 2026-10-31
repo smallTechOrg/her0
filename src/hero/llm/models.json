@@ -1,0 +1,6 @@
+{
+  "models": [
+    {"id": "claude-sonnet-5-5", "label": "Claude Sonnet 5.5 (default)", "evidence": null},
+    {"id": "claude-opus-5-5", "label": "Claude Opus 5.5", "evidence": "docs/evidence/phase2_1/model_check_claude-opus-5-5.json"}
+  ]
+}

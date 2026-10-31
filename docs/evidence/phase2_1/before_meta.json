@@ -1,0 +1,96 @@
+{
+  "label": "before",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "bellandur_source": "recorded",
+  "bellandur": {
+    "slug": "bellandur-main-road-n-2",
+    "scene_source": "recorded-json",
+    "shots": {
+      "0m": {
+        "distance_m": 0,
+        "phase": "ready",
+        "perf": {
+          "draw_calls": 110,
+          "triangles": 9643,
+          "fps_avg": 30
+        }
+      },
+      "20m": {
+        "distance_m": 20,
+        "phase": "running",
+        "perf": {
+          "draw_calls": 153,
+          "triangles": 9797,
+          "fps_avg": 30
+        }
+      },
+      "40m": {
+        "distance_m": 40,
+        "phase": "running",
+        "perf": {
+          "draw_calls": 155,
+          "triangles": 11645,
+          "fps_avg": 30
+        }
+      },
+      "70m": {
+        "distance_m": 70,
+        "phase": "running",
+        "perf": {
+          "draw_calls": 158,
+          "triangles": 11657,
+          "fps_avg": 30
+        }
+      }
+    },
+    "hero_source": null,
+    "console_errors": []
+  },
+  "curved": {
+    "slug": "s4-curved-fixture-w",
+    "scene_source": "recorded-json",
+    "shots": {
+      "0m": {
+        "distance_m": 0,
+        "phase": "ready",
+        "perf": {
+          "draw_calls": 24,
+          "triangles": 2088,
+          "fps_avg": 30
+        }
+      },
+      "20m": {
+        "distance_m": 20,
+        "phase": "running",
+        "perf": {
+          "draw_calls": 25,
+          "triangles": 2110,
+          "fps_avg": 30
+        }
+      },
+      "40m": {
+        "distance_m": 40,
+        "phase": "running",
+        "perf": {
+          "draw_calls": 24,
+          "triangles": 2002,
+          "fps_avg": 30
+        }
+      },
+      "70m": {
+        "distance_m": 70,
+        "phase": "running",
+        "perf": {
+          "draw_calls": 23,
+          "triangles": 1934,
+          "fps_avg": 30
+        }
+      }
+    },
+    "hero_source": null,
+    "console_errors": []
+  }
+}

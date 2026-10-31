@@ -1,0 +1,345 @@
+{
+  "by_view": {
+    "forward": {
+      "frame": {
+        "visibility_ok": true,
+        "footpath_visible": true,
+        "footpath_side": "left",
+        "footpath_state": "broken",
+        "notes": "Paver footpath on the left, uneven, parked vehicles at the kerb."
+      },
+      "detections": [
+        {
+          "local_id": "a",
+          "type": "parked_vehicle",
+          "box_px": [
+            140,
+            330,
+            150,
+            90
+          ],
+          "touches_ground": true,
+          "est_distance_m": 12.0,
+          "orientation": "parallel",
+          "attributes": {
+            "colour": "yellow",
+            "blocks_footpath": true
+          },
+          "description": "Yellow auto-rickshaw parked half on the footpath, leaving about 0.4 m of walkway.",
+          "confidence": 0.8,
+          "subtype": "auto-rickshaw",
+          "size_m": {
+            "w": 1.4,
+            "h": 1.7,
+            "d": 2.6
+          }
+        },
+        {
+          "local_id": "b",
+          "type": "tree",
+          "box_px": [
+            10,
+            150,
+            110,
+            260
+          ],
+          "touches_ground": true,
+          "est_distance_m": 8.0,
+          "orientation": "unknown",
+          "attributes": {
+            "canopy_low": false
+          },
+          "description": "Large tree whose trunk stands at the footpath edge; canopy overhangs the walkway.",
+          "confidence": 0.75,
+          "size_m": {
+            "w": 0.8,
+            "h": 6.0,
+            "d": 0.8
+          }
+        },
+        {
+          "local_id": "c",
+          "type": "pole",
+          "box_px": [
+            255,
+            180,
+            18,
+            160
+          ],
+          "touches_ground": true,
+          "est_distance_m": 15.0,
+          "orientation": "unknown",
+          "attributes": {},
+          "description": "Concrete utility pole at the back of the footpath.",
+          "confidence": 0.6,
+          "size_m": {
+            "w": 0.3,
+            "h": 7.0,
+            "d": 0.3
+          }
+        }
+      ],
+      "facades": [
+        {
+          "box_px": [
+            0,
+            60,
+            120,
+            260
+          ],
+          "side": "left",
+          "colour_hex": "#c9b79c",
+          "storeys": 3,
+          "use": "shops",
+          "description": "Three-storey cream shopfront block with shutters.",
+          "confidence": 0.7
+        }
+      ]
+    },
+    "back": {
+      "frame": {
+        "visibility_ok": true,
+        "footpath_visible": true,
+        "footpath_side": "left",
+        "footpath_state": "broken",
+        "notes": "Looking back along the street."
+      },
+      "detections": [
+        {
+          "local_id": "a",
+          "type": "debris",
+          "box_px": [
+            380,
+            400,
+            90,
+            40
+          ],
+          "touches_ground": true,
+          "est_distance_m": 6.0,
+          "orientation": "unknown",
+          "attributes": {},
+          "description": "Heap of rubble on the footpath edge.",
+          "confidence": 0.55,
+          "size_m": {
+            "w": 1.5,
+            "h": 0.5,
+            "d": 1.2
+          }
+        },
+        {
+          "local_id": "b",
+          "type": "bin",
+          "box_px": [
+            330,
+            380,
+            30,
+            40
+          ],
+          "touches_ground": true,
+          "est_distance_m": 9.0,
+          "orientation": "unknown",
+          "attributes": {},
+          "description": "Green municipal bin beside the kerb.",
+          "confidence": 0.5
+        }
+      ],
+      "facades": []
+    },
+    "left": {
+      "frame": {
+        "visibility_ok": true,
+        "footpath_visible": true,
+        "footpath_side": "left",
+        "footpath_state": "intact",
+        "notes": "Side view of the footpath."
+      },
+      "detections": [
+        {
+          "local_id": "a",
+          "type": "drain",
+          "box_px": [
+            60,
+            470,
+            160,
+            50
+          ],
+          "touches_ground": true,
+          "est_distance_m": 4.0,
+          "orientation": "parallel",
+          "attributes": {
+            "covered": false
+          },
+          "description": "Open stormwater drain along the back of the footpath.",
+          "confidence": 0.6,
+          "size_m": {
+            "w": 0.6,
+            "h": 0.2,
+            "d": 3.0
+          }
+        },
+        {
+          "local_id": "b",
+          "type": "signboard",
+          "box_px": [
+            400,
+            260,
+            60,
+            120
+          ],
+          "touches_ground": true,
+          "est_distance_m": 9.0,
+          "orientation": "unknown",
+          "attributes": {},
+          "description": "Shop signboard standing on the footpath.",
+          "confidence": 0.55
+        }
+      ],
+      "facades": [
+        {
+          "box_px": [
+            0,
+            40,
+            640,
+            300
+          ],
+          "side": "left",
+          "colour_hex": "#b8a58c",
+          "storeys": 2,
+          "use": "shops",
+          "description": "Row of two-storey shops.",
+          "confidence": 0.65
+        }
+      ]
+    },
+    "right": {
+      "frame": {
+        "visibility_ok": true,
+        "footpath_visible": false,
+        "footpath_side": "none",
+        "footpath_state": "unknown",
+        "notes": "Far side of the street, no footpath."
+      },
+      "detections": [
+        {
+          "local_id": "a",
+          "type": "parked_vehicle",
+          "box_px": [
+            200,
+            400,
+            220,
+            100
+          ],
+          "touches_ground": true,
+          "est_distance_m": 10.0,
+          "orientation": "parallel",
+          "attributes": {},
+          "description": "White car parked on the far side of the carriageway.",
+          "confidence": 0.7,
+          "subtype": "car",
+          "size_m": {
+            "w": 1.8,
+            "h": 1.5,
+            "d": 4.2
+          }
+        }
+      ],
+      "facades": []
+    },
+    "oblique": {
+      "frame": {
+        "visibility_ok": true,
+        "footpath_visible": true,
+        "footpath_side": "left",
+        "footpath_state": "broken",
+        "notes": "Paver footpath on the left, uneven, parked vehicles at the kerb."
+      },
+      "detections": [
+        {
+          "local_id": "a",
+          "type": "parked_vehicle",
+          "box_px": [
+            140,
+            330,
+            150,
+            90
+          ],
+          "touches_ground": true,
+          "est_distance_m": 12.0,
+          "orientation": "parallel",
+          "attributes": {
+            "colour": "yellow",
+            "blocks_footpath": true
+          },
+          "description": "Yellow auto-rickshaw parked half on the footpath, leaving about 0.4 m of walkway.",
+          "confidence": 0.8,
+          "subtype": "auto-rickshaw",
+          "size_m": {
+            "w": 1.4,
+            "h": 1.7,
+            "d": 2.6
+          }
+        },
+        {
+          "local_id": "b",
+          "type": "tree",
+          "box_px": [
+            10,
+            150,
+            110,
+            260
+          ],
+          "touches_ground": true,
+          "est_distance_m": 8.0,
+          "orientation": "unknown",
+          "attributes": {
+            "canopy_low": false
+          },
+          "description": "Large tree whose trunk stands at the footpath edge; canopy overhangs the walkway.",
+          "confidence": 0.75,
+          "size_m": {
+            "w": 0.8,
+            "h": 6.0,
+            "d": 0.8
+          }
+        },
+        {
+          "local_id": "c",
+          "type": "pole",
+          "box_px": [
+            255,
+            180,
+            18,
+            160
+          ],
+          "touches_ground": true,
+          "est_distance_m": 15.0,
+          "orientation": "unknown",
+          "attributes": {},
+          "description": "Concrete utility pole at the back of the footpath.",
+          "confidence": 0.6,
+          "size_m": {
+            "w": 0.3,
+            "h": 7.0,
+            "d": 0.3
+          }
+        }
+      ],
+      "facades": [
+        {
+          "box_px": [
+            0,
+            60,
+            120,
+            260
+          ],
+          "side": "left",
+          "colour_hex": "#c9b79c",
+          "storeys": 3,
+          "use": "shops",
+          "description": "Three-storey cream shopfront block with shutters.",
+          "confidence": 0.7
+        }
+      ]
+    }
+  }
+}
