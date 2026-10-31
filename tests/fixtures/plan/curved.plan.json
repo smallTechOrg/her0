@@ -439,661 +439,13 @@
   {
    "s": 0.0,
    "lane_lat": [
-    5.552,
-    3.402,
-    1.602
-   ],
-   "footpath": {
-    "lo": 4.652,
-    "hi": 6.452,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.25,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.198,
-     "hi": 4.302,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.302,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.452,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.302,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 2.5,
-   "lane_lat": [
-    5.548,
-    3.398,
-    1.598
-   ],
-   "footpath": {
-    "lo": 4.648,
-    "hi": 6.448,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.25,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.202,
-     "hi": 4.298,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.298,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.448,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.298,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 5.0,
-   "lane_lat": [
-    5.545,
-    3.395,
-    1.595
-   ],
-   "footpath": {
-    "lo": 4.645,
-    "hi": 6.445,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.25,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.205,
-     "hi": 4.295,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.295,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.445,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.295,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 7.5,
-   "lane_lat": [
-    5.542,
-    3.392,
-    1.592
-   ],
-   "footpath": {
-    "lo": 4.642,
-    "hi": 6.442,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.25,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.208,
-     "hi": 4.292,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.292,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.442,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.292,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 10.0,
-   "lane_lat": [
-    5.538,
-    3.388,
-    1.588
-   ],
-   "footpath": {
-    "lo": 4.638,
-    "hi": 6.438,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.25,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.212,
-     "hi": 4.288,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.288,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.438,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.288,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 12.5,
-   "lane_lat": [
-    5.535,
-    3.385,
-    1.585
-   ],
-   "footpath": {
-    "lo": 4.635,
-    "hi": 6.435,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.25,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.215,
-     "hi": 4.285,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.285,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.435,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.285,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 15.0,
-   "lane_lat": [
-    5.532,
-    3.382,
-    1.582
-   ],
-   "footpath": {
-    "lo": 4.632,
-    "hi": 6.432,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.25,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.218,
-     "hi": 4.282,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.282,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.432,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.282,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 17.5,
-   "lane_lat": [
-    5.528,
-    3.378,
-    1.578
-   ],
-   "footpath": {
-    "lo": 4.628,
-    "hi": 6.428,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.25,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.222,
-     "hi": 4.278,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.278,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.428,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.278,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 20.0,
-   "lane_lat": [
-    5.525,
-    3.375,
-    1.575
-   ],
-   "footpath": {
-    "lo": 4.625,
-    "hi": 6.425,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.25,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.225,
-     "hi": 4.275,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.275,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.425,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.275,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 22.5,
-   "lane_lat": [
     5.521,
-    3.371,
-    1.571
+    3.357,
+    1.557
    ],
    "footpath": {
-    "lo": 4.621,
-    "hi": 6.421,
+    "lo": 4.67,
+    "hi": 6.277,
     "state": "intact",
     "material": "paver",
     "height_m": 0.15,
@@ -1126,1996 +478,15 @@
     },
     {
      "kind": "carriageway",
-     "lo": -4.229,
-     "hi": 4.271,
+     "lo": -4.243,
+     "hi": 4.257,
      "material": "asphalt",
      "height_m": 0.0,
      "confidence": 0.551
     },
     {
      "kind": "kerb",
-     "lo": 4.271,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.421,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.271,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 25.0,
-   "lane_lat": [
-    5.518,
-    3.368,
-    1.568
-   ],
-   "footpath": {
-    "lo": 4.618,
-    "hi": 6.418,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.25,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.232,
-     "hi": 4.268,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.268,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.418,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.268,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 27.5,
-   "lane_lat": [
-    5.515,
-    3.365,
-    1.565
-   ],
-   "footpath": {
-    "lo": 4.615,
-    "hi": 6.415,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.25,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.235,
-     "hi": 4.265,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.265,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.415,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.265,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 30.0,
-   "lane_lat": [
-    5.49,
-    3.327,
-    1.527
-   ],
-   "footpath": {
-    "lo": 4.577,
-    "hi": 6.403,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.798
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.273,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.273,
-     "hi": 4.227,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.798
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.25,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.403,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.227,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 32.5,
-   "lane_lat": [
-    5.445,
-    3.335,
-    1.535
-   ],
-   "footpath": {
-    "lo": 4.585,
-    "hi": 6.304,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.798
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.265,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.265,
-     "hi": 4.235,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.798
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.25,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.304,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.235,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 35.0,
-   "lane_lat": [
-    5.4,
-    3.344,
-    1.544
-   ],
-   "footpath": {
-    "lo": 4.594,
-    "hi": 6.206,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.798
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.256,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.256,
-     "hi": 4.244,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.798
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.25,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.206,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.244,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 37.5,
-   "lane_lat": [
-    5.354,
-    3.352,
-    1.552
-   ],
-   "footpath": {
-    "lo": 4.602,
-    "hi": 6.107,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.798
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.25,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.248,
-     "hi": 4.252,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.798
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.252,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.107,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.252,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 40.0,
-   "lane_lat": [
-    5.222,
-    3.333,
-    1.533
-   ],
-   "footpath": {
-    "lo": 4.547,
-    "hi": 5.897,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.267,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.267,
-     "hi": 4.233,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.25,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 5.9,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.233,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 42.5,
-   "lane_lat": [
-    5.279,
-    3.334,
-    1.534
-   ],
-   "footpath": {
-    "lo": 4.62,
-    "hi": 5.937,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.266,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.266,
-     "hi": 4.234,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.25,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 5.937,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.234,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 45.0,
-   "lane_lat": [
-    5.335,
-    3.336,
-    1.536
-   ],
-   "footpath": {
-    "lo": 4.693,
-    "hi": 5.977,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.264,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.264,
-     "hi": 4.236,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.25,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 5.977,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.236,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 47.5,
-   "lane_lat": [
-    5.392,
-    3.338,
-    1.538
-   ],
-   "footpath": {
-    "lo": 4.766,
-    "hi": 6.017,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.262,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.262,
-     "hi": 4.238,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.25,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.017,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.238,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 50.0,
-   "lane_lat": [
-    5.448,
-    3.34,
-    1.54
-   ],
-   "footpath": {
-    "lo": 4.84,
-    "hi": 6.056,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.26,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.26,
-     "hi": 4.24,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.25,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.056,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.24,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 52.5,
-   "lane_lat": [
-    5.505,
-    3.342,
-    1.542
-   ],
-   "footpath": {
-    "lo": 4.913,
-    "hi": 6.096,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.258,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.258,
-     "hi": 4.242,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.25,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.096,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.242,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 55.0,
-   "lane_lat": [
-    5.561,
-    3.343,
-    1.543
-   ],
-   "footpath": {
-    "lo": 4.986,
-    "hi": 6.136,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.257,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.257,
-     "hi": 4.243,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.25,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.136,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.243,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 57.5,
-   "lane_lat": [
-    5.618,
-    3.345,
-    1.545
-   ],
-   "footpath": {
-    "lo": 5.059,
-    "hi": 6.176,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.255,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.255,
-     "hi": 4.245,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.25,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.176,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.245,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 60.0,
-   "lane_lat": [
-    5.729,
-    3.355,
-    1.555
-   ],
-   "footpath": {
-    "lo": 5.179,
-    "hi": 6.279,
-    "state": "broken",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.25,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.245,
-     "hi": 4.255,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.255,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.279,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.255,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 62.5,
-   "lane_lat": [
-    5.751,
-    3.347,
-    1.547
-   ],
-   "footpath": {
-    "lo": 5.201,
-    "hi": 6.301,
-    "state": "broken",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.798
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.253,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.253,
-     "hi": 4.247,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.798
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.25,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.301,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.247,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 65.0,
-   "lane_lat": [
-    5.742,
-    3.344,
-    1.544
-   ],
-   "footpath": {
-    "lo": 5.192,
-    "hi": 6.292,
-    "state": "broken",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.798
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.256,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.256,
-     "hi": 4.244,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.798
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.25,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.292,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.244,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 67.5,
-   "lane_lat": [
-    5.734,
-    3.34,
-    1.54
-   ],
-   "footpath": {
-    "lo": 5.184,
-    "hi": 6.284,
-    "state": "broken",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.798
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.26,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.26,
-     "hi": 4.24,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.798
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.25,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.284,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.24,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 70.0,
-   "lane_lat": [
-    5.725,
-    3.337,
-    1.537
-   ],
-   "footpath": {
-    "lo": 5.175,
-    "hi": 6.275,
-    "state": "broken",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.798
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.263,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.263,
-     "hi": 4.237,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.798
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.25,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.275,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.237,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 72.5,
-   "lane_lat": [
-    5.677,
-    3.358,
-    1.558
-   ],
-   "footpath": null,
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.25,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.242,
-     "hi": 4.258,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.258,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 5.9,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.258,
-    "height_m": 0.0,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 75.0,
-   "lane_lat": [
-    5.63,
-    3.36,
-    1.56
-   ],
-   "footpath": null,
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.25,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.24,
-     "hi": 4.26,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.26,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 5.9,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.26,
-    "height_m": 0.0,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 77.5,
-   "lane_lat": [
-    5.582,
-    3.362,
-    1.562
-   ],
-   "footpath": null,
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.25,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.238,
-     "hi": 4.262,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.262,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 5.9,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.262,
-    "height_m": 0.0,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 80.0,
-   "lane_lat": [
-    5.534,
-    3.364,
-    1.564
-   ],
-   "footpath": null,
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.25,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.236,
-     "hi": 4.264,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.264,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 5.9,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.264,
-    "height_m": 0.0,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 82.5,
-   "lane_lat": [
-    5.486,
-    3.366,
-    1.566
-   ],
-   "footpath": null,
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.25,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.234,
-     "hi": 4.266,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.266,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 5.9,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.266,
-    "height_m": 0.0,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 85.0,
-   "lane_lat": [
-    5.438,
-    3.332,
-    1.532
-   ],
-   "footpath": {
-    "lo": 4.688,
-    "hi": 6.188,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.268,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.268,
-     "hi": 4.232,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.25,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.188,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.232,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 87.5,
-   "lane_lat": [
-    5.446,
-    3.342,
-    1.542
-   ],
-   "footpath": {
-    "lo": 4.696,
-    "hi": 6.196,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.258,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.258,
-     "hi": 4.242,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.25,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.196,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.242,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 90.0,
-   "lane_lat": [
-    5.454,
-    3.351,
-    1.551
-   ],
-   "footpath": {
-    "lo": 4.704,
-    "hi": 6.204,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.25,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.249,
-     "hi": 4.251,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.251,
-     "hi": 4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "forecourt",
-     "lo": 6.204,
-     "hi": 8.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    }
-   ],
-   "kerb": {
-    "lat": 4.251,
-    "height_m": 0.15,
-    "width_m": 0.2
-   },
-   "ground_src": "procedural"
-  },
-  {
-   "s": 92.5,
-   "lane_lat": [
-    5.463,
-    3.36,
-    1.56
-   ],
-   "footpath": {
-    "lo": 4.713,
-    "hi": 6.213,
-    "state": "intact",
-    "material": "paver",
-    "height_m": 0.15,
-    "confidence": 0.551
-   },
-   "strips": [
-    {
-     "kind": "forecourt",
-     "lo": -8.9,
-     "hi": -5.9,
-     "material": "unknown",
-     "height_m": 0.0,
-     "confidence": 0.139
-    },
-    {
-     "kind": "footpath",
-     "lo": -5.9,
-     "hi": -4.4,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "kerb",
-     "lo": -4.4,
-     "hi": -4.25,
-     "material": "unknown",
-     "height_m": 0.15,
-     "confidence": 0.139
-    },
-    {
-     "kind": "carriageway",
-     "lo": -4.24,
-     "hi": 4.26,
-     "material": "asphalt",
-     "height_m": 0.0,
-     "confidence": 0.551
-    },
-    {
-     "kind": "kerb",
-     "lo": 4.26,
+     "lo": 4.257,
      "hi": 4.4,
      "material": "unknown",
      "height_m": 0.15,
@@ -3131,22 +502,22 @@
     }
    ],
    "kerb": {
-    "lat": 4.26,
+    "lat": 4.257,
     "height_m": 0.15,
     "width_m": 0.2
    },
    "ground_src": "procedural"
   },
   {
-   "s": 95.0,
+   "s": 2.5,
    "lane_lat": [
-    5.485,
-    3.375,
-    1.575
+    5.521,
+    3.357,
+    1.557
    ],
    "footpath": {
-    "lo": 4.71,
-    "hi": 6.26,
+    "lo": 4.67,
+    "hi": 6.277,
     "state": "intact",
     "material": "paver",
     "height_m": 0.15,
@@ -3179,15 +550,15 @@
     },
     {
      "kind": "carriageway",
-     "lo": -4.225,
-     "hi": 4.275,
+     "lo": -4.243,
+     "hi": 4.257,
      "material": "asphalt",
      "height_m": 0.0,
      "confidence": 0.551
     },
     {
      "kind": "kerb",
-     "lo": 4.275,
+     "lo": 4.257,
      "hi": 4.4,
      "material": "unknown",
      "height_m": 0.15,
@@ -3195,7 +566,7 @@
     },
     {
      "kind": "forecourt",
-     "lo": 6.26,
+     "lo": 6.213,
      "hi": 8.9,
      "material": "unknown",
      "height_m": 0.0,
@@ -3203,7 +574,2636 @@
     }
    ],
    "kerb": {
-    "lat": 4.275,
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 5.0,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 7.5,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 10.0,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 12.5,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 15.0,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 17.5,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 20.0,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 22.5,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 25.0,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 27.5,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 30.0,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.798
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.798
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 32.5,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.798
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.798
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 35.0,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.798
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.798
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 37.5,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.798
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.798
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 40.0,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 42.5,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 45.0,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 47.5,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 50.0,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 52.5,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 55.0,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 57.5,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 60.0,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "broken",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 62.5,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "broken",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.798
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.798
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 65.0,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "broken",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.798
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.798
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 67.5,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "broken",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.798
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.798
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 70.0,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "broken",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.798
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.798
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 72.5,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": null,
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.0,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 75.0,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": null,
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.0,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 77.5,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": null,
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.0,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 80.0,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": null,
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.0,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 82.5,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": null,
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.0,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 85.0,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 87.5,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 90.0,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 92.5,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
+    "height_m": 0.15,
+    "width_m": 0.2
+   },
+   "ground_src": "procedural"
+  },
+  {
+   "s": 95.0,
+   "lane_lat": [
+    5.521,
+    3.357,
+    1.557
+   ],
+   "footpath": {
+    "lo": 4.67,
+    "hi": 6.277,
+    "state": "intact",
+    "material": "paver",
+    "height_m": 0.15,
+    "confidence": 0.551
+   },
+   "strips": [
+    {
+     "kind": "forecourt",
+     "lo": -8.9,
+     "hi": -5.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    },
+    {
+     "kind": "footpath",
+     "lo": -5.9,
+     "hi": -4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "kerb",
+     "lo": -4.4,
+     "hi": -4.25,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "carriageway",
+     "lo": -4.243,
+     "hi": 4.257,
+     "material": "asphalt",
+     "height_m": 0.0,
+     "confidence": 0.551
+    },
+    {
+     "kind": "kerb",
+     "lo": 4.257,
+     "hi": 4.4,
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.139
+    },
+    {
+     "kind": "forecourt",
+     "lo": 6.213,
+     "hi": 8.9,
+     "material": "unknown",
+     "height_m": 0.0,
+     "confidence": 0.139
+    }
+   ],
+   "kerb": {
+    "lat": 4.257,
     "height_m": 0.15,
     "width_m": 0.2
    },
@@ -3212,13 +3212,13 @@
   {
    "s": 97.5,
    "lane_lat": [
-    5.512,
-    3.383,
-    1.583
+    5.521,
+    3.357,
+    1.557
    ],
    "footpath": {
-    "lo": 4.674,
-    "hi": 6.349,
+    "lo": 4.67,
+    "hi": 6.277,
     "state": "intact",
     "material": "paver",
     "height_m": 0.15,
@@ -3251,15 +3251,15 @@
     },
     {
      "kind": "carriageway",
-     "lo": -4.217,
-     "hi": 4.283,
+     "lo": -4.243,
+     "hi": 4.257,
      "material": "asphalt",
      "height_m": 0.0,
      "confidence": 0.654
     },
     {
      "kind": "kerb",
-     "lo": 4.283,
+     "lo": 4.257,
      "hi": 4.4,
      "material": "unknown",
      "height_m": 0.15,
@@ -3267,7 +3267,7 @@
     },
     {
      "kind": "forecourt",
-     "lo": 6.349,
+     "lo": 6.213,
      "hi": 8.9,
      "material": "unknown",
      "height_m": 0.0,
@@ -3275,7 +3275,7 @@
     }
    ],
    "kerb": {
-    "lat": 4.283,
+    "lat": 4.257,
     "height_m": 0.15,
     "width_m": 0.2
    },
@@ -3284,13 +3284,13 @@
   {
    "s": 100.0,
    "lane_lat": [
-    5.552,
-    3.402,
-    1.602
+    5.521,
+    3.357,
+    1.557
    ],
    "footpath": {
-    "lo": 4.652,
-    "hi": 6.452,
+    "lo": 4.67,
+    "hi": 6.277,
     "state": "intact",
     "material": "paver",
     "height_m": 0.15,
@@ -3323,15 +3323,15 @@
     },
     {
      "kind": "carriageway",
-     "lo": -4.198,
-     "hi": 4.302,
+     "lo": -4.243,
+     "hi": 4.257,
      "material": "asphalt",
      "height_m": 0.0,
      "confidence": 0.551
     },
     {
      "kind": "kerb",
-     "lo": 4.302,
+     "lo": 4.257,
      "hi": 4.4,
      "material": "unknown",
      "height_m": 0.15,
@@ -3339,7 +3339,7 @@
     },
     {
      "kind": "forecourt",
-     "lo": 6.452,
+     "lo": 6.213,
      "hi": 8.9,
      "material": "unknown",
      "height_m": 0.0,
@@ -3347,7 +3347,7 @@
     }
    ],
    "kerb": {
-    "lat": 4.302,
+    "lat": 4.257,
     "height_m": 0.15,
     "width_m": 0.2
    },
@@ -3965,7 +3965,7 @@
     0
    ],
    "action": "slide",
-   "lateral_m": 5.331,
+   "lateral_m": 5.521,
    "yaw_deg": 0.0,
    "size_m": {
     "w": 1.8,
@@ -4003,12 +4003,12 @@
    },
    "billboard_url": null,
    "latlon": {
-    "lat": 12.97095,
-    "lon": 77.641338
+    "lat": 12.970951,
+    "lon": 77.641336
    },
    "tile_px": [
-    564.02,
-    694.01
+    562.85,
+    693.41
    ]
   },
   {
@@ -4133,7 +4133,7 @@
     0
    ],
    "action": "dodge",
-   "lateral_m": 5.558,
+   "lateral_m": 5.521,
    "yaw_deg": 0.0,
    "size_m": {
     "w": 1.8,
@@ -4157,12 +4157,12 @@
    "source": null,
    "billboard_url": null,
    "latlon": {
-    "lat": 12.971206,
-    "lon": 77.641551
+    "lat": 12.971205,
+    "lon": 77.641552
    },
    "tile_px": [
-    723.36,
-    498.64
+    723.51,
+    498.84
    ]
   },
   {
@@ -4231,11 +4231,11 @@
    "reason": "intact_footpath",
    "latlon": {
     "lat": 12.970648,
-    "lon": 77.64125
+    "lon": 77.641251
    },
    "tile_px": [
-    498.92,
-    925.41
+    499.08,
+    925.42
    ]
   },
   {
@@ -4248,8 +4248,8 @@
     "lon": 77.641263
    },
    "tile_px": [
-    508.19,
-    852.39
+    508.25,
+    852.41
    ]
   },
   {
@@ -4262,7 +4262,7 @@
     "lon": 77.641287
    },
    "tile_px": [
-    526.47,
+    526.45,
     781.17
    ]
   },
@@ -4272,12 +4272,12 @@
    "lane": 0,
    "reason": "intact_footpath",
    "latlon": {
-    "lat": 12.970925,
-    "lon": 77.641324
+    "lat": 12.970926,
+    "lon": 77.641323
    },
    "tile_px": [
-    554.14,
-    713.11
+    553.38,
+    712.75
    ]
   },
   {
@@ -4286,12 +4286,12 @@
    "lane": 0,
    "reason": "intact_footpath",
    "latlon": {
-    "lat": 12.971009,
-    "lon": 77.641372
+    "lat": 12.97101,
+    "lon": 77.64137
    },
    "tile_px": [
-    589.59,
-    649.11
+    588.5,
+    648.43
    ]
   },
   {
@@ -4304,8 +4304,8 @@
     "lon": 77.641428
    },
    "tile_px": [
-    631.45,
-    588.42
+    631.66,
+    588.59
    ]
   },
   {
@@ -4314,12 +4314,12 @@
    "lane": 0,
    "reason": "intact_footpath",
    "latlon": {
-    "lat": 12.971293,
+    "lat": 12.971294,
     "lon": 77.641698
    },
    "tile_px": [
-    832.88,
-    431.54
+    832.68,
+    431.12
    ]
   }
  ],
@@ -4331,7 +4331,7 @@
    "ent-c78f2090a5"
   ],
   "spawn_hints": {
-   "density": 0.075,
+   "density": 0.05,
    "type_weights": {
     "parked_car": 0.2934,
     "two_wheeler": 0.06,

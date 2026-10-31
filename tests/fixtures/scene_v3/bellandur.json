@@ -45,27 +45,27 @@
   }
  },
  "cross_section": {
-  "road_width_m": 8.577,
+  "road_width_m": 8.407,
   "lanes": [
    {
     "index": 0,
     "name": "footpath",
     "kind": "footpath",
-    "lat_m": 5.882,
+    "lat_m": 5.918,
     "width_m": 1.8
    },
    {
     "index": 1,
     "name": "road_edge",
     "kind": "road_edge",
-    "lat_m": 4.481,
+    "lat_m": 4.518,
     "width_m": 1.6
    },
    {
     "index": 2,
     "name": "road",
     "kind": "road",
-    "lat_m": 2.681,
+    "lat_m": 2.718,
     "width_m": 2.0
    }
   ],
@@ -122,7 +122,7 @@
  },
  "walkability": {
   "footpath_coverage_pct": 72.5,
-  "hazard_count": 16,
+  "hazard_count": 18,
   "crossing_present": false,
   "score": 44
  },
@@ -290,8 +290,8 @@
     },
     "lane_share": [
      0.242,
-     0.061,
-     0.697
+     0.03,
+     0.727
     ],
     "mean_confidence": 0.495
    },

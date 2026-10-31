@@ -158,7 +158,7 @@ def test_spawn_hints_mix_observed_and_prior_and_density_saturates():
     h = dynamic.spawn_hints(ents, 100.0, GP)
     assert tuple(h.type_weights) == SPAWN_TYPES and sum(h.type_weights.values()) == pytest.approx(1.0, abs=1e-6)
     assert h.type_weights["two_wheeler"] > h.type_weights["parked_car"] > h.type_weights["barricade"]
-    assert h.density == pytest.approx(10 / 40.0, abs=1e-3)
+    assert h.density == pytest.approx(10 / 60.0, abs=1e-3)
     assert dynamic.spawn_hints(ents * 20, 50.0, GP).density == 1.0
 
 

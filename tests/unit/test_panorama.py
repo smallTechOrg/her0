@@ -125,3 +125,60 @@ def test_build_is_content_addressed_and_rewrites_nothing_for_equal_input(tmp_pat
 def test_build_with_no_street_view_gives_an_empty_manifest(tmp_path: Path):
     manifest = pm.build_panoramas("s", 100.0, [], tmp_path, _ref())
     assert manifest["panoramas"] == [] and (tmp_path / "panoramas" / "s" / pm.MANIFEST_NAME).is_file()
+
+
+# ------------------------------------------------------------------ the frozen ground
+
+
+def _sphere(left_colour, right_colour, ground=(60, 60, 60), width=256):
+    """Equirect whose lower hemisphere is `ground`, the left half-sphere (bearings 180..360) tinted `left_colour`
+    and the right one (0..180) `right_colour` above the horizon (used to check bearings land on the right side)."""
+    import numpy as np
+
+    h = width // 2
+    img = np.zeros((h, width, 3), dtype=np.float32)
+    img[: h // 2, : width // 2] = right_colour
+    img[: h // 2, width // 2:] = left_colour
+    img[h // 2:, : width // 2] = ground
+    img[h // 2:, width // 2:] = [c // 2 for c in ground]        # the ground looks darker toward the west
+    return img
+
+
+def test_ground_is_painted_from_the_nearest_panorama_in_the_glb_uv_frame():
+    ref = _ref()                                                 # due east: west = bearings around 270 (left half)
+    near = _sphere(RED, GREEN, ground=(200, 100, 50))
+    far = _sphere(RED, GREEN, ground=(50, 100, 200))
+    img = pm.bake_ground([(20.0, 0.0, near, -90.0), (80.0, 0.0, far, -90.0)], 100.0, ref, mpp=0.5)
+    assert img.size == (56, 200)                                 # 28 m x 100 m at 0.5 m/px
+    # row 0 = s = 100 (painted by the far panorama), last row = s = 0 (near one); column 0 = t = +14 (left).
+    # 5 m ahead (east) of each panorama its bright eastern ground shows
+    top, bottom = img.getpixel((28, 30)), img.getpixel((28, 150))
+    assert _close(bottom, (200, 100, 50), 25) and _close(top, (50, 100, 200), 25)
+    # a point behind (west of) the near panorama samples the darker western ground
+    behind = img.getpixel((28, 170))                              # s ~ 15 < 20: looking west from the panorama
+    ahead = img.getpixel((28, 150))                               # s ~ 25 > 20: looking east
+    assert sum(behind) < sum(ahead)
+
+
+def test_ground_blind_spot_is_painted_by_the_neighbour():
+    ref = _ref()
+    near = _sphere((0, 0, 0), (0, 0, 0), ground=(255, 255, 255))
+    far = _sphere((0, 0, 0), (0, 0, 0), ground=(10, 10, 10))
+    # the near panorama only covers down to -45 deg: within ~2.5 m of it the far one (sees it shallowly) paints
+    img = pm.bake_ground([(20.0, 0.0, near, -45.0), (60.0, 0.0, far, -90.0)], 100.0, ref, mpp=0.5)
+    under = img.getpixel((28, 160))                               # s = 20, t = 0: directly under the near camera
+    beside = img.getpixel((28, 148))                              # s = 26: 6 m ahead, elev -23 deg: covered by near
+    assert sum(under) < 200 and sum(beside) > 500, (under, beside)
+
+
+def test_build_stores_the_frozen_ground_next_to_the_spheres(tmp_path: Path):
+    ref = _ref()
+    obs = [_obs(tmp_path, "A", h, station_s=20.0, pitch=-30.0) for h in (0, 90, 180, 270)]
+    manifest = pm.build_panoramas("g", 100.0, obs, tmp_path, ref, width=128)
+    g = manifest["ground"]
+    assert g["url"].startswith("/media/panoramas/g/ground_") and g["band_m"] == 14.0 and g["row0_s"] == 100.0
+    assert (tmp_path / "panoramas" / "g" / Path(g["url"]).name).is_file()
+    assert manifest["panoramas"][0]["min_elev_deg"] == -75.0
+    assert g["width"] == 560 and g["height"] == 2000
+    assert pm.load_panoramas("g", tmp_path) == manifest
+    assert pm.build_panoramas("none", 100.0, [], tmp_path, ref)["ground"] is None

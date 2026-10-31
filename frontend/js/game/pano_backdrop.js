@@ -16,6 +16,12 @@
 import * as THREE from 'three';
 
 export const PANO_NODES = ['Road', 'Footpath', 'Footpath_Opposite', 'Kerb', 'Ground_L', 'Ground_R', 'Frontage_L', 'Frontage_R', 'Frontage_Caps'];
+// Ground nodes carry the glb ground UVs (u = (14 - t) / 28, v = (L - s) / L): with `manifest.ground` they get the
+// FROZEN ground baked from the panoramas (one static photo, never swims) instead of the live projection.
+export const GROUND_NODES = ['Road', 'Footpath', 'Footpath_Opposite', 'Ground_L', 'Ground_R'];
+// Decorative furniture the photo already shows (painted crossings, railings): hidden in photo mode. Poles, trees
+// and boxes stay: they carry the colliders, and a hit must be visible.
+export const PHOTO_HIDDEN_NODES = ['Furniture_Decals', 'Furniture_Railings'];
 export const PANO_SCHEMA = 'hero-panoramas/1';
 const PREFETCH_AHEAD = 2;
 const CACHE_MAX = 6;
@@ -171,9 +177,14 @@ export function createPanoBackdrop(manifest, track, street, { camBackM = 0, expo
   dome.frustumCulled = false;
 
   const previous = new Map();   // mesh -> original material (restored by dispose)
+  const hidden = [];
+  const groundMat = manifest.ground ? new THREE.MeshBasicMaterial({ name: 'mat_pano_ground', color: 0xffffff }) : null;
   for (const g of street.copies) {
     g.traverse((o) => {
-      if (o.isMesh && PANO_NODES.includes(o.name)) { previous.set(o, o.material); o.material = project; }
+      if (!o.isMesh) return;
+      if (groundMat && GROUND_NODES.includes(o.name)) { previous.set(o, o.material); o.material = groundMat; }
+      else if (PANO_NODES.includes(o.name)) { previous.set(o, o.material); o.material = project; }
+      else if (PHOTO_HIDDEN_NODES.includes(o.name) && o.visible) { o.visible = false; hidden.push(o); }
     });
   }
 
@@ -223,10 +234,15 @@ export function createPanoBackdrop(manifest, track, street, { camBackM = 0, expo
 
   return {
     dome, material: project, entries, panos,
-    /** Load the panoramas the start needs (call before showing the street). */
+    /** Load the panoramas the start needs and the frozen ground (call before showing the street). */
     async prime(runnerS = 0) {
       const { a, b } = pick(runnerS - camBackM);
-      const [ta, tb] = await Promise.all([get(a.url).promise, get(b.url).promise]);
+      const [ta, tb, tg] = await Promise.all([get(a.url).promise, get(b.url).promise,
+        groundMat ? loadTexture(manifest.ground.url) : Promise.resolve(null)]);
+      if (groundMat) {
+        if (tg) { tg.wrapS = tg.wrapT = THREE.ClampToEdgeWrapping; tg.anisotropy = 16; groundMat.map = tg; groundMat.needsUpdate = true; }
+        else { for (const [mesh, mat] of previous) if (mesh.material === groundMat) mesh.material = project; }   // fall back to the projection
+      }
       stats.loaded = cache.size;
       apply(a, b, 0);
       return !!(ta || tb);
@@ -241,10 +257,12 @@ export function createPanoBackdrop(manifest, track, street, { camBackM = 0, expo
     /** Debug summary (e2e tests). */
     get state() {
       return { count: panos.length, current: cur.a ? cur.a.i : null, next: cur.b ? cur.b.i : null, mix: Math.round(cur.mix * 1000) / 1000,
-        cached: [...cache.values()].filter((e) => e.tex).length };
+        cached: [...cache.values()].filter((e) => e.tex).length, ground: !!(groundMat && groundMat.map), hidden: hidden.length };
     },
     dispose() {
       for (const [mesh, mat] of previous) mesh.material = mat;
+      for (const o of hidden) o.visible = true;
+      if (groundMat) { if (groundMat.map) groundMat.map.dispose(); groundMat.dispose(); }
       for (const e of cache.values()) if (e.tex) e.tex.dispose();
       cache.clear();
       project.dispose(); domeMat.dispose(); dome.geometry.dispose(); blank.dispose();

@@ -16,7 +16,7 @@ import { fromManifest, fromLegacyScene, resultsScene } from '/js/game/play_data.
 import { createAtmosphere, createAoBlob } from '/js/game/atmosphere.js?v=2';
 import { createRunnerAvatar } from '/js/game/runner_avatar.js';
 import { createCameraRig, CAM_BACK_M } from '/js/game/camera_rig.js?v=1';
-import { createPanoBackdrop, fetchPanoramas } from '/js/game/pano_backdrop.js?v=1';
+import { createPanoBackdrop, fetchPanoramas } from '/js/game/pano_backdrop.js?v=2';
 import { createBudget } from '/js/game/budget.js?v=1';
 
 const MAX_DT_S = 0.1;

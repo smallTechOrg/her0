@@ -25,7 +25,7 @@ from hero.model.types import Entity
 BAND_WIDEN_M = 0.3
 PRIOR_KERB_M = 0.15
 PRIOR_BAND_WIDTH_M = 1.5
-DENSITY_FULL_PER_100M = 40.0
+DENSITY_FULL_PER_100M = 60.0   # dynamic entities seen per 100 m that saturate the spawn density (was 40: too busy)
 OBSERVED_MIX = 0.7
 MIN_EXCLUDED_FOR_OBSERVED = 3
 Runtime = str  # "fixed" | "dynamic_context"
@@ -99,7 +99,7 @@ def _lane_weights(lanes: Sequence[int], gameplay: GameplayV1) -> tuple[float, fl
 
 def spawn_hints(entities: Sequence[Entity], length_m: float, gameplay: GameplayV1,
                 lanes: Sequence[int] = ()) -> SpawnHints:
-    """Density = min(1, excluded per 100 m / 40); weights = 0.7 observed + 0.3 prior when >= 3 entities else the prior."""
+    """Density = min(1, excluded per 100 m / 60); weights = 0.7 observed + 0.3 prior when >= 3 entities else the prior."""
     prior = gameplay.spawner.default_spawn_hints.type_weights
     prior = {k: prior[k] for k in SPAWN_TYPES}
     counts = _spawn_type_counts(entities)

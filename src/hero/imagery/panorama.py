@@ -50,6 +50,11 @@ MAX_SIDE_M = 20.0             # panoramas farther off the line than this belong 
 END_MARGIN_M = 12.0           # panoramas just past either end are still useful (seen from the last metres)
 FEATHER = 0.12                # fraction of the frame edge over which a frame's weight fades to 0
 MIN_FRAMES = 1
+GROUND_BAND_M = 14.0          # the ground strip covers t in [-14, +14] (same frame as the glb ground UVs)
+GROUND_MPP = 0.05             # 5 cm/px: a 100 m street -> 2000 x 560 px
+GROUND_MAX_PX = 4096
+GROUND_BLEND_M = 2.0          # cross-fade width between neighbouring panoramas' views of the ground
+GROUND_MIN_ELEV_DEG = 1.5     # a panorama paints the ground only where it looks down at least this much
 
 
 def panorama_key(observations: Sequence[Observation]) -> str:
@@ -160,6 +165,82 @@ def _fill_gaps(out: np.ndarray, covered: np.ndarray) -> None:
     out[gap] = blurred[gap]
 
 
+# ------------------------------------------------------------------ the frozen ground
+
+
+def bake_ground(panos: Sequence[tuple[float, float, np.ndarray, float]], length_s: float, ref: ReferenceLine, *,
+                mpp: float = GROUND_MPP, camera_height_m: float = SV_CAMERA_HEIGHT_M) -> Image.Image:
+    """The street's ground (``t`` in ``[-14, 14]``, ``s`` in ``[0, L]``) painted ONCE from the panoramas: every
+    pixel takes the view of the nearest panorama (by ``s``), cross-faded over ``GROUND_BLEND_M`` at the midpoint
+    between neighbours. Row 0 = ``s = L``, column 0 = ``t = +14`` (the glb ground UV frame, ``uv_ground``), so the
+    play page can drape it on the ground nodes directly. Frozen, the road never swims as the runner moves.
+
+    ``panos`` = ``(s, t, equirect RGB float array, min_elev_deg)`` per panorama (column 0 = north, row 0 = up;
+    ``min_elev_deg`` = the lowest elevation its frames cover - the ground closer than that, i.e. the blind spot under
+    Google's car, is painted by the neighbouring panoramas instead)."""
+    if not panos:
+        raise ValueError("no panoramas")
+    width = max(2, min(GROUND_MAX_PX, int(round(2 * GROUND_BAND_M / mpp))))
+    height = max(2, min(GROUND_MAX_PX, int(round(length_s / mpp))))
+    t = GROUND_BAND_M - (np.arange(width) + 0.5) * (2 * GROUND_BAND_M / width)       # +14 .. -14
+    s = length_s - (np.arange(height) + 0.5) * (length_s / height)                    # L .. 0
+    # world xy of every pixel from the reference line (east, north), left normal = (-ty, tx)
+    base = np.array([ref._xy_ext(float(v)) for v in s])                                # (H, 2)
+    tang = np.array([ref.tangent(float(v)) for v in s])                                # (H, 2)
+    px = base[:, 0][:, None] - tang[:, 1][:, None] * t[None, :]
+    py = base[:, 1][:, None] + tang[:, 0][:, None] * t[None, :]
+    order = sorted(range(len(panos)), key=lambda i: panos[i][0])
+    ss = np.array([panos[i][0] for i in order])
+    acc = np.zeros((height, width, 3), dtype=np.float32)
+    wsum = np.zeros((height, width), dtype=np.float32)
+    for n, i in enumerate(order):
+        ps, pt, img, min_elev = panos[i]
+        # row weight: 1 inside this panorama's half of the gap to each neighbour, fading over GROUND_BLEND_M; the
+        # neighbours keep a small weight everywhere so a blind spot is always painted by someone
+        lo = -np.inf if n == 0 else (ss[n - 1] + ps) / 2.0
+        hi = np.inf if n == len(order) - 1 else (ps + ss[n + 1]) / 2.0
+        near = np.clip((s - lo) / GROUND_BLEND_M + 0.5, 0.0, 1.0) * np.clip((hi - s) / GROUND_BLEND_M + 0.5, 0.0, 1.0)
+        w_row = np.maximum(near, 0.02 * np.exp(-np.abs(s - ps) / 25.0))
+        rows = np.nonzero(w_row > 1e-4)[0]
+        if not rows.size:
+            continue
+        cx, cy = ref._xy_ext(float(ps))
+        tx, ty = ref.tangent(float(ps))
+        cx, cy = cx - ty * pt, cy + tx * pt
+        dx = px[rows] - cx
+        dy = py[rows] - cy
+        horiz = np.hypot(dx, dy)
+        elev = np.degrees(np.arctan2(-camera_height_m, horiz))
+        bearing = np.degrees(np.arctan2(dx, dy)) % 360.0
+        ih, iw = img.shape[:2]
+        u = bearing / 360.0 * iw - 0.5
+        v = (0.5 - elev / 180.0) * ih - 0.5
+        colours = _sample_bilinear_wrap(img, u, v)
+        seen = np.clip((elev - (min_elev + 2.0)) / 6.0, 0.0, 1.0)      # 0 inside the blind spot, 1 beyond it
+        w = w_row[rows][:, None] * np.clip((-elev - GROUND_MIN_ELEV_DEG) / 3.0, 0.0, 1.0) * seen
+        acc[rows] += colours * w[..., None]
+        wsum[rows] += w
+    covered = wsum > 1e-6
+    out = np.zeros_like(acc)
+    out[covered] = acc[covered] / wsum[covered][:, None]
+    _fill_gaps(out, covered)
+    return Image.fromarray(np.clip(out + 0.5, 0, 255).astype(np.uint8), "RGB")
+
+
+def _sample_bilinear_wrap(img: np.ndarray, x: np.ndarray, y: np.ndarray) -> np.ndarray:
+    """Bilinear sample with horizontal wrap (equirect seam) and vertical clamp."""
+    h, w = img.shape[:2]
+    y = np.clip(y, 0.0, h - 1.001)
+    x0 = np.floor(x).astype(np.int64)
+    y0 = np.floor(y).astype(np.int32)
+    fx = (x - x0)[..., None]
+    fy = (y - y0)[..., None]
+    xa, xb = x0 % w, (x0 + 1) % w
+    top = img[y0, xa] * (1 - fx) + img[y0, xb] * fx
+    bot = img[y0 + 1, xa] * (1 - fx) + img[y0 + 1, xb] * fx
+    return top * (1 - fy) + bot * fy
+
+
 # ------------------------------------------------------------------ building the set for a street
 
 
@@ -211,18 +292,40 @@ def build_panoramas(slug: str, length_s: float, observations: Sequence[Observati
             dest.write_bytes(buf.getvalue())
         for f in frames:
             f[0].close()
+        min_elev = min(f[2] - f[3] / 2.0 for f in frames)      # lowest elevation any frame of this sphere reaches
         panos.append({
             "pano_id": pano_id, "s": round(s, 3), "t": round(t, 3), "lat": first.lat, "lon": first.lon,
-            "frames": len(frames), "capture_date": first.capture_date,
+            "frames": len(frames), "capture_date": first.capture_date, "min_elev_deg": round(min_elev, 1),
             "url": f"/media/panoramas/{slug}/{dest.name}", "width": width, "height": width // 2,
         })
     panos.sort(key=lambda p: p["s"])
+    ground = _store_ground(out_dir, slug, panos, length_s, ref, key) if panos else None
     manifest = {
         "schema": PANO_SCHEMA, "slug": slug, "key": key, "length_s": length_s,
         "camera_height_m": SV_CAMERA_HEIGHT_M, "bearing0_deg": round(ref.bearing_deg(0.0), 3), "panoramas": panos,
+        "ground": ground,
     }
     (out_dir / MANIFEST_NAME).write_text(json.dumps(manifest, indent=1))
     return manifest
+
+
+def _store_ground(out_dir: Path, slug: str, panos: list[dict[str, Any]], length_s: float, ref: ReferenceLine,
+                  key: str) -> dict[str, Any]:
+    dest = out_dir / f"ground_{key}.jpg"
+    if not dest.is_file():
+        views = []
+        for p in panos:
+            with Image.open(out_dir / Path(p["url"]).name) as im:
+                views.append((float(p["s"]), float(p["t"]), np.asarray(im.convert("RGB"), dtype=np.float32),
+                              float(p.get("min_elev_deg", -45.0))))
+        image = bake_ground(views, length_s, ref)
+        buf = io.BytesIO()
+        image.save(buf, "JPEG", quality=JPEG_QUALITY, optimize=True)
+        dest.write_bytes(buf.getvalue())
+    with Image.open(dest) as im:
+        w, h = im.size
+    return {"url": f"/media/panoramas/{slug}/{dest.name}", "width": w, "height": h, "band_m": GROUND_BAND_M,
+            "row0_s": length_s, "col0_t": GROUND_BAND_M}
 
 
 def load_panoramas(slug: str, data_dir: Path) -> dict[str, Any] | None:
@@ -234,7 +337,7 @@ def load_panoramas(slug: str, data_dir: Path) -> dict[str, Any] | None:
         manifest = json.loads(path.read_text())
     except (OSError, ValueError):
         return None
-    for p in manifest.get("panoramas", []):
+    for p in [*manifest.get("panoramas", []), *([manifest["ground"]] if manifest.get("ground") else [])]:
         if not (panoramas_dir(data_dir, slug) / Path(p["url"]).name).is_file():
             return None
     return manifest

@@ -138,6 +138,7 @@ class _Rules:
     hazard_weight: float = HAZARD_WEIGHT
     hazard_norm: float = HAZARD_SATURATION
     split: bool = False  # classify entities fixed / dynamic_context
+    freeze_corridor: bool = False  # one constant cross-section for the whole street (lanes and footpath never drift)
 
 
 LEGACY = _Rules()
@@ -147,6 +148,7 @@ KERB_BASE_M = 0.15  # prior kerb between a carriageway and a footpath
 def rules_from_gameplay(gp) -> _Rules:
     ln, tk, wk = gp.lanes, gp.tokens, gp.scoring.walkability
     return _Rules(
+        freeze_corridor=True,
         road_edge_inset=ln.road_edge_inset_m, lane_gap=ln.road_lane_gap_m, min_sep=ln.min_footpath_to_edge_m,
         prior_centre_offset=KERB_BASE_M + ln.default_footpath_width_m / 2.0,
         bands=(ln.default_footpath_width_m, ln.widths_m.road_edge, ln.widths_m.road),
@@ -291,6 +293,46 @@ def _fill_centres(stations: Sequence[_Station], prior_offset: float = PRIOR_PATH
         else:
             out.append(st.edge + prior_offset)
     return out
+
+
+def _median(values: Sequence[float]) -> float:
+    xs = sorted(values)
+    n = len(xs)
+    return xs[n // 2] if n % 2 else (xs[n // 2 - 1] + xs[n // 2]) / 2.0
+
+
+def _freeze_corridor(stations: list[_Station]) -> None:
+    """One cross-section for the whole street: every station takes the median footpath band, kerb edge, strip
+    bounds and lane centres. Per-station state / material / confidence stay. Detected widths wobble by tens of
+    centimetres from station to station (and jump at the loop seam); with the Street View backdrop painted over the
+    geometry that wobble reads as the tracks drifting, so the runner's lanes are kept dead straight instead."""
+    if not stations:
+        return
+    for i in range(3):
+        m = _median([st.lane[i] for st in stations])
+        for st in stations:
+            st.lane[i] = m
+    edge = _median([st.edge for st in stations])
+    for st in stations:
+        st.edge = edge
+    with_fp = [st for st in stations if st.fp is not None]
+    if with_fp:
+        lo, hi = _median([st.fp.lo for st in with_fp]), _median([st.fp.hi for st in with_fp])  # type: ignore[union-attr]
+        height = _median([st.fp.height for st in with_fp])  # type: ignore[union-attr]
+        for st in with_fp:
+            st.fp.lo, st.fp.hi, st.fp.height = lo, hi, height  # type: ignore[union-attr]
+    # strips: the k-th strip of a kind takes the median bounds of the k-th strip of that kind over the street
+    groups: dict[tuple[str, int], list[_Sp]] = {}
+    for st in stations:
+        seen: dict[str, int] = {}
+        for sp in st.strips:
+            k = seen.get(sp.kind, 0)
+            seen[sp.kind] = k + 1
+            groups.setdefault((sp.kind, k), []).append(sp)
+    for members in groups.values():
+        lo, hi = _median([sp.lo for sp in members]), _median([sp.hi for sp in members])
+        for sp in members:
+            sp.lo, sp.hi = lo, hi
 
 
 def _blend_seam(stations: list[_Station], length: float) -> None:
@@ -564,6 +606,8 @@ def _core(model: CanonicalModel, *, observations: Mapping[str, Observation], ass
     for st, c in zip(stations, centres):
         l1 = st.edge - rules.road_edge_inset
         st.lane = [max(c, l1 + rules.min_sep), l1, l1 - rules.lane_gap]
+    if rules.freeze_corridor:
+        _freeze_corridor(stations)
     _blend_seam(stations, length)
 
     # ---- path (world frame)

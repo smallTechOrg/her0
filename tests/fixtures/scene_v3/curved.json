@@ -58,14 +58,14 @@
     "index": 1,
     "name": "road_edge",
     "kind": "road_edge",
-    "lat_m": 3.359,
+    "lat_m": 3.357,
     "width_m": 1.6
    },
    {
     "index": 2,
     "name": "road",
     "kind": "road",
-    "lat_m": 1.559,
+    "lat_m": 1.557,
     "width_m": 2.0
    }
   ],

@@ -167,7 +167,9 @@ def _install_panoramas(page: Page, count: int = 2) -> dict:
     panos = [{"pano_id": f"p{i}", "s": 10.0 + 40.0 * i, "t": 3.0, "lat": 12.9, "lon": 77.6, "frames": 4, "capture_date": "2026-04",
               "url": f"/media/panoramas/{SLUG}/p{i}_deadbeef.jpg", "width": 64, "height": 32} for i in range(count)]
     manifest = {"schema": "hero-panoramas/1", "slug": SLUG, "key": "deadbeef", "length_s": 100.0, "camera_height_m": 2.5,
-                "bearing0_deg": 90.0, "panoramas": panos}
+                "bearing0_deg": 90.0, "panoramas": panos,
+                "ground": {"url": f"/media/panoramas/{SLUG}/ground_deadbeef.jpg", "width": 64, "height": 32, "band_m": 14.0,
+                           "row0_s": 100.0, "col0_t": 14.0}}
 
     def on_manifest(route):
         seen["manifest"] += 1
@@ -186,7 +188,8 @@ PANO_PROBE = """() => {
   const names = {};
   for (const m of window.__hero.graph().meshes) { names[m.name] = m.material; }
   const g = window.__hero.graph();
-  return { pano: window.__hero.pano, road: names.Road, frontage: names.Frontage_L, poles: names.Furniture_Poles,
+  return { pano: window.__hero.pano, road: names.Road, frontage: names.Frontage_L, poles: names.Furniture_Poles, kerb: names.Kerb,
+           decals: g.meshes.some((m) => m.name === 'Furniture_Decals' && m.visible),
            hasDome: g.meshes.some((m) => m.name === 'PanoSky' && m.visible), skyVisible: g.meshes.some((m) => m.name === 'Sky' && m.visible),
            fog: g.fog };
 }"""
@@ -197,10 +200,12 @@ def test_street_view_panoramas_are_projected_onto_the_street_when_the_export_sti
     seen = _install_panoramas(page)
     open_ready(page, live_server)
     info = page.evaluate(PANO_PROBE)
-    assert seen["manifest"] == 1 and seen["images"] >= 2           # the two the start needs were primed
-    assert info["pano"]["count"] == 2 and info["pano"]["cached"] >= 2
-    assert info["road"] == "ShaderMaterial" and info["frontage"] == "ShaderMaterial"
+    assert seen["manifest"] == 1 and seen["images"] >= 3           # the two spheres the start needs + the frozen ground
+    assert info["pano"]["count"] == 2 and info["pano"]["cached"] >= 2 and info["pano"]["ground"] is True
+    assert info["road"] == "MeshBasicMaterial"                      # the ground is the frozen photo: it never swims
+    assert info["frontage"] == "ShaderMaterial" and info["kerb"] == "ShaderMaterial"   # walls: live projection
     assert info["poles"] == "MeshLambertMaterial"                   # furniture / obstacles stay lit models
+    assert not info["decals"]                                       # painted crossings are in the photo already
     assert info["hasDome"] and not info["skyVisible"]
     assert info["fog"]["near"] >= 100                               # the photo carries its own haze
     page.click("#start")
@@ -216,6 +221,6 @@ def test_without_panoramas_the_baked_textures_and_gradient_sky_stay(page: Page, 
                lambda route: route.fulfill(status=404, content_type="application/json", body='{"ok":false,"error":{"code":"not_found","message":"no panoramas yet"}}'))
     open_ready(page, live_server)
     info = page.evaluate(PANO_PROBE)
-    assert info["pano"] is None and info["road"] == "MeshLambertMaterial"
+    assert info["pano"] is None and info["road"] == "MeshLambertMaterial" and info["decals"]
     assert info["skyVisible"] and not info["hasDome"] and info["fog"]["near"] == 30
     assert not page.hero_errors, page.hero_errors  # type: ignore[attr-defined]
