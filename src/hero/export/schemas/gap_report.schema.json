@@ -1,0 +1,367 @@
+{
+  "$defs": {
+    "BlankCounts": {
+      "additionalProperties": false,
+      "properties": {
+        "ground": {
+          "minimum": 0,
+          "title": "Ground",
+          "type": "integer"
+        },
+        "frontage_modelled": {
+          "minimum": 0,
+          "title": "Frontage Modelled",
+          "type": "integer"
+        },
+        "frontage_opposite": {
+          "minimum": 0,
+          "title": "Frontage Opposite",
+          "type": "integer"
+        },
+        "footpath": {
+          "minimum": 0,
+          "title": "Footpath",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "ground",
+        "frontage_modelled",
+        "frontage_opposite",
+        "footpath"
+      ],
+      "title": "BlankCounts",
+      "type": "object"
+    },
+    "FootpathGap": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "enum": [
+            "traced",
+            "state_only",
+            "prior"
+          ],
+          "title": "Evidence",
+          "type": "string"
+        },
+        "rendered": {
+          "enum": [
+            "traced",
+            "state_only",
+            "interpolated",
+            "prior"
+          ],
+          "title": "Rendered",
+          "type": "string"
+        }
+      },
+      "required": [
+        "evidence",
+        "rendered"
+      ],
+      "title": "FootpathGap",
+      "type": "object"
+    },
+    "FrontageGap": {
+      "additionalProperties": false,
+      "properties": {
+        "modelled": {
+          "$ref": "#/$defs/FrontageSideGap"
+        },
+        "opposite": {
+          "$ref": "#/$defs/FrontageSideGap"
+        }
+      },
+      "required": [
+        "modelled",
+        "opposite"
+      ],
+      "title": "FrontageGap",
+      "type": "object"
+    },
+    "FrontageSideGap": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "enum": [
+            "osm",
+            "photo",
+            "osm+photo",
+            "none"
+          ],
+          "title": "Evidence",
+          "type": "string"
+        },
+        "rendered": {
+          "enum": [
+            "osm",
+            "vision",
+            "interpolated",
+            "prior"
+          ],
+          "title": "Rendered",
+          "type": "string"
+        }
+      },
+      "required": [
+        "evidence",
+        "rendered"
+      ],
+      "title": "FrontageSideGap",
+      "type": "object"
+    },
+    "FurnitureGap": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "enum": [
+            "street_level",
+            "none"
+          ],
+          "title": "Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "evidence"
+      ],
+      "title": "FurnitureGap",
+      "type": "object"
+    },
+    "GapBin": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "minimum": 0,
+          "title": "Index",
+          "type": "integer"
+        },
+        "s_from": {
+          "title": "S From",
+          "type": "number"
+        },
+        "s_to": {
+          "title": "S To",
+          "type": "number"
+        },
+        "fidelity_level": {
+          "maximum": 3,
+          "minimum": 0,
+          "title": "Fidelity Level",
+          "type": "integer"
+        },
+        "ground": {
+          "$ref": "#/$defs/GroundGap"
+        },
+        "frontage": {
+          "$ref": "#/$defs/FrontageGap"
+        },
+        "footpath": {
+          "$ref": "#/$defs/FootpathGap"
+        },
+        "furniture": {
+          "$ref": "#/$defs/FurnitureGap"
+        },
+        "hint": {
+          "default": "",
+          "title": "Hint",
+          "type": "string"
+        }
+      },
+      "required": [
+        "index",
+        "s_from",
+        "s_to",
+        "fidelity_level",
+        "ground",
+        "frontage",
+        "footpath",
+        "furniture"
+      ],
+      "title": "GapBin",
+      "type": "object"
+    },
+    "GapCounts": {
+      "additionalProperties": false,
+      "properties": {
+        "ground": {
+          "minimum": 0,
+          "title": "Ground",
+          "type": "integer"
+        },
+        "frontage_modelled": {
+          "minimum": 0,
+          "title": "Frontage Modelled",
+          "type": "integer"
+        },
+        "frontage_opposite": {
+          "minimum": 0,
+          "title": "Frontage Opposite",
+          "type": "integer"
+        },
+        "footpath": {
+          "minimum": 0,
+          "title": "Footpath",
+          "type": "integer"
+        },
+        "furniture": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Furniture",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "ground",
+        "frontage_modelled",
+        "frontage_opposite",
+        "footpath"
+      ],
+      "title": "GapCounts",
+      "type": "object"
+    },
+    "GroundGap": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "enum": [
+            "satellite_hires",
+            "satellite_overview",
+            "none"
+          ],
+          "title": "Evidence",
+          "type": "string"
+        },
+        "rendered": {
+          "enum": [
+            "satellite_hires",
+            "satellite_overview",
+            "interpolated",
+            "procedural"
+          ],
+          "title": "Rendered",
+          "type": "string"
+        }
+      },
+      "required": [
+        "evidence",
+        "rendered"
+      ],
+      "title": "GroundGap",
+      "type": "object"
+    },
+    "Interpolation": {
+      "additionalProperties": false,
+      "properties": {
+        "what": {
+          "enum": [
+            "ground_texture",
+            "frontage",
+            "footpath_state",
+            "kerb",
+            "furniture_unknown"
+          ],
+          "title": "What",
+          "type": "string"
+        },
+        "side": {
+          "title": "Side",
+          "type": "string"
+        },
+        "s_from": {
+          "title": "S From",
+          "type": "number"
+        },
+        "s_to": {
+          "title": "S To",
+          "type": "number"
+        },
+        "method": {
+          "enum": [
+            "neighbours",
+            "prior",
+            "osm",
+            "procedural"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "from_s": {
+          "items": {
+            "type": "number"
+          },
+          "title": "From S",
+          "type": "array"
+        },
+        "note": {
+          "default": "",
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "what",
+        "side",
+        "s_from",
+        "s_to",
+        "method"
+      ],
+      "title": "Interpolation",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "gap_report": {
+      "const": 1,
+      "default": 1,
+      "title": "Gap Report",
+      "type": "integer"
+    },
+    "model_version": {
+      "minimum": 0,
+      "title": "Model Version",
+      "type": "integer"
+    },
+    "bin_m": {
+      "default": 5.0,
+      "title": "Bin M",
+      "type": "number"
+    },
+    "length_s": {
+      "exclusiveMinimum": 0,
+      "title": "Length S",
+      "type": "number"
+    },
+    "bins": {
+      "items": {
+        "$ref": "#/$defs/GapBin"
+      },
+      "title": "Bins",
+      "type": "array"
+    },
+    "uncovered": {
+      "$ref": "#/$defs/GapCounts"
+    },
+    "blank_after_compile": {
+      "$ref": "#/$defs/BlankCounts"
+    },
+    "interpolations": {
+      "items": {
+        "$ref": "#/$defs/Interpolation"
+      },
+      "title": "Interpolations",
+      "type": "array"
+    }
+  },
+  "required": [
+    "model_version",
+    "length_s",
+    "bins",
+    "uncovered",
+    "blank_after_compile"
+  ],
+  "title": "GapReport",
+  "type": "object"
+}

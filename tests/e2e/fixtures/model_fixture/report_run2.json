@@ -1,0 +1,287 @@
+{
+ "run_id": "fx-run-2",
+ "segment_slug": "fixture-curved-street",
+ "mode": "generate",
+ "model": null,
+ "base_version": 1,
+ "result_version": 2,
+ "version_created": true,
+ "started_at": "2026-10-30T11:00:00Z",
+ "finished_at": "2026-10-30T11:03:00Z",
+ "duration_s": 180.0,
+ "images": {
+  "planned": 48,
+  "used_total": 48,
+  "new": 22,
+  "cached": 26,
+  "fused_this_run": 22,
+  "by_source": {
+   "google_static_maps": 4,
+   "google_streetview": 44
+  },
+  "by_kind": {
+   "satellite_crop": 3,
+   "satellite_overview": 1,
+   "streetview": 44
+  },
+  "by_view": {
+   "back": 11,
+   "forward": 11,
+   "left": 11,
+   "right": 11
+  },
+  "new_observation_ids": [
+   "obs-fx-027",
+   "obs-fx-028",
+   "obs-fx-029",
+   "obs-fx-030",
+   "obs-fx-031",
+   "obs-fx-032",
+   "obs-fx-033",
+   "obs-fx-034",
+   "obs-fx-035",
+   "obs-fx-036",
+   "obs-fx-037",
+   "obs-fx-038",
+   "obs-fx-039",
+   "obs-fx-040",
+   "obs-fx-041",
+   "obs-fx-042",
+   "obs-fx-043",
+   "obs-fx-044",
+   "obs-fx-045",
+   "obs-fx-046",
+   "obs-fx-047",
+   "obs-fx-048"
+  ],
+  "skipped": []
+ },
+ "detections": {
+  "new": [
+   {
+    "id": "ent-5b1eaf3d66",
+    "type": "bin",
+    "description": "Green waste bin beside the footpath.",
+    "confidence": 0.565
+   },
+   {
+    "id": "ent-c78f2090a5",
+    "type": "vendor_stall",
+    "description": "Roadside fruit stall at the back of the footpath.",
+    "confidence": 0.595
+   },
+   {
+    "id": "ent-f367118cc3",
+    "type": "bollard",
+    "description": "White bollard at the kerb.",
+    "confidence": 0.595
+   }
+  ],
+  "changed": [
+   {
+    "id": "ent-7ab2051f05",
+    "what": "confidence 0.704 -> 0.842"
+   },
+   {
+    "id": "ent-99e751ab0b",
+    "what": "confidence 0.709 -> 0.596"
+   },
+   {
+    "id": "ent-9db1e6c792",
+    "what": "confidence 0.657 -> 0.728"
+   }
+  ],
+  "removed": [],
+  "contradicted": [],
+  "unchanged_count": 4
+ },
+ "profile_changes": [],
+ "fidelity": {
+  "before": {
+   "overall": 1.0,
+   "histogram_m": {
+    "L1": 100.0
+   }
+  },
+  "after": {
+   "overall": 2.0,
+   "histogram_m": {
+    "L2": 100.0
+   }
+  },
+  "improved_intervals": [
+   {
+    "s_from": 0.0,
+    "s_to": 100.0,
+    "from": "L1",
+    "to": "L2"
+   }
+  ],
+  "bins": [
+   {
+    "s_from": 0.0,
+    "s_to": 5.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 5.0,
+    "s_to": 10.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 10.0,
+    "s_to": 15.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 15.0,
+    "s_to": 20.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 20.0,
+    "s_to": 25.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 25.0,
+    "s_to": 30.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 30.0,
+    "s_to": 35.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 35.0,
+    "s_to": 40.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 40.0,
+    "s_to": 45.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 45.0,
+    "s_to": 50.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 50.0,
+    "s_to": 55.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 55.0,
+    "s_to": 60.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 60.0,
+    "s_to": 65.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 65.0,
+    "s_to": 70.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 70.0,
+    "s_to": 75.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 75.0,
+    "s_to": 80.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 80.0,
+    "s_to": 85.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 85.0,
+    "s_to": 90.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 90.0,
+    "s_to": 95.0,
+    "level_before": 1,
+    "level_after": 2
+   },
+   {
+    "s_from": 95.0,
+    "s_to": 100.0,
+    "level_before": 1,
+    "level_after": 2
+   }
+  ]
+ },
+ "confidence_changes": [
+  {
+   "entity_id": "ent-7ab2051f05",
+   "type": "pole",
+   "before": 0.704,
+   "after": 0.842,
+   "reason": "2 more supporting views"
+  },
+  {
+   "entity_id": "ent-99e751ab0b",
+   "type": "pothole",
+   "before": 0.709,
+   "after": 0.596,
+   "reason": "1 view did not see it"
+  },
+  {
+   "entity_id": "ent-9db1e6c792",
+   "type": "drain",
+   "before": 0.657,
+   "after": 0.728,
+   "reason": "1 more supporting view"
+  }
+ ],
+ "cost": {
+  "anthropic_usd": 0.27,
+  "anthropic_calls": 4,
+  "input_tokens": 51200,
+  "output_tokens": 7400,
+  "google_new_requests": 22,
+  "google_cached": 26,
+  "google_est_usd": 0.154,
+  "total_usd": 0.424,
+  "global_budget_usd": 50.0,
+  "budget_remaining_usd": 49.42,
+  "share_of_global_budget": 0.0
+ },
+ "quality": null,
+ "warnings": [],
+ "degraded": false,
+ "summary": "Run added 22 new images (26 of 48 images were already cached) and created model v2 from v1: 3 new objects, 3 changed, 0 removed, 0 newly contradicted; fidelity L1 -> L2. Cost $0.42.",
+ "suggestions": [
+  "Metres 20-25 are the least certain (1 object below 60 % confidence).",
+  "A close-up photo around 0-100 m would raise it to L3."
+ ]
+}

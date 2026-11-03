@@ -1,0 +1,30 @@
+{
+ "category": "highway",
+ "display_name": "100 Feet Road, Indiranagar, Bengaluru, India",
+ "geojson": {
+  "coordinates": [
+   [
+    77.6405,
+    12.973
+   ],
+   [
+    77.6405,
+    12.974
+   ],
+   [
+    77.6406,
+    12.975
+   ],
+   [
+    77.6407,
+    12.976
+   ]
+  ],
+  "type": "LineString"
+ },
+ "name": "100 Feet Road",
+ "osm_id": 4242,
+ "osm_type": "way",
+ "place_id": 1,
+ "type": "primary"
+}

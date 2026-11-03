@@ -1,0 +1,82 @@
+{
+  "budget": {
+    "max_draw_calls": 60,
+    "max_triangles": 60000,
+    "max_glb_textures": 2
+  },
+  "source": "window.__hero.perf at each screenshot (software GL, 390x844)",
+  "scenes": {
+    "bellandur": {
+      "hero_source": "glb",
+      "scene_source": "server",
+      "shots": {
+        "0m": {
+          "draw_calls": 41,
+          "triangles": 8742,
+          "textures": 3,
+          "texture_mb": 2.48,
+          "glb_bytes": 316772
+        },
+        "20m": {
+          "draw_calls": 30,
+          "triangles": 6304,
+          "textures": 3,
+          "texture_mb": 2.48,
+          "glb_bytes": 316772
+        },
+        "40m": {
+          "draw_calls": 29,
+          "triangles": 6208,
+          "textures": 3,
+          "texture_mb": 2.48,
+          "glb_bytes": 316772
+        },
+        "70m": {
+          "draw_calls": 28,
+          "triangles": 5920,
+          "textures": 3,
+          "texture_mb": 2.48,
+          "glb_bytes": 316772
+        }
+      }
+    },
+    "curved": {
+      "hero_source": "glb",
+      "scene_source": "intercepted-v3-pipeline-build",
+      "shots": {
+        "0m": {
+          "draw_calls": 25,
+          "triangles": 4416,
+          "textures": 3,
+          "texture_mb": 1.29,
+          "glb_bytes": 163800
+        },
+        "20m": {
+          "draw_calls": 17,
+          "triangles": 2786,
+          "textures": 3,
+          "texture_mb": 1.29,
+          "glb_bytes": 163800
+        },
+        "40m": {
+          "draw_calls": 22,
+          "triangles": 3578,
+          "textures": 3,
+          "texture_mb": 1.29,
+          "glb_bytes": 163800
+        },
+        "70m": {
+          "draw_calls": 25,
+          "triangles": 3828,
+          "textures": 3,
+          "texture_mb": 1.29,
+          "glb_bytes": 163800
+        }
+      }
+    }
+  },
+  "max_observed": {
+    "draw_calls": 41,
+    "triangles": 8742
+  }
+}

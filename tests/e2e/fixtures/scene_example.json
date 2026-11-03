@@ -1,0 +1,324 @@
+{
+  "schema_version": 1,
+  "segment": {
+    "slug": "100-feet-road-indiranagar-w",
+    "name": "100 Feet Road, Indiranagar (west footpath)",
+    "city": "Bengaluru",
+    "start": {
+      "lat": 12.974,
+      "lon": 77.6405
+    },
+    "end": {
+      "lat": 12.97467,
+      "lon": 77.64058
+    },
+    "length_m": 74.6,
+    "heading_deg": 6.7,
+    "footpath_side": "left"
+  },
+  "ground": {
+    "tile_url": "/media/imagery/fixture-scene-example-tile.png",
+    "size_px": [
+      1280,
+      1280
+    ],
+    "zoom": 19,
+    "scale": 2,
+    "center": {
+      "lat": 12.974335,
+      "lon": 77.64054
+    },
+    "meters_per_px": 0.1455,
+    "frame_to_px": {
+      "origin_px": [
+        610.2,
+        894.8
+      ],
+      "along_px_per_m": [
+        0.8,
+        -6.83
+      ],
+      "across_px_per_m": [
+        -6.83,
+        -0.8
+      ]
+    }
+  },
+  "cross_section": {
+    "road_width_m": 9.0,
+    "lanes": [
+      {
+        "index": 0,
+        "name": "footpath",
+        "kind": "footpath",
+        "lat_m": 5.4,
+        "width_m": 1.8
+      },
+      {
+        "index": 1,
+        "name": "road_edge",
+        "kind": "road_edge",
+        "lat_m": 3.6,
+        "width_m": 1.6
+      },
+      {
+        "index": 2,
+        "name": "road",
+        "kind": "road",
+        "lat_m": 1.8,
+        "width_m": 2.0
+      }
+    ],
+    "footpath_coverage": [
+      {
+        "from_m": 0.0,
+        "to_m": 22.0,
+        "state": "intact",
+        "confidence": 0.9
+      },
+      {
+        "from_m": 22.0,
+        "to_m": 31.0,
+        "state": "missing",
+        "confidence": 0.7
+      },
+      {
+        "from_m": 31.0,
+        "to_m": 74.6,
+        "state": "broken",
+        "confidence": 0.6
+      }
+    ]
+  },
+  "buildings": [
+    {
+      "id": "b1",
+      "source": "osm",
+      "footprint": [
+        [
+          0.0,
+          7.5
+        ],
+        [
+          28.0,
+          7.5
+        ],
+        [
+          28.0,
+          19.0
+        ],
+        [
+          0.0,
+          19.0
+        ]
+      ],
+      "height_m": 9.0,
+      "color_hex": "#c9b79c",
+      "facade_url": "/media/crops/example-run/b1_facade.png",
+      "confidence": 0.95
+    }
+  ],
+  "objects": [
+    {
+      "id": "o1",
+      "type": "parked_vehicle",
+      "label": "parked car on footpath",
+      "x_m": 12.5,
+      "length_m": 4.2,
+      "lanes": [
+        0,
+        1
+      ],
+      "action": "dodge",
+      "size_m": {
+        "w": 1.8,
+        "h": 1.5,
+        "d": 4.2
+      },
+      "confidence": 0.85,
+      "source": {
+        "image_url": "/media/imagery/7b2d0000000000000000000000000000000000000000000000000000000000e0.png",
+        "crop_px": [
+          210,
+          300,
+          180,
+          140
+        ]
+      },
+      "billboard_url": "/media/crops/example-run/o1.png",
+      "latlon": {
+        "lat": 12.974116,
+        "lon": 77.640472
+      },
+      "tile_px": [
+        589.5,
+        805.8
+      ]
+    },
+    {
+      "id": "o2",
+      "type": "footpath_gap",
+      "label": "footpath missing",
+      "x_m": 22.0,
+      "length_m": 9.0,
+      "lanes": [
+        0
+      ],
+      "action": "dodge",
+      "size_m": {
+        "w": 1.8,
+        "h": 0.2,
+        "d": 9.0
+      },
+      "confidence": 0.7,
+      "source": null,
+      "billboard_url": null,
+      "latlon": {
+        "lat": 12.974202,
+        "lon": 77.640474
+      },
+      "tile_px": [
+        590.9,
+        740.2
+      ]
+    },
+    {
+      "id": "o3",
+      "type": "pothole",
+      "label": "pothole",
+      "x_m": 40.0,
+      "length_m": 1.0,
+      "lanes": [
+        2
+      ],
+      "action": "jump",
+      "size_m": {
+        "w": 1.0,
+        "h": 0.1,
+        "d": 1.0
+      },
+      "confidence": 0.6,
+      "source": {
+        "image_url": "/media/imagery/9c000000000000000000000000000000000000000000000000000000000011.png",
+        "crop_px": [
+          300,
+          420,
+          90,
+          60
+        ]
+      },
+      "billboard_url": "/media/crops/example-run/o3.png",
+      "latlon": {
+        "lat": 12.974359,
+        "lon": 77.640527
+      },
+      "tile_px": [
+        629.9,
+        620.2
+      ]
+    },
+    {
+      "id": "o4",
+      "type": "low_branch",
+      "label": "low branch",
+      "x_m": 55.0,
+      "length_m": 1.0,
+      "lanes": [
+        0
+      ],
+      "action": "slide",
+      "size_m": {
+        "w": 1.8,
+        "h": 0.6,
+        "d": 1.0
+      },
+      "confidence": 0.5,
+      "source": null,
+      "billboard_url": null,
+      "latlon": {
+        "lat": 12.974497,
+        "lon": 77.64051
+      },
+      "tile_px": [
+        617.3,
+        514.8
+      ]
+    },
+    {
+      "id": "o5",
+      "type": "crossing",
+      "label": "zebra crossing",
+      "x_m": 60.0,
+      "length_m": 3.0,
+      "lanes": [
+        0,
+        1,
+        2
+      ],
+      "action": "none",
+      "size_m": {
+        "w": 9.0,
+        "h": 0.0,
+        "d": 3.0
+      },
+      "confidence": 0.8,
+      "source": null,
+      "billboard_url": null,
+      "latlon": {
+        "lat": 12.97454,
+        "lon": 77.640532
+      },
+      "tile_px": [
+        633.6,
+        482.1
+      ]
+    }
+  ],
+  "tokens": [
+    {
+      "id": "t1",
+      "x_m": 8.0,
+      "lane": 0,
+      "reason": "intact_footpath",
+      "latlon": {
+        "lat": 12.974077,
+        "lon": 77.640459
+      },
+      "tile_px": [
+        579.7,
+        835.9
+      ]
+    },
+    {
+      "id": "t2",
+      "x_m": 60.0,
+      "lane": 1,
+      "reason": "crossing",
+      "latlon": {
+        "lat": 12.97454,
+        "lon": 77.640532
+      },
+      "tile_px": [
+        633.6,
+        482.1
+      ]
+    }
+  ],
+  "walkability": {
+    "footpath_coverage_pct": 29.5,
+    "hazard_count": 4,
+    "crossing_present": true,
+    "score": 50
+  },
+  "generation": {
+    "run_id": "example-run",
+    "quality": "full",
+    "confidence_overall": 0.72,
+    "review_iterations": 2,
+    "models": {
+      "vision": "claude-sonnet-4-5",
+      "review": "claude-sonnet-4-5"
+    },
+    "warnings": []
+  }
+}

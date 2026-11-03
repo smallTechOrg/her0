@@ -1,0 +1,904 @@
+{
+  "$defs": {
+    "AboutFidelity": {
+      "additionalProperties": false,
+      "properties": {
+        "level": {
+          "pattern": "^L[0-3]$",
+          "title": "Level",
+          "type": "string"
+        },
+        "score": {
+          "maximum": 3.0,
+          "minimum": 0.0,
+          "title": "Score",
+          "type": "number"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "histogram_m": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Histogram M",
+          "type": "object"
+        }
+      },
+      "required": [
+        "level",
+        "score",
+        "label"
+      ],
+      "title": "AboutFidelity",
+      "type": "object"
+    },
+    "AboutPhotos": {
+      "additionalProperties": false,
+      "properties": {
+        "total": {
+          "minimum": 0,
+          "title": "Total",
+          "type": "integer"
+        },
+        "street_view": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Street View",
+          "type": "integer"
+        },
+        "satellite": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Satellite",
+          "type": "integer"
+        },
+        "user": {
+          "default": 0,
+          "minimum": 0,
+          "title": "User",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "total"
+      ],
+      "title": "AboutPhotos",
+      "type": "object"
+    },
+    "AboutV3": {
+      "additionalProperties": false,
+      "description": "v2 About + the gap/dynamic summaries.",
+      "properties": {
+        "model_version": {
+          "minimum": 0,
+          "title": "Model Version",
+          "type": "integer"
+        },
+        "fidelity": {
+          "$ref": "#/$defs/AboutFidelity"
+        },
+        "photos": {
+          "$ref": "#/$defs/AboutPhotos"
+        },
+        "last_updated": {
+          "title": "Last Updated",
+          "type": "string"
+        },
+        "capture_dates": {
+          "$ref": "#/$defs/CaptureDates"
+        },
+        "low_confidence_parts": {
+          "items": {
+            "$ref": "#/$defs/LowConfidencePart"
+          },
+          "title": "Low Confidence Parts",
+          "type": "array"
+        },
+        "summary": {
+          "title": "Summary",
+          "type": "string"
+        },
+        "improve_hint": {
+          "default": "",
+          "title": "Improve Hint",
+          "type": "string"
+        },
+        "legacy": {
+          "default": false,
+          "title": "Legacy",
+          "type": "boolean"
+        },
+        "placement_verified": {
+          "default": false,
+          "title": "Placement Verified",
+          "type": "boolean"
+        },
+        "degraded": {
+          "default": false,
+          "title": "Degraded",
+          "type": "boolean"
+        },
+        "interpolated": {
+          "items": {
+            "$ref": "#/$defs/Interpolation"
+          },
+          "title": "Interpolated",
+          "type": "array"
+        },
+        "gap_summary": {
+          "default": "",
+          "title": "Gap Summary",
+          "type": "string"
+        },
+        "dynamic_summary": {
+          "default": "",
+          "title": "Dynamic Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "model_version",
+        "fidelity",
+        "photos",
+        "last_updated",
+        "summary"
+      ],
+      "title": "AboutV3",
+      "type": "object"
+    },
+    "Assets": {
+      "additionalProperties": false,
+      "properties": {
+        "mesh_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Mesh Sha256",
+          "type": "string"
+        },
+        "sha8": {
+          "pattern": "^[0-9a-f]{8}$",
+          "title": "Sha8",
+          "type": "string"
+        },
+        "glb_url": {
+          "title": "Glb Url",
+          "type": "string"
+        },
+        "manifest_url": {
+          "title": "Manifest Url",
+          "type": "string"
+        },
+        "xodr_url": {
+          "title": "Xodr Url",
+          "type": "string"
+        },
+        "gameplay_url": {
+          "default": "/api/gameplay.json",
+          "title": "Gameplay Url",
+          "type": "string"
+        },
+        "glb_bytes": {
+          "minimum": 0,
+          "title": "Glb Bytes",
+          "type": "integer"
+        },
+        "triangles": {
+          "minimum": 0,
+          "title": "Triangles",
+          "type": "integer"
+        },
+        "primitives": {
+          "minimum": 0,
+          "title": "Primitives",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "mesh_sha256",
+        "sha8",
+        "glb_url",
+        "manifest_url",
+        "xodr_url",
+        "glb_bytes",
+        "triangles",
+        "primitives"
+      ],
+      "title": "Assets",
+      "type": "object"
+    },
+    "CaptureDates": {
+      "additionalProperties": false,
+      "properties": {
+        "oldest": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Oldest"
+        },
+        "newest": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Newest"
+        }
+      },
+      "title": "CaptureDates",
+      "type": "object"
+    },
+    "CoverageRangeV2": {
+      "additionalProperties": false,
+      "properties": {
+        "from_m": {
+          "minimum": 0,
+          "title": "From M",
+          "type": "number"
+        },
+        "to_m": {
+          "exclusiveMinimum": 0,
+          "title": "To M",
+          "type": "number"
+        },
+        "state": {
+          "$ref": "#/$defs/FootpathState"
+        },
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        }
+      },
+      "required": [
+        "from_m",
+        "to_m",
+        "state",
+        "confidence"
+      ],
+      "title": "CoverageRangeV2",
+      "type": "object"
+    },
+    "CrossSectionV2": {
+      "additionalProperties": false,
+      "properties": {
+        "road_width_m": {
+          "exclusiveMinimum": 0,
+          "title": "Road Width M",
+          "type": "number"
+        },
+        "lanes": {
+          "items": {
+            "$ref": "#/$defs/Lane"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "title": "Lanes",
+          "type": "array"
+        },
+        "footpath_coverage": {
+          "items": {
+            "$ref": "#/$defs/CoverageRangeV2"
+          },
+          "minItems": 1,
+          "title": "Footpath Coverage",
+          "type": "array"
+        }
+      },
+      "required": [
+        "road_width_m",
+        "lanes",
+        "footpath_coverage"
+      ],
+      "title": "CrossSectionV2",
+      "type": "object"
+    },
+    "DynamicContext": {
+      "additionalProperties": false,
+      "properties": {
+        "excluded_count": {
+          "minimum": 0,
+          "title": "Excluded Count",
+          "type": "integer"
+        },
+        "entity_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Entity Ids",
+          "type": "array"
+        },
+        "by_type": {
+          "additionalProperties": {
+            "$ref": "#/$defs/DynamicTypeStats"
+          },
+          "title": "By Type",
+          "type": "object"
+        }
+      },
+      "required": [
+        "excluded_count"
+      ],
+      "title": "DynamicContext",
+      "type": "object"
+    },
+    "DynamicTypeStats": {
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "minimum": 0,
+          "title": "Count",
+          "type": "integer"
+        },
+        "per_100m": {
+          "minimum": 0,
+          "title": "Per 100M",
+          "type": "number"
+        },
+        "subtypes": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Subtypes",
+          "type": "object"
+        },
+        "lane_share": {
+          "default": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Lane Share",
+          "type": "array"
+        },
+        "mean_confidence": {
+          "default": 0.0,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Mean Confidence",
+          "type": "number"
+        }
+      },
+      "required": [
+        "count",
+        "per_100m"
+      ],
+      "title": "DynamicTypeStats",
+      "type": "object"
+    },
+    "FootpathSide": {
+      "enum": [
+        "left",
+        "right"
+      ],
+      "title": "FootpathSide",
+      "type": "string"
+    },
+    "FootpathState": {
+      "enum": [
+        "intact",
+        "broken",
+        "missing",
+        "blocked",
+        "encroached",
+        "unknown"
+      ],
+      "title": "FootpathState",
+      "type": "string"
+    },
+    "FrameToPx": {
+      "additionalProperties": false,
+      "description": "Affine ``px = origin_px + x_m * along + lat_m * across`` (spec/data.md, computed by hero.scene.geo).",
+      "properties": {
+        "origin_px": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Origin Px",
+          "type": "array"
+        },
+        "along_px_per_m": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Along Px Per M",
+          "type": "array"
+        },
+        "across_px_per_m": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Across Px Per M",
+          "type": "array"
+        }
+      },
+      "required": [
+        "origin_px",
+        "along_px_per_m",
+        "across_px_per_m"
+      ],
+      "title": "FrameToPx",
+      "type": "object"
+    },
+    "Generation": {
+      "additionalProperties": false,
+      "properties": {
+        "run_id": {
+          "title": "Run Id",
+          "type": "string"
+        },
+        "quality": {
+          "$ref": "#/$defs/Quality"
+        },
+        "confidence_overall": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence Overall",
+          "type": "number"
+        },
+        "review_iterations": {
+          "minimum": 0,
+          "title": "Review Iterations",
+          "type": "integer"
+        },
+        "models": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Models",
+          "type": "object"
+        },
+        "warnings": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Warnings",
+          "type": "array"
+        }
+      },
+      "required": [
+        "run_id",
+        "quality",
+        "confidence_overall",
+        "review_iterations",
+        "models"
+      ],
+      "title": "Generation",
+      "type": "object"
+    },
+    "GroundV2": {
+      "additionalProperties": false,
+      "properties": {
+        "tile_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tile Url"
+        },
+        "size_px": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "integer"
+            }
+          ],
+          "title": "Size Px",
+          "type": "array"
+        },
+        "zoom": {
+          "maximum": 22,
+          "minimum": 0,
+          "title": "Zoom",
+          "type": "integer"
+        },
+        "scale": {
+          "maximum": 2,
+          "minimum": 1,
+          "title": "Scale",
+          "type": "integer"
+        },
+        "center": {
+          "$ref": "#/$defs/LatLon"
+        },
+        "meters_per_px": {
+          "exclusiveMinimum": 0,
+          "title": "Meters Per Px",
+          "type": "number"
+        },
+        "frame_to_px": {
+          "$ref": "#/$defs/FrameToPx"
+        }
+      },
+      "required": [
+        "size_px",
+        "zoom",
+        "scale",
+        "center",
+        "meters_per_px",
+        "frame_to_px"
+      ],
+      "title": "GroundV2",
+      "type": "object"
+    },
+    "Interpolation": {
+      "additionalProperties": false,
+      "properties": {
+        "what": {
+          "enum": [
+            "ground_texture",
+            "frontage",
+            "footpath_state",
+            "kerb",
+            "furniture_unknown"
+          ],
+          "title": "What",
+          "type": "string"
+        },
+        "side": {
+          "title": "Side",
+          "type": "string"
+        },
+        "s_from": {
+          "title": "S From",
+          "type": "number"
+        },
+        "s_to": {
+          "title": "S To",
+          "type": "number"
+        },
+        "method": {
+          "enum": [
+            "neighbours",
+            "prior",
+            "osm",
+            "procedural"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "from_s": {
+          "items": {
+            "type": "number"
+          },
+          "title": "From S",
+          "type": "array"
+        },
+        "note": {
+          "default": "",
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "what",
+        "side",
+        "s_from",
+        "s_to",
+        "method"
+      ],
+      "title": "Interpolation",
+      "type": "object"
+    },
+    "Lane": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Index",
+          "type": "integer"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/LaneKind"
+        },
+        "lat_m": {
+          "title": "Lat M",
+          "type": "number"
+        },
+        "width_m": {
+          "exclusiveMinimum": 0,
+          "title": "Width M",
+          "type": "number"
+        }
+      },
+      "required": [
+        "index",
+        "name",
+        "kind",
+        "lat_m",
+        "width_m"
+      ],
+      "title": "Lane",
+      "type": "object"
+    },
+    "LaneKind": {
+      "enum": [
+        "footpath",
+        "road_edge",
+        "road"
+      ],
+      "title": "LaneKind",
+      "type": "string"
+    },
+    "LatLon": {
+      "additionalProperties": false,
+      "properties": {
+        "lat": {
+          "maximum": 90.0,
+          "minimum": -90.0,
+          "title": "Lat",
+          "type": "number"
+        },
+        "lon": {
+          "maximum": 180.0,
+          "minimum": -180.0,
+          "title": "Lon",
+          "type": "number"
+        }
+      },
+      "required": [
+        "lat",
+        "lon"
+      ],
+      "title": "LatLon",
+      "type": "object"
+    },
+    "LowConfidencePart": {
+      "additionalProperties": false,
+      "properties": {
+        "s_from": {
+          "title": "S From",
+          "type": "number"
+        },
+        "s_to": {
+          "title": "S To",
+          "type": "number"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "s_from",
+        "s_to",
+        "reason"
+      ],
+      "title": "LowConfidencePart",
+      "type": "object"
+    },
+    "ModelRefV3": {
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "minimum": 0,
+          "title": "Version",
+          "type": "integer"
+        },
+        "model_hash": {
+          "title": "Model Hash",
+          "type": "string"
+        },
+        "compiled_by": {
+          "default": "hero.model.compile/2",
+          "title": "Compiled By",
+          "type": "string"
+        }
+      },
+      "required": [
+        "version",
+        "model_hash"
+      ],
+      "title": "ModelRefV3",
+      "type": "object"
+    },
+    "Quality": {
+      "enum": [
+        "full",
+        "satellite_only",
+        "generic"
+      ],
+      "title": "Quality",
+      "type": "string"
+    },
+    "SegmentInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "slug": {
+          "pattern": "^[a-z0-9-]+$",
+          "title": "Slug",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "city": {
+          "title": "City",
+          "type": "string"
+        },
+        "start": {
+          "$ref": "#/$defs/LatLon"
+        },
+        "end": {
+          "$ref": "#/$defs/LatLon"
+        },
+        "length_m": {
+          "exclusiveMinimum": 0,
+          "title": "Length M",
+          "type": "number"
+        },
+        "heading_deg": {
+          "exclusiveMaximum": 360.0,
+          "minimum": 0.0,
+          "title": "Heading Deg",
+          "type": "number"
+        },
+        "footpath_side": {
+          "$ref": "#/$defs/FootpathSide"
+        }
+      },
+      "required": [
+        "slug",
+        "name",
+        "city",
+        "start",
+        "end",
+        "length_m",
+        "heading_deg",
+        "footpath_side"
+      ],
+      "title": "SegmentInfo",
+      "type": "object"
+    },
+    "Walkability": {
+      "additionalProperties": false,
+      "properties": {
+        "footpath_coverage_pct": {
+          "maximum": 100.0,
+          "minimum": 0.0,
+          "title": "Footpath Coverage Pct",
+          "type": "number"
+        },
+        "hazard_count": {
+          "minimum": 0,
+          "title": "Hazard Count",
+          "type": "integer"
+        },
+        "crossing_present": {
+          "title": "Crossing Present",
+          "type": "boolean"
+        },
+        "score": {
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Score",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "footpath_coverage_pct",
+        "hazard_count",
+        "crossing_present",
+        "score"
+      ],
+      "title": "Walkability",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 3,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "segment": {
+      "$ref": "#/$defs/SegmentInfo"
+    },
+    "ground": {
+      "$ref": "#/$defs/GroundV2"
+    },
+    "cross_section": {
+      "$ref": "#/$defs/CrossSectionV2"
+    },
+    "walkability": {
+      "$ref": "#/$defs/Walkability"
+    },
+    "about": {
+      "$ref": "#/$defs/AboutV3"
+    },
+    "dynamic_context": {
+      "$ref": "#/$defs/DynamicContext"
+    },
+    "generation": {
+      "$ref": "#/$defs/Generation"
+    },
+    "model": {
+      "$ref": "#/$defs/ModelRefV3"
+    },
+    "assets": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Assets"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "schema_version",
+    "segment",
+    "ground",
+    "cross_section",
+    "walkability",
+    "about",
+    "dynamic_context",
+    "generation",
+    "model"
+  ],
+  "title": "SceneV3",
+  "type": "object"
+}

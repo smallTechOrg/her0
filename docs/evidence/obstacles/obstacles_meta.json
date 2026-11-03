@@ -1,0 +1,33 @@
+{
+ "models": {
+  "parked_car": {
+   "triangles": 2280,
+   "groups": 3
+  },
+  "two_wheeler": {
+   "triangles": 1524,
+   "groups": 3
+  },
+  "cone": {
+   "triangles": 480,
+   "groups": 3
+  },
+  "barricade": {
+   "triangles": 782,
+   "groups": 3
+  },
+  "pothole": {
+   "triangles": 396,
+   "groups": 3
+  },
+  "stall": {
+   "triangles": 4648,
+   "groups": 3
+  },
+  "low_branch": {
+   "triangles": 2236,
+   "groups": 2
+  }
+ },
+ "console_errors": []
+}

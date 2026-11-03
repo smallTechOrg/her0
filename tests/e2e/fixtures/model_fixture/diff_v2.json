@@ -1,0 +1,154 @@
+{
+ "from_version": 1,
+ "to_version": 2,
+ "is_empty": false,
+ "entities": {
+  "added": [
+   {
+    "id": "ent-5b1eaf3d66",
+    "type": "bin",
+    "s": 20.02,
+    "t": 6.77,
+    "confidence": 0.565,
+    "description": "Green waste bin beside the footpath."
+   },
+   {
+    "id": "ent-c78f2090a5",
+    "type": "vendor_stall",
+    "s": 93.0,
+    "t": 6.95,
+    "confidence": 0.595,
+    "description": "Roadside fruit stall at the back of the footpath."
+   },
+   {
+    "id": "ent-f367118cc3",
+    "type": "bollard",
+    "s": 88.0,
+    "t": 4.42,
+    "confidence": 0.595,
+    "description": "White bollard at the kerb."
+   }
+  ],
+  "removed": [],
+  "revived": [],
+  "changed": [
+   {
+    "id": "ent-7ab2051f05",
+    "fields": {
+     "confidence": [
+      0.704,
+      0.842
+     ]
+    },
+    "reason": "2 more supporting views"
+   },
+   {
+    "id": "ent-99e751ab0b",
+    "fields": {
+     "confidence": [
+      0.709,
+      0.596
+     ]
+    },
+    "reason": "1 view did not see it"
+   },
+   {
+    "id": "ent-9db1e6c792",
+    "fields": {
+     "confidence": [
+      0.657,
+      0.728
+     ]
+    },
+    "reason": "1 more supporting view"
+   }
+  ],
+  "unchanged": 4
+ },
+ "profile": {
+  "changed_intervals": []
+ },
+ "buildings": {
+  "added": [
+   {
+    "id": "bld-v-971ad482",
+    "side": "left",
+    "source": "vision"
+   }
+  ],
+  "changed": [
+   {
+    "id": "bld-osm-3001",
+    "fields": {
+     "colour_hex": [
+      null,
+      "#c9b79c"
+     ],
+     "source": [
+      "osm",
+      "mixed"
+     ],
+     "description": [
+      "Map-only building outline; height is an estimate.",
+      "Cream three-storey shopfront block."
+     ],
+     "facades": [
+      0,
+      1
+     ]
+    }
+   },
+   {
+    "id": "bld-osm-3002",
+    "fields": {
+     "colour_hex": [
+      null,
+      "#c9b79c"
+     ],
+     "source": [
+      "osm",
+      "mixed"
+     ],
+     "description": [
+      "Map-only building outline; height is an estimate.",
+      "Cream three-storey shopfront block."
+     ],
+     "facades": [
+      0,
+      1
+     ]
+    }
+   }
+  ],
+  "removed": []
+ },
+ "fidelity": {
+  "improved": [
+   {
+    "s_from": 0.0,
+    "s_to": 100.0,
+    "from": "L1",
+    "to": "L2"
+   }
+  ],
+  "unchanged_len_m": 0.0,
+  "overall": [
+   1.0,
+   2.0
+  ]
+ },
+ "contradictions": {
+  "opened": [],
+  "resolved": []
+ },
+ "observations": {
+  "fused_added": 22
+ },
+ "summary_lines": [
+  "22 new photos fused",
+  "3 new objects: 1 bin, 1 bollard, 1 vendor_stall",
+  "3 objects updated",
+  "1 new / 2 updated buildings",
+  "Fidelity L1 → L2 over 100 m"
+ ]
+}

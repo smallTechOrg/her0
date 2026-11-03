@@ -1,0 +1,1 @@
+Model v0 (map-only prior): 0 objects, 3 buildings, fidelity L0 (score 0.00) from 0 photos.

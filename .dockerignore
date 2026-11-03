@@ -1,0 +1,9 @@
+.git
+.venv
+data
+tests/e2e/fixtures/model_fixture
+docs/evidence
+**/__pycache__
+*.pyc
+.pytest_cache
+node_modules

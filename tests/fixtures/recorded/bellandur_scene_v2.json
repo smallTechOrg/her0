@@ -1,0 +1,8753 @@
+{
+ "schema_version": 2,
+ "segment": {
+  "slug": "bellandur-main-road-n-2",
+  "name": "Bellandur Main Road",
+  "city": "Bengaluru",
+  "start": {
+   "lat": 12.92291188,
+   "lon": 77.67256169
+  },
+  "end": {
+   "lat": 12.92287952,
+   "lon": 77.67348076
+  },
+  "length_m": 100.0,
+  "heading_deg": 92.1,
+  "footpath_side": "left"
+ },
+ "ground": {
+  "tile_url": "/media/imagery/c1321c3628c59e5fb1483359ee5646b6b8dae2d5f7a56fa0de7e53bd9252ce52.png",
+  "size_px": [
+   1280,
+   1280
+  ],
+  "zoom": 19,
+  "scale": 2,
+  "center": {
+   "lat": 12.922920108512828,
+   "lon": 77.67302139438522
+  },
+  "meters_per_px": 0.14551,
+  "frame_to_px": {
+   "origin_px": [
+    297.21956592798233,
+    646.2950664013624
+   ],
+   "along_px_per_m": [
+    6.875594049692154,
+    0.24836483597755432
+   ],
+   "across_px_per_m": [
+    0.24836480617523193,
+    -6.8755941689014435
+   ]
+  }
+ },
+ "path": {
+  "length_m": 100.0,
+  "samples": [
+   {
+    "s": 0.0,
+    "x": 0.0,
+    "z": 0.0,
+    "theta": 0.0,
+    "tile_px": [
+     297.22,
+     646.3
+    ]
+   },
+   {
+    "s": 2.5,
+    "x": 0.0,
+    "z": -2.5,
+    "theta": 0.0,
+    "tile_px": [
+     313.93,
+     642.23
+    ]
+   },
+   {
+    "s": 5.0,
+    "x": 0.0,
+    "z": -5.0,
+    "theta": 0.0,
+    "tile_px": [
+     330.64,
+     638.16
+    ]
+   },
+   {
+    "s": 7.5,
+    "x": 0.0,
+    "z": -7.5,
+    "theta": -0.18249,
+    "tile_px": [
+     347.72,
+     636.56
+    ]
+   },
+   {
+    "s": 10.0,
+    "x": -0.4537,
+    "z": -9.9585,
+    "theta": -0.18249,
+    "tile_px": [
+     364.9,
+     635.59
+    ]
+   },
+   {
+    "s": 12.5,
+    "x": -0.9074,
+    "z": -12.417,
+    "theta": -0.18249,
+    "tile_px": [
+     382.07,
+     634.63
+    ]
+   },
+   {
+    "s": 15.0,
+    "x": -1.3611,
+    "z": -14.8755,
+    "theta": -0.2615,
+    "tile_px": [
+     399.26,
+     634.52
+    ]
+   },
+   {
+    "s": 17.5,
+    "x": -2.0074,
+    "z": -17.2905,
+    "theta": -0.2615,
+    "tile_px": [
+     416.45,
+     634.91
+    ]
+   },
+   {
+    "s": 20.0,
+    "x": -2.6537,
+    "z": -19.7055,
+    "theta": -0.2615,
+    "tile_px": [
+     433.65,
+     635.3
+    ]
+   },
+   {
+    "s": 22.5,
+    "x": -3.3,
+    "z": -22.1205,
+    "theta": -0.2615,
+    "tile_px": [
+     450.84,
+     635.69
+    ]
+   },
+   {
+    "s": 25.0,
+    "x": -3.9464,
+    "z": -24.5355,
+    "theta": -0.2615,
+    "tile_px": [
+     468.04,
+     636.08
+    ]
+   },
+   {
+    "s": 27.5,
+    "x": -4.5927,
+    "z": -26.9505,
+    "theta": -0.2615,
+    "tile_px": [
+     485.24,
+     636.47
+    ]
+   },
+   {
+    "s": 30.0,
+    "x": -5.239,
+    "z": -29.3655,
+    "theta": -0.2615,
+    "tile_px": [
+     502.43,
+     636.87
+    ]
+   },
+   {
+    "s": 32.5,
+    "x": -5.8853,
+    "z": -31.7805,
+    "theta": -0.2615,
+    "tile_px": [
+     519.63,
+     637.26
+    ]
+   },
+   {
+    "s": 35.0,
+    "x": -6.5316,
+    "z": -34.1955,
+    "theta": -0.2615,
+    "tile_px": [
+     536.82,
+     637.65
+    ]
+   },
+   {
+    "s": 37.5,
+    "x": -7.178,
+    "z": -36.6105,
+    "theta": -0.2615,
+    "tile_px": [
+     554.02,
+     638.04
+    ]
+   },
+   {
+    "s": 40.0,
+    "x": -7.8243,
+    "z": -39.0256,
+    "theta": -0.2615,
+    "tile_px": [
+     571.21,
+     638.43
+    ]
+   },
+   {
+    "s": 42.5,
+    "x": -8.4706,
+    "z": -41.4406,
+    "theta": -0.2615,
+    "tile_px": [
+     588.41,
+     638.82
+    ]
+   },
+   {
+    "s": 45.0,
+    "x": -9.1169,
+    "z": -43.8556,
+    "theta": -0.2615,
+    "tile_px": [
+     605.61,
+     639.22
+    ]
+   },
+   {
+    "s": 47.5,
+    "x": -9.7633,
+    "z": -46.2706,
+    "theta": -0.2615,
+    "tile_px": [
+     622.8,
+     639.61
+    ]
+   },
+   {
+    "s": 50.0,
+    "x": -10.4096,
+    "z": -48.6856,
+    "theta": -0.2615,
+    "tile_px": [
+     640.0,
+     640.0
+    ]
+   },
+   {
+    "s": 52.5,
+    "x": -11.0559,
+    "z": -51.1006,
+    "theta": -0.2615,
+    "tile_px": [
+     657.19,
+     640.39
+    ]
+   },
+   {
+    "s": 55.0,
+    "x": -11.7022,
+    "z": -53.5156,
+    "theta": -0.33179,
+    "tile_px": [
+     674.33,
+     641.76
+    ]
+   },
+   {
+    "s": 57.5,
+    "x": -12.5166,
+    "z": -55.8793,
+    "theta": -0.33179,
+    "tile_px": [
+     691.46,
+     643.36
+    ]
+   },
+   {
+    "s": 60.0,
+    "x": -13.3309,
+    "z": -58.2429,
+    "theta": -0.33179,
+    "tile_px": [
+     708.58,
+     644.96
+    ]
+   },
+   {
+    "s": 62.5,
+    "x": -14.1452,
+    "z": -60.6066,
+    "theta": -0.33179,
+    "tile_px": [
+     725.71,
+     646.56
+    ]
+   },
+   {
+    "s": 65.0,
+    "x": -14.9596,
+    "z": -62.9702,
+    "theta": -0.33179,
+    "tile_px": [
+     742.83,
+     648.16
+    ]
+   },
+   {
+    "s": 67.5,
+    "x": -15.7739,
+    "z": -65.3339,
+    "theta": -0.33179,
+    "tile_px": [
+     759.96,
+     649.75
+    ]
+   },
+   {
+    "s": 70.0,
+    "x": -16.5883,
+    "z": -67.6975,
+    "theta": -0.33179,
+    "tile_px": [
+     777.09,
+     651.35
+    ]
+   },
+   {
+    "s": 72.5,
+    "x": -17.4026,
+    "z": -70.0612,
+    "theta": -0.33179,
+    "tile_px": [
+     794.21,
+     652.95
+    ]
+   },
+   {
+    "s": 75.0,
+    "x": -18.217,
+    "z": -72.4248,
+    "theta": -0.33179,
+    "tile_px": [
+     811.34,
+     654.55
+    ]
+   },
+   {
+    "s": 77.5,
+    "x": -19.0313,
+    "z": -74.7885,
+    "theta": -0.33179,
+    "tile_px": [
+     828.46,
+     656.15
+    ]
+   },
+   {
+    "s": 80.0,
+    "x": -19.8456,
+    "z": -77.1521,
+    "theta": -0.33179,
+    "tile_px": [
+     845.59,
+     657.75
+    ]
+   },
+   {
+    "s": 82.5,
+    "x": -20.66,
+    "z": -79.5158,
+    "theta": -0.33179,
+    "tile_px": [
+     862.71,
+     659.35
+    ]
+   },
+   {
+    "s": 85.0,
+    "x": -21.4743,
+    "z": -81.8794,
+    "theta": -0.33179,
+    "tile_px": [
+     879.84,
+     660.94
+    ]
+   },
+   {
+    "s": 87.5,
+    "x": -22.2887,
+    "z": -84.2431,
+    "theta": -0.33179,
+    "tile_px": [
+     896.97,
+     662.54
+    ]
+   },
+   {
+    "s": 90.0,
+    "x": -23.103,
+    "z": -86.6067,
+    "theta": -0.33179,
+    "tile_px": [
+     914.09,
+     664.14
+    ]
+   },
+   {
+    "s": 92.5,
+    "x": -23.9173,
+    "z": -88.9704,
+    "theta": -0.33179,
+    "tile_px": [
+     931.22,
+     665.74
+    ]
+   },
+   {
+    "s": 95.0,
+    "x": -24.7317,
+    "z": -91.334,
+    "theta": -0.33179,
+    "tile_px": [
+     948.34,
+     667.34
+    ]
+   },
+   {
+    "s": 97.5,
+    "x": -25.546,
+    "z": -93.6977,
+    "theta": -0.33179,
+    "tile_px": [
+     965.47,
+     668.94
+    ]
+   },
+   {
+    "s": 100.0,
+    "x": -26.3604,
+    "z": -96.0613,
+    "theta": -0.41036,
+    "tile_px": [
+     982.53,
+     671.05
+    ]
+   }
+  ]
+ },
+ "corridor": {
+  "step_m": 2.5,
+  "ground_half_m": 30.0,
+  "stations": [
+   {
+    "s": 0.0,
+    "lane_lat": [
+     5.386,
+     3.986,
+     2.186
+    ],
+    "footpath": {
+     "lo": 4.107,
+     "hi": 6.225,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.493
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -6.624,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -6.624,
+      "hi": -6.025,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "carriageway",
+      "lo": -5.305,
+      "hi": 4.107,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.467
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.225,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.2703,
+      0.6616
+     ],
+     [
+      0.1941,
+      0.3482
+     ]
+    ]
+   },
+   {
+    "s": 2.5,
+    "lane_lat": [
+     5.424,
+     4.024,
+     2.224
+    ],
+    "footpath": {
+     "lo": 4.128,
+     "hi": 6.246,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.493
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -6.556,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -6.556,
+      "hi": -5.975,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "carriageway",
+      "lo": -5.267,
+      "hi": 4.128,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.467
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.246,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.2834,
+      0.6584
+     ],
+     [
+      0.2071,
+      0.3451
+     ]
+    ]
+   },
+   {
+    "s": 5.0,
+    "lane_lat": [
+     5.462,
+     4.062,
+     2.262
+    ],
+    "footpath": {
+     "lo": 4.149,
+     "hi": 6.266,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.493
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -6.488,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -6.488,
+      "hi": -5.925,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "carriageway",
+      "lo": -5.229,
+      "hi": 4.149,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.467
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.266,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.2964,
+      0.6552
+     ],
+     [
+      0.2202,
+      0.3419
+     ]
+    ]
+   },
+   {
+    "s": 7.5,
+    "lane_lat": [
+     5.5,
+     4.1,
+     2.3
+    ],
+    "footpath": {
+     "lo": 4.169,
+     "hi": 6.287,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.493
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -6.42,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -6.42,
+      "hi": -5.875,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "carriageway",
+      "lo": -5.19,
+      "hi": 4.169,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.467
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.287,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.2807,
+      0.6583
+     ],
+     [
+      0.2626,
+      0.3363
+     ]
+    ]
+   },
+   {
+    "s": 10.0,
+    "lane_lat": [
+     5.538,
+     4.138,
+     2.338
+    ],
+    "footpath": {
+     "lo": 4.19,
+     "hi": 6.307,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.493
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -6.352,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -6.352,
+      "hi": -5.825,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "carriageway",
+      "lo": -5.152,
+      "hi": 4.19,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.467
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.307,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.2941,
+      0.6576
+     ],
+     [
+      0.276,
+      0.3356
+     ]
+    ]
+   },
+   {
+    "s": 12.5,
+    "lane_lat": [
+     5.576,
+     4.176,
+     2.376
+    ],
+    "footpath": {
+     "lo": 4.21,
+     "hi": 6.328,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.493
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -6.284,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -6.284,
+      "hi": -5.775,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "carriageway",
+      "lo": -5.114,
+      "hi": 4.21,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.467
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.328,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.3076,
+      0.6568
+     ],
+     [
+      0.2894,
+      0.3348
+     ]
+    ]
+   },
+   {
+    "s": 15.0,
+    "lane_lat": [
+     5.614,
+     4.214,
+     2.414
+    ],
+    "footpath": {
+     "lo": 4.231,
+     "hi": 6.345,
+     "state": "encroached",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.493
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -6.193,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -6.193,
+      "hi": -5.742,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "carriageway",
+      "lo": -5.089,
+      "hi": 4.231,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.467
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.345,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.3083,
+      0.6569
+     ],
+     [
+      0.3156,
+      0.3345
+     ]
+    ]
+   },
+   {
+    "s": 17.5,
+    "lane_lat": [
+     5.652,
+     4.252,
+     2.452
+    ],
+    "footpath": {
+     "lo": 4.251,
+     "hi": 6.373,
+     "state": "encroached",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.493
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -6.171,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -6.171,
+      "hi": -5.658,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "carriageway",
+      "lo": -5.025,
+      "hi": 4.251,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.467
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.373,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.3217,
+      0.6572
+     ],
+     [
+      0.329,
+      0.3348
+     ]
+    ]
+   },
+   {
+    "s": 20.0,
+    "lane_lat": [
+     5.69,
+     4.29,
+     2.49
+    ],
+    "footpath": {
+     "lo": 4.272,
+     "hi": 6.4,
+     "state": "encroached",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.493
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -6.148,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -6.148,
+      "hi": -5.575,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "carriageway",
+      "lo": -4.962,
+      "hi": 4.272,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.467
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.4,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.3351,
+      0.6575
+     ],
+     [
+      0.3425,
+      0.3351
+     ]
+    ]
+   },
+   {
+    "s": 22.5,
+    "lane_lat": [
+     5.729,
+     4.329,
+     2.529
+    ],
+    "footpath": {
+     "lo": 4.293,
+     "hi": 6.427,
+     "state": "encroached",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.493
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -6.125,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -6.125,
+      "hi": -5.492,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "carriageway",
+      "lo": -4.898,
+      "hi": 4.293,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.467
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.427,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.3485,
+      0.6578
+     ],
+     [
+      0.3559,
+      0.3354
+     ]
+    ]
+   },
+   {
+    "s": 25.0,
+    "lane_lat": [
+     5.767,
+     4.367,
+     2.567
+    ],
+    "footpath": {
+     "lo": 4.313,
+     "hi": 6.455,
+     "state": "encroached",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.493
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -6.102,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -6.102,
+      "hi": -5.408,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "carriageway",
+      "lo": -4.835,
+      "hi": 4.313,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.467
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.455,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.362,
+      0.6581
+     ],
+     [
+      0.3693,
+      0.3357
+     ]
+    ]
+   },
+   {
+    "s": 27.5,
+    "lane_lat": [
+     5.805,
+     4.405,
+     2.605
+    ],
+    "footpath": {
+     "lo": 4.334,
+     "hi": 6.482,
+     "state": "encroached",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.493
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -6.08,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -6.08,
+      "hi": -5.325,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "carriageway",
+      "lo": -4.771,
+      "hi": 4.334,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.467
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.482,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.3754,
+      0.6585
+     ],
+     [
+      0.3828,
+      0.336
+     ]
+    ]
+   },
+   {
+    "s": 30.0,
+    "lane_lat": [
+     5.843,
+     4.443,
+     2.643
+    ],
+    "footpath": {
+     "lo": 4.354,
+     "hi": 6.503,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.493
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -6.012,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -6.012,
+      "hi": -5.275,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "carriageway",
+      "lo": -4.733,
+      "hi": 4.354,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.467
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.503,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.3889,
+      0.6588
+     ],
+     [
+      0.3962,
+      0.3363
+     ]
+    ]
+   },
+   {
+    "s": 32.5,
+    "lane_lat": [
+     5.881,
+     4.481,
+     2.681
+    ],
+    "footpath": {
+     "lo": 4.375,
+     "hi": 6.544,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.493
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -6.08,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -6.08,
+      "hi": -5.125,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -4.619,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -4.619,
+      "hi": 4.375,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.467
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.544,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.4023,
+      0.6591
+     ],
+     [
+      0.4096,
+      0.3366
+     ]
+    ]
+   },
+   {
+    "s": 35.0,
+    "lane_lat": [
+     5.919,
+     4.519,
+     2.719
+    ],
+    "footpath": {
+     "lo": 4.396,
+     "hi": 6.585,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.493
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -6.148,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -6.148,
+      "hi": -4.975,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -4.505,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -4.505,
+      "hi": 4.396,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.467
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.585,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.4157,
+      0.6594
+     ],
+     [
+      0.4231,
+      0.337
+     ]
+    ]
+   },
+   {
+    "s": 37.5,
+    "lane_lat": [
+     5.957,
+     4.557,
+     2.757
+    ],
+    "footpath": {
+     "lo": 4.416,
+     "hi": 6.626,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.493
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -6.216,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -6.216,
+      "hi": -4.825,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -4.39,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -4.39,
+      "hi": 4.416,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.467
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.626,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.4292,
+      0.6597
+     ],
+     [
+      0.4365,
+      0.3373
+     ]
+    ]
+   },
+   {
+    "s": 40.0,
+    "lane_lat": [
+     5.995,
+     4.595,
+     2.795
+    ],
+    "footpath": {
+     "lo": 4.437,
+     "hi": 6.668,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.493
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -6.284,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -6.284,
+      "hi": -4.675,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -4.276,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -4.276,
+      "hi": 4.437,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.467
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.668,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.4426,
+      0.66
+     ],
+     [
+      0.4499,
+      0.3376
+     ]
+    ]
+   },
+   {
+    "s": 42.5,
+    "lane_lat": [
+     6.033,
+     4.633,
+     2.833
+    ],
+    "footpath": {
+     "lo": 4.457,
+     "hi": 6.709,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.493
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -6.352,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -6.352,
+      "hi": -4.65,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -4.162,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -4.162,
+      "hi": 4.457,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.467
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.709,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.456,
+      0.6603
+     ],
+     [
+      0.4634,
+      0.3379
+     ]
+    ]
+   },
+   {
+    "s": 45.0,
+    "lane_lat": [
+     6.071,
+     4.671,
+     2.871
+    ],
+    "footpath": {
+     "lo": 4.478,
+     "hi": 6.75,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.493
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -6.42,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -6.42,
+      "hi": -4.65,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -4.048,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -4.048,
+      "hi": 4.478,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.467
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.75,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.4695,
+      0.6606
+     ],
+     [
+      0.4768,
+      0.3382
+     ]
+    ]
+   },
+   {
+    "s": 47.5,
+    "lane_lat": [
+     6.11,
+     4.71,
+     2.91
+    ],
+    "footpath": {
+     "lo": 4.499,
+     "hi": 6.791,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.493
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -6.488,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -6.488,
+      "hi": -4.65,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -3.933,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -3.933,
+      "hi": 4.499,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.467
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.791,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.4829,
+      0.6609
+     ],
+     [
+      0.4902,
+      0.3385
+     ]
+    ]
+   },
+   {
+    "s": 50.0,
+    "lane_lat": [
+     6.296,
+     4.896,
+     3.096
+    ],
+    "footpath": {
+     "lo": 4.913,
+     "hi": 7.674,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.602
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -12.794,
+      "hi": -6.149,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.546
+     },
+     {
+      "kind": "verge",
+      "lo": -6.149,
+      "hi": -4.25,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.473
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.25,
+      "hi": -4.049,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -4.049,
+      "hi": 4.913,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.643
+     }
+    ],
+    "ground_uv": [
+     [
+      0.4963,
+      0.6612
+     ],
+     [
+      0.5037,
+      0.3388
+     ]
+    ]
+   },
+   {
+    "s": 52.5,
+    "lane_lat": [
+     5.7,
+     4.3,
+     2.5
+    ],
+    "footpath": {
+     "lo": 4.228,
+     "hi": 6.675,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.473
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -5.208,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -4.969,
+      "hi": -4.65,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -4.05,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -4.05,
+      "hi": 4.228,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.423
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.675,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.5098,
+      0.6615
+     ],
+     [
+      0.5171,
+      0.3391
+     ]
+    ]
+   },
+   {
+    "s": 55.0,
+    "lane_lat": [
+     5.736,
+     4.336,
+     2.536
+    ],
+    "footpath": {
+     "lo": 4.247,
+     "hi": 6.713,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.473
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -5.182,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -4.931,
+      "hi": -4.65,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -3.986,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -3.986,
+      "hi": 4.247,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.423
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.713,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.5118,
+      0.6619
+     ],
+     [
+      0.5418,
+      0.3408
+     ]
+    ]
+   },
+   {
+    "s": 57.5,
+    "lane_lat": [
+     5.773,
+     4.373,
+     2.573
+    ],
+    "footpath": {
+     "lo": 4.266,
+     "hi": 6.75,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.473
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -5.156,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -4.893,
+      "hi": -4.65,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -3.922,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -3.922,
+      "hi": 4.266,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.423
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.75,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.5252,
+      0.6632
+     ],
+     [
+      0.5552,
+      0.3421
+     ]
+    ]
+   },
+   {
+    "s": 60.0,
+    "lane_lat": [
+     5.809,
+     4.409,
+     2.609
+    ],
+    "footpath": {
+     "lo": 4.284,
+     "hi": 6.788,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.473
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -5.13,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -4.855,
+      "hi": -4.65,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -3.858,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -3.858,
+      "hi": 4.284,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.423
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.788,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.5386,
+      0.6644
+     ],
+     [
+      0.5686,
+      0.3433
+     ]
+    ]
+   },
+   {
+    "s": 62.5,
+    "lane_lat": [
+     5.845,
+     4.445,
+     2.645
+    ],
+    "footpath": {
+     "lo": 4.303,
+     "hi": 6.825,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.473
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -5.104,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -4.817,
+      "hi": -4.65,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -3.794,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -3.794,
+      "hi": 4.303,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.423
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.825,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.552,
+      0.6657
+     ],
+     [
+      0.5819,
+      0.3446
+     ]
+    ]
+   },
+   {
+    "s": 65.0,
+    "lane_lat": [
+     5.882,
+     4.482,
+     2.682
+    ],
+    "footpath": {
+     "lo": 4.322,
+     "hi": 6.863,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.473
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -5.079,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -4.78,
+      "hi": -4.65,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -3.731,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -3.731,
+      "hi": 4.322,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.423
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.863,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.5654,
+      0.6669
+     ],
+     [
+      0.5953,
+      0.3458
+     ]
+    ]
+   },
+   {
+    "s": 67.5,
+    "lane_lat": [
+     5.918,
+     4.518,
+     2.718
+    ],
+    "footpath": {
+     "lo": 4.341,
+     "hi": 6.9,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.473
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -5.053,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -4.742,
+      "hi": -4.65,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -3.667,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -3.667,
+      "hi": 4.341,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.423
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.9,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.5787,
+      0.6682
+     ],
+     [
+      0.6087,
+      0.3471
+     ]
+    ]
+   },
+   {
+    "s": 70.0,
+    "lane_lat": [
+     5.955,
+     4.555,
+     2.755
+    ],
+    "footpath": {
+     "lo": 4.359,
+     "hi": 6.938,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.473
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -5.027,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -4.704,
+      "hi": -4.65,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -3.603,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -3.603,
+      "hi": 4.359,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.423
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.938,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.5921,
+      0.6694
+     ],
+     [
+      0.6221,
+      0.3483
+     ]
+    ]
+   },
+   {
+    "s": 72.5,
+    "lane_lat": [
+     5.991,
+     4.591,
+     2.791
+    ],
+    "footpath": {
+     "lo": 4.378,
+     "hi": 6.975,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.473
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -5.001,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "verge",
+      "lo": -4.666,
+      "hi": -4.65,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -3.539,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -3.539,
+      "hi": 4.378,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.423
+     },
+     {
+      "kind": "forecourt",
+      "lo": 6.975,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.6055,
+      0.6707
+     ],
+     [
+      0.6355,
+      0.3496
+     ]
+    ]
+   },
+   {
+    "s": 75.0,
+    "lane_lat": [
+     6.027,
+     4.627,
+     2.827
+    ],
+    "footpath": {
+     "lo": 4.397,
+     "hi": 7.013,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.473
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -4.975,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -3.475,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -3.475,
+      "hi": 4.397,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.423
+     },
+     {
+      "kind": "forecourt",
+      "lo": 7.013,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.6189,
+      0.6719
+     ],
+     [
+      0.6488,
+      0.3508
+     ]
+    ]
+   },
+   {
+    "s": 77.5,
+    "lane_lat": [
+     6.064,
+     4.664,
+     2.864
+    ],
+    "footpath": {
+     "lo": 4.416,
+     "hi": 7.05,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.473
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -4.95,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -3.411,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -3.411,
+      "hi": 4.416,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.423
+     },
+     {
+      "kind": "forecourt",
+      "lo": 7.05,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.6322,
+      0.6732
+     ],
+     [
+      0.6622,
+      0.3521
+     ]
+    ]
+   },
+   {
+    "s": 80.0,
+    "lane_lat": [
+     6.1,
+     4.7,
+     2.9
+    ],
+    "footpath": {
+     "lo": 4.434,
+     "hi": 7.088,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.473
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -4.924,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -3.347,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -3.347,
+      "hi": 4.434,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.423
+     },
+     {
+      "kind": "forecourt",
+      "lo": 7.088,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.6456,
+      0.6744
+     ],
+     [
+      0.6756,
+      0.3533
+     ]
+    ]
+   },
+   {
+    "s": 82.5,
+    "lane_lat": [
+     6.136,
+     4.736,
+     2.936
+    ],
+    "footpath": {
+     "lo": 4.453,
+     "hi": 7.125,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.473
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -4.905,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -3.291,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -3.291,
+      "hi": 4.453,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.423
+     },
+     {
+      "kind": "forecourt",
+      "lo": 7.125,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.659,
+      0.6757
+     ],
+     [
+      0.689,
+      0.3546
+     ]
+    ]
+   },
+   {
+    "s": 85.0,
+    "lane_lat": [
+     6.173,
+     4.773,
+     2.973
+    ],
+    "footpath": {
+     "lo": 4.472,
+     "hi": 7.163,
+     "state": "intact",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.473
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -4.894,
+      "material": "concrete",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -3.242,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -3.242,
+      "hi": 4.472,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.423
+     },
+     {
+      "kind": "forecourt",
+      "lo": 7.163,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.6724,
+      0.6769
+     ],
+     [
+      0.7024,
+      0.3558
+     ]
+    ]
+   },
+   {
+    "s": 87.5,
+    "lane_lat": [
+     6.209,
+     4.809,
+     3.009
+    ],
+    "footpath": {
+     "lo": 4.491,
+     "hi": 7.2,
+     "state": "encroached",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.473
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -7.65,
+      "hi": -4.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -3.2,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -3.2,
+      "hi": 4.491,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.423
+     },
+     {
+      "kind": "forecourt",
+      "lo": 7.2,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.6858,
+      0.6782
+     ],
+     [
+      0.7157,
+      0.3571
+     ]
+    ]
+   },
+   {
+    "s": 90.0,
+    "lane_lat": [
+     6.245,
+     4.845,
+     3.045
+    ],
+    "footpath": {
+     "lo": 4.509,
+     "hi": 7.237,
+     "state": "encroached",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.473
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -7.65,
+      "hi": -4.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -3.164,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "carriageway",
+      "lo": -3.164,
+      "hi": 4.509,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.423
+     },
+     {
+      "kind": "forecourt",
+      "lo": 7.237,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.6991,
+      0.6794
+     ],
+     [
+      0.7291,
+      0.3583
+     ]
+    ]
+   },
+   {
+    "s": 92.5,
+    "lane_lat": [
+     6.282,
+     4.882,
+     3.082
+    ],
+    "footpath": {
+     "lo": 4.528,
+     "hi": 7.275,
+     "state": "encroached",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.473
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -7.65,
+      "hi": -4.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -3.15,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "kerb",
+      "lo": -3.15,
+      "hi": -3.127,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.139
+     },
+     {
+      "kind": "carriageway",
+      "lo": -3.127,
+      "hi": 4.528,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.423
+     },
+     {
+      "kind": "forecourt",
+      "lo": 7.275,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.7125,
+      0.6807
+     ],
+     [
+      0.7425,
+      0.3596
+     ]
+    ]
+   },
+   {
+    "s": 95.0,
+    "lane_lat": [
+     6.163,
+     4.763,
+     2.963
+    ],
+    "footpath": {
+     "lo": 4.474,
+     "hi": 7.131,
+     "state": "encroached",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.476
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -8.371,
+      "hi": -4.979,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.179
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -3.15,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "verge",
+      "lo": -3.729,
+      "hi": -3.608,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "kerb",
+      "lo": -3.125,
+      "hi": -3.091,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.139
+     },
+     {
+      "kind": "carriageway",
+      "lo": -3.46,
+      "hi": 4.474,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.43
+     },
+     {
+      "kind": "forecourt",
+      "lo": 7.131,
+      "hi": 7.65,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.139
+     }
+    ],
+    "ground_uv": [
+     [
+      0.7259,
+      0.6819
+     ],
+     [
+      0.7559,
+      0.3608
+     ]
+    ]
+   },
+   {
+    "s": 97.5,
+    "lane_lat": [
+     6.031,
+     4.595,
+     2.795
+    ],
+    "footpath": {
+     "lo": 4.578,
+     "hi": 7.228,
+     "state": "encroached",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.532
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -10.172,
+      "hi": -5.802,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.277
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -4.5,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "verge",
+      "lo": -5.739,
+      "hi": -4.775,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.357
+     },
+     {
+      "kind": "kerb",
+      "lo": -3.025,
+      "hi": -3.021,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.139
+     },
+     {
+      "kind": "carriageway",
+      "lo": -4.353,
+      "hi": 4.578,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.528
+     }
+    ],
+    "ground_uv": [
+     [
+      0.7393,
+      0.6832
+     ],
+     [
+      0.7693,
+      0.3621
+     ]
+    ]
+   },
+   {
+    "s": 100.0,
+    "lane_lat": [
+     5.386,
+     3.986,
+     2.186
+    ],
+    "footpath": {
+     "lo": 4.107,
+     "hi": 6.225,
+     "state": "encroached",
+     "material": "unknown",
+     "height_m": 0.15,
+     "confidence": 0.493
+    },
+    "strips": [
+     {
+      "kind": "forecourt",
+      "lo": -11.973,
+      "hi": -6.624,
+      "material": "unknown",
+      "height_m": 0.0,
+      "confidence": 0.375
+     },
+     {
+      "kind": "footpath",
+      "lo": -4.65,
+      "hi": -4.5,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.33
+     },
+     {
+      "kind": "verge",
+      "lo": -6.624,
+      "hi": -6.025,
+      "material": "earth",
+      "height_m": 0.0,
+      "confidence": 0.274
+     },
+     {
+      "kind": "kerb",
+      "lo": -3.025,
+      "hi": -3.021,
+      "material": "unknown",
+      "height_m": 0.15,
+      "confidence": 0.139
+     },
+     {
+      "kind": "carriageway",
+      "lo": -5.305,
+      "hi": 4.107,
+      "material": "asphalt",
+      "height_m": 0.0,
+      "confidence": 0.467
+     }
+    ],
+    "ground_uv": [
+     [
+      0.7401,
+      0.6831
+     ],
+     [
+      0.7951,
+      0.3654
+     ]
+    ]
+   }
+  ]
+ },
+ "cross_section": {
+  "road_width_m": 8.577,
+  "lanes": [
+   {
+    "index": 0,
+    "name": "footpath",
+    "kind": "footpath",
+    "lat_m": 5.882,
+    "width_m": 1.5
+   },
+   {
+    "index": 1,
+    "name": "road_edge",
+    "kind": "road_edge",
+    "lat_m": 4.481,
+    "width_m": 1.6
+   },
+   {
+    "index": 2,
+    "name": "road",
+    "kind": "road",
+    "lat_m": 2.681,
+    "width_m": 2.0
+   }
+  ],
+  "footpath_coverage": [
+   {
+    "from_m": 0.0,
+    "to_m": 15.0,
+    "state": "intact",
+    "confidence": 0.493
+   },
+   {
+    "from_m": 15.0,
+    "to_m": 30.0,
+    "state": "encroached",
+    "confidence": 0.493
+   },
+   {
+    "from_m": 30.0,
+    "to_m": 50.0,
+    "state": "intact",
+    "confidence": 0.493
+   },
+   {
+    "from_m": 50.0,
+    "to_m": 52.5,
+    "state": "intact",
+    "confidence": 0.602
+   },
+   {
+    "from_m": 52.5,
+    "to_m": 82.5,
+    "state": "intact",
+    "confidence": 0.473
+   },
+   {
+    "from_m": 82.5,
+    "to_m": 87.5,
+    "state": "intact",
+    "confidence": 0.473
+   },
+   {
+    "from_m": 87.5,
+    "to_m": 97.5,
+    "state": "encroached",
+    "confidence": 0.473
+   },
+   {
+    "from_m": 97.5,
+    "to_m": 100.0,
+    "state": "encroached",
+    "confidence": 0.585
+   }
+  ]
+ },
+ "buildings": [
+  {
+   "id": "bld-osm-309674931",
+   "source": "mixed",
+   "footprint": [
+    [
+     3.16,
+     22.57
+    ],
+    [
+     13.42,
+     17.34
+    ],
+    [
+     24.58,
+     90.4
+    ],
+    [
+     13.42,
+     93.27
+    ]
+   ],
+   "height_m": 16.0,
+   "color_hex": "#c8cf4a",
+   "facade_url": "/media/crops/bellandur-main-road-n-2/bld-osm-309674931.png?v=1",
+   "confidence": 0.5,
+   "side": "modelled",
+   "description": "Yellow-green four-storey building with shops on the ground floor and balconies above."
+  },
+  {
+   "id": "bld-osm-309674933",
+   "source": "mixed",
+   "footprint": [
+    [
+     15.84,
+     13.91
+    ],
+    [
+     33.65,
+     10.25
+    ],
+    [
+     39.2,
+     39.59
+    ],
+    [
+     21.4,
+     42.78
+    ]
+   ],
+   "height_m": 9.0,
+   "color_hex": "#c9d04c",
+   "facade_url": "/media/crops/bellandur-main-road-n-2/bld-osm-309674933.png?v=1",
+   "confidence": 0.5,
+   "side": "modelled",
+   "description": "Yellow building with cafe, salon and health care shops at ground level."
+  },
+  {
+   "id": "bld-osm-309674934",
+   "source": "mixed",
+   "footprint": [
+    [
+     51.22,
+     88.93
+    ],
+    [
+     58.88,
+     86.51
+    ],
+    [
+     50.91,
+     7.97
+    ],
+    [
+     36.96,
+     10.54
+    ]
+   ],
+   "height_m": 9.0,
+   "color_hex": "#e6e0d0",
+   "facade_url": "/media/crops/bellandur-main-road-n-2/bld-osm-309674934.png?v=1",
+   "confidence": 0.57,
+   "side": "modelled",
+   "description": "Cream apartment blocks with balconies behind the gate and a tiled roof entrance."
+  },
+  {
+   "id": "bld-osm-309674936",
+   "source": "mixed",
+   "footprint": [
+    [
+     58.81,
+     55.55
+    ],
+    [
+     89.18,
+     52.14
+    ],
+    [
+     85.83,
+     10.71
+    ],
+    [
+     54.51,
+     14.04
+    ]
+   ],
+   "height_m": 9.0,
+   "color_hex": "#e8e0cc",
+   "facade_url": "/media/crops/bellandur-main-road-n-2/bld-osm-309674936.png?v=1",
+   "confidence": 0.65,
+   "side": "modelled",
+   "description": "Cream apartment building with blue trim, balconies, and a compound wall."
+  },
+  {
+   "id": "bld-osm-309674938",
+   "source": "mixed",
+   "footprint": [
+    [
+     93.19,
+     22.42
+    ],
+    [
+     92.52,
+     9.55
+    ],
+    [
+     120.91,
+     9.77
+    ],
+    [
+     120.58,
+     22.65
+    ]
+   ],
+   "height_m": 9.0,
+   "color_hex": "#b9a58c",
+   "facade_url": "/media/crops/bellandur-main-road-n-2/bld-osm-309674938.png?v=1",
+   "confidence": 0.599,
+   "side": "modelled",
+   "description": "Shopfronts with clinic and dental signboards above."
+  },
+  {
+   "id": "bld-osm-310345954",
+   "source": "mixed",
+   "footprint": [
+    [
+     -11.63,
+     -17.95
+    ],
+    [
+     38.97,
+     -34.34
+    ],
+    [
+     45.17,
+     -10.76
+    ],
+    [
+     43.07,
+     -10.2
+    ],
+    [
+     36.95,
+     -8.58
+    ],
+    [
+     36.35,
+     -10.87
+    ],
+    [
+     24.82,
+     -7.84
+    ],
+    [
+     24.38,
+     -9.5
+    ],
+    [
+     19.02,
+     -8.09
+    ],
+    [
+     18.43,
+     -10.31
+    ],
+    [
+     6.64,
+     -6.82
+    ],
+    [
+     1.96,
+     -12.89
+    ],
+    [
+     -3.82,
+     -9.59
+    ],
+    [
+     -5.59,
+     -12.72
+    ],
+    [
+     -7.89,
+     -11.41
+    ]
+   ],
+   "height_m": 9.600000000000001,
+   "color_hex": "#dcd0b8",
+   "facade_url": "/media/crops/bellandur-main-road-n-2/bld-osm-310345954.png?v=1",
+   "confidence": 0.738,
+   "side": "opposite",
+   "description": "Cream apartment building with stilt parking and a decorative fence."
+  },
+  {
+   "id": "bld-osm-310345955",
+   "source": "mixed",
+   "footprint": [
+    [
+     47.36,
+     -6.86
+    ],
+    [
+     46.91,
+     -20.74
+    ],
+    [
+     83.78,
+     -19.79
+    ],
+    [
+     83.27,
+     -5.92
+    ]
+   ],
+   "height_m": 9.0,
+   "color_hex": "#f0eeea",
+   "facade_url": "/media/crops/bellandur-main-road-n-2/bld-osm-310345955.png?v=1",
+   "confidence": 0.628,
+   "side": "opposite",
+   "description": "White four-storey building with a dark shopfront band and storage shutters."
+  },
+  {
+   "id": "bld-osm-310345956",
+   "source": "osm",
+   "footprint": [
+    [
+     -16.09,
+     -18.19
+    ],
+    [
+     -20.15,
+     -25.07
+    ],
+    [
+     -21.59,
+     -24.21
+    ],
+    [
+     -23.87,
+     -28.06
+    ],
+    [
+     34.53,
+     -49.29
+    ],
+    [
+     37.04,
+     -40.26
+    ],
+    [
+     38.32,
+     -40.61
+    ],
+    [
+     39.14,
+     -37.64
+    ]
+   ],
+   "height_m": 9.0,
+   "color_hex": "#b8b0a2",
+   "facade_url": null,
+   "confidence": 0.5,
+   "side": "opposite",
+   "description": "Map-only building outline; height is an estimate."
+  },
+  {
+   "id": "bld-osm-609993408",
+   "source": "osm",
+   "footprint": [
+    [
+     99.04,
+     44.16
+    ],
+    [
+     110.45,
+     45.04
+    ],
+    [
+     112.62,
+     27.42
+    ],
+    [
+     97.87,
+     25.57
+    ]
+   ],
+   "height_m": 9.0,
+   "color_hex": "#b8b0a2",
+   "facade_url": null,
+   "confidence": 0.5,
+   "side": "modelled",
+   "description": "Map-only building outline; height is an estimate."
+  },
+  {
+   "id": "bld-v-08c2891a",
+   "source": "vision",
+   "footprint": [
+    [
+     91.303,
+     -8.15
+    ],
+    [
+     100.0,
+     -8.15
+    ],
+    [
+     100.0,
+     -16.15
+    ],
+    [
+     91.303,
+     -16.15
+    ]
+   ],
+   "height_m": 12.8,
+   "color_hex": "#b87b58",
+   "facade_url": "/media/crops/bellandur-main-road-n-2/bld-v-08c2891a.png?v=1",
+   "confidence": 0.259,
+   "side": "opposite",
+   "description": "Brown apartment building behind a gate."
+  },
+  {
+   "id": "bld-v-7224b544",
+   "source": "vision",
+   "footprint": [
+    [
+     0.0,
+     8.15
+    ],
+    [
+     0.001,
+     8.15
+    ],
+    [
+     0.001,
+     16.15
+    ],
+    [
+     0.0,
+     16.15
+    ]
+   ],
+   "height_m": 12.8,
+   "color_hex": "#dfe3e8",
+   "facade_url": "/media/crops/bellandur-main-road-n-2/bld-v-7224b544.png?v=1",
+   "confidence": 0.605,
+   "side": "modelled",
+   "description": "White hospital/office building with blue band."
+  }
+ ],
+ "objects": [
+  {
+   "id": "ent-43ede1976c",
+   "entity_id": "ent-43ede1976c",
+   "type": "parked_vehicle",
+   "label": "two-wheeler (parked vehicle)",
+   "x_m": 0.0,
+   "length_m": 1.545,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 0.093,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.818,
+    "h": 1.121,
+    "d": 1.545
+   },
+   "confidence": 0.213,
+   "scenery": true,
+   "description": "Two-wheeler with rider on the carriageway.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 3 later views; disputed.",
+    "observation_ids": [
+     "5a791ed3-caa3-4f09-8a7f-617ec4d791b8",
+     "d869a66a-7f15-4efd-a124-b4adf4abbe51"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/7b221457b05b9b5283ff683b08cace42ccc944d1872c406771d168acea0e1974.jpg",
+    "crop_px": [
+     165,
+     347,
+     25,
+     45
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-43ede1976c.png?v=1",
+   "latlon": {
+    "lat": 12.922913,
+    "lon": 77.672561
+   },
+   "tile_px": [
+    297.07,
+    645.67
+   ]
+  },
+  {
+   "id": "ent-6b372ddf13",
+   "entity_id": "ent-6b372ddf13",
+   "type": "parked_vehicle",
+   "label": "auto-rickshaw (parked vehicle)",
+   "x_m": 0.0,
+   "length_m": 4.2,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -4.233,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 1.8,
+    "h": 1.5,
+    "d": 4.2
+   },
+   "confidence": 0.635,
+   "scenery": true,
+   "description": "Green and yellow auto-rickshaw on the carriageway at the left edge.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame.",
+    "observation_ids": [
+     "d869a66a-7f15-4efd-a124-b4adf4abbe51"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/41e7d9353c0df4125969b87c48039b6d5ec29d0f17732984f317ca457720a991.jpg",
+    "crop_px": [
+     0,
+     338,
+     65,
+     108
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-6b372ddf13.png?v=1",
+   "latlon": {
+    "lat": 12.922875,
+    "lon": 77.672571
+   },
+   "tile_px": [
+    304.11,
+    674.59
+   ]
+  },
+  {
+   "id": "ent-77e304a2b9",
+   "entity_id": "ent-77e304a2b9",
+   "type": "tree",
+   "label": "tree",
+   "x_m": 0.0,
+   "length_m": 0.8,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 16.588,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.8,
+    "h": 5.0,
+    "d": 0.8
+   },
+   "confidence": 0.49,
+   "scenery": true,
+   "description": "Palm trees inside the compound behind the gate.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame.",
+    "observation_ids": [
+     "e5f332ac-582b-4a9d-979c-1c49885a970b"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/56509920cedf53a7734f70fee61d28932c347ca97e9fade529945c2d810969d9.jpg",
+    "crop_px": [
+     300,
+     215,
+     95,
+     90
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-77e304a2b9.png?v=1",
+   "latlon": {
+    "lat": 12.923057,
+    "lon": 77.672525
+   },
+   "tile_px": [
+    270.23,
+    535.41
+   ]
+  },
+  {
+   "id": "ent-844968ef4b",
+   "entity_id": "ent-844968ef4b",
+   "type": "parked_vehicle",
+   "label": "car (parked vehicle)",
+   "x_m": 0.0,
+   "length_m": 2.193,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -5.834,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.84,
+    "h": 1.238,
+    "d": 2.193
+   },
+   "confidence": 0.454,
+   "scenery": true,
+   "description": "Two-wheeler with rider on the carriageway.",
+   "evidence": {
+    "observation_count": 3,
+    "sources": {
+     "street_view": 3,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 3 Street View frames; not visible in 1 later view; disputed.",
+    "observation_ids": [
+     "5a791ed3-caa3-4f09-8a7f-617ec4d791b8",
+     "c83bf4fe-eb07-420e-aea7-3c7b84d7c9a5",
+     "d869a66a-7f15-4efd-a124-b4adf4abbe51"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/9584ae83a50c775225d9c894a61c8b0becf418612ee6d99ec7be3fdf11f7378f.jpg",
+    "crop_px": [
+     421,
+     347,
+     70,
+     72
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-844968ef4b.png?v=1",
+   "latlon": {
+    "lat": 12.922861,
+    "lon": 77.672574
+   },
+   "tile_px": [
+    306.71,
+    685.29
+   ]
+  },
+  {
+   "id": "ent-b76bf1dd79",
+   "entity_id": "ent-b76bf1dd79",
+   "type": "gate",
+   "label": "gate",
+   "x_m": 0.0,
+   "length_m": 0.2,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 13.611,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 3.0,
+    "h": 2.0,
+    "d": 0.2
+   },
+   "confidence": 0.414,
+   "scenery": true,
+   "description": "Large metal sliding gate of the building compound opening onto the footpath.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 2 later views; disputed.",
+    "observation_ids": [
+     "5a791ed3-caa3-4f09-8a7f-617ec4d791b8",
+     "e5f332ac-582b-4a9d-979c-1c49885a970b"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/56509920cedf53a7734f70fee61d28932c347ca97e9fade529945c2d810969d9.jpg",
+    "crop_px": [
+     245,
+     305,
+     90,
+     80
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-b76bf1dd79.png?v=1",
+   "latlon": {
+    "lat": 12.923031,
+    "lon": 77.672532
+   },
+   "tile_px": [
+    275.08,
+    555.31
+   ]
+  },
+  {
+   "id": "ent-be2156dc1b",
+   "entity_id": "ent-be2156dc1b",
+   "type": "wall",
+   "label": "wall",
+   "x_m": 0.0,
+   "length_m": 1.0,
+   "lanes": [
+    0
+   ],
+   "action": "dodge",
+   "lateral_m": 6.398,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 2.0,
+    "d": 1.0
+   },
+   "confidence": 0.417,
+   "scenery": false,
+   "description": "Yellowish compound wall running along the footpath.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 1 later view; disputed.",
+    "observation_ids": [
+     "d869a66a-7f15-4efd-a124-b4adf4abbe51"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/41e7d9353c0df4125969b87c48039b6d5ec29d0f17732984f317ca457720a991.jpg",
+    "crop_px": [
+     340,
+     305,
+     300,
+     100
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-be2156dc1b.png?v=1",
+   "latlon": {
+    "lat": 12.922968,
+    "lon": 77.672548
+   },
+   "tile_px": [
+    286.81,
+    603.52
+   ]
+  },
+  {
+   "id": "ent-c51b3372ff",
+   "entity_id": "ent-c51b3372ff",
+   "type": "pole",
+   "label": "utility (pole)",
+   "x_m": 0.0,
+   "length_m": 0.3,
+   "lanes": [
+    0
+   ],
+   "action": "dodge",
+   "lateral_m": 5.368,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 7.0,
+    "d": 0.3
+   },
+   "confidence": 0.631,
+   "scenery": false,
+   "description": "Utility pole with tangled cables and posters standing on the footpath edge beside the kerb, narrowing the walkway.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 1 later view.",
+    "observation_ids": [
+     "d869a66a-7f15-4efd-a124-b4adf4abbe51"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/41e7d9353c0df4125969b87c48039b6d5ec29d0f17732984f317ca457720a991.jpg",
+    "crop_px": [
+     535,
+     10,
+     50,
+     465
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-c51b3372ff.png?v=1",
+   "latlon": {
+    "lat": 12.922959,
+    "lon": 77.67255
+   },
+   "tile_px": [
+    288.49,
+    610.41
+   ]
+  },
+  {
+   "id": "ent-cd158dd250",
+   "entity_id": "ent-cd158dd250",
+   "type": "debris",
+   "label": "debris",
+   "x_m": 0.0,
+   "length_m": 1.0,
+   "lanes": [
+    1,
+    2
+   ],
+   "action": "jump",
+   "lateral_m": 3.493,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 1.0,
+    "h": 0.4,
+    "d": 1.0
+   },
+   "confidence": 0.366,
+   "scenery": false,
+   "description": "Scattered garbage and debris along the footpath beside the wall.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 1 later view; disputed.",
+    "observation_ids": [
+     "d869a66a-7f15-4efd-a124-b4adf4abbe51"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/41e7d9353c0df4125969b87c48039b6d5ec29d0f17732984f317ca457720a991.jpg",
+    "crop_px": [
+     340,
+     380,
+     170,
+     70
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-cd158dd250.png?v=1",
+   "latlon": {
+    "lat": 12.922942,
+    "lon": 77.672554
+   },
+   "tile_px": [
+    291.54,
+    622.94
+   ]
+  },
+  {
+   "id": "ent-f0f92fa6ac",
+   "entity_id": "ent-f0f92fa6ac",
+   "type": "gate",
+   "label": "gate",
+   "x_m": 0.0,
+   "length_m": 0.2,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -12.722,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 3.0,
+    "h": 2.0,
+    "d": 0.2
+   },
+   "confidence": 0.414,
+   "scenery": true,
+   "description": "Iron gates of an apartment entrance on the right.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame.",
+    "observation_ids": [
+     "c83bf4fe-eb07-420e-aea7-3c7b84d7c9a5"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/9584ae83a50c775225d9c894a61c8b0becf418612ee6d99ec7be3fdf11f7378f.jpg",
+    "crop_px": [
+     328,
+     328,
+     95,
+     48
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-f0f92fa6ac.png?v=1",
+   "latlon": {
+    "lat": 12.922801,
+    "lon": 77.672589
+   },
+   "tile_px": [
+    317.92,
+    731.34
+   ]
+  },
+  {
+   "id": "ent-a0ccd12e7c",
+   "entity_id": "ent-a0ccd12e7c",
+   "type": "drain",
+   "label": "drain",
+   "x_m": 0.629,
+   "length_m": 1.0,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 7.055,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.8,
+    "h": 0.1,
+    "d": 1.0
+   },
+   "confidence": 0.221,
+   "scenery": true,
+   "description": "Drain or cover slab near the kerb on the left side.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 1 later view; disputed.",
+    "observation_ids": [
+     "e5f332ac-582b-4a9d-979c-1c49885a970b"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/56509920cedf53a7734f70fee61d28932c347ca97e9fade529945c2d810969d9.jpg",
+    "crop_px": [
+     548,
+     445,
+     92,
+     25
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-a0ccd12e7c.png?v=1",
+   "latlon": {
+    "lat": 12.922975,
+    "lon": 77.672552
+   },
+   "tile_px": [
+    289.95,
+    598.11
+   ]
+  },
+  {
+   "id": "ent-8b5360ca43",
+   "entity_id": "ent-8b5360ca43",
+   "type": "parked_vehicle",
+   "label": "auto-rickshaw (parked vehicle)",
+   "x_m": 0.68,
+   "length_m": 4.2,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -0.266,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 1.8,
+    "h": 1.5,
+    "d": 4.2
+   },
+   "confidence": 0.59,
+   "scenery": true,
+   "description": "Green and yellow auto-rickshaw on the carriageway near the camera.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 3 later views.",
+    "observation_ids": [
+     "5a791ed3-caa3-4f09-8a7f-617ec4d791b8",
+     "d869a66a-7f15-4efd-a124-b4adf4abbe51"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/7b221457b05b9b5283ff683b08cace42ccc944d1872c406771d168acea0e1974.jpg",
+    "crop_px": [
+     0,
+     347,
+     148,
+     140
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-8b5360ca43.png?v=1",
+   "latlon": {
+    "lat": 12.922911,
+    "lon": 77.672568
+   },
+   "tile_px": [
+    302.2,
+    646.97
+   ]
+  },
+  {
+   "id": "ent-fc70fe384b",
+   "entity_id": "ent-fc70fe384b",
+   "type": "wall",
+   "label": "wall",
+   "x_m": 0.992,
+   "length_m": 1.0,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -6.437,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 2.0,
+    "d": 1.0
+   },
+   "confidence": 0.473,
+   "scenery": true,
+   "description": "Beige brick-pattern compound wall on the right side of the street.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 1 later view; disputed.",
+    "observation_ids": [
+     "c83bf4fe-eb07-420e-aea7-3c7b84d7c9a5"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/9584ae83a50c775225d9c894a61c8b0becf418612ee6d99ec7be3fdf11f7378f.jpg",
+    "crop_px": [
+     0,
+     343,
+     278,
+     75
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-fc70fe384b.png?v=1",
+   "latlon": {
+    "lat": 12.922858,
+    "lon": 77.672585
+   },
+   "tile_px": [
+    314.32,
+    687.71
+   ]
+  },
+  {
+   "id": "ent-83f331edc5",
+   "entity_id": "ent-83f331edc5",
+   "type": "wall",
+   "label": "wall",
+   "x_m": 1.158,
+   "length_m": 1.0,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 11.735,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 2.0,
+    "d": 1.0
+   },
+   "confidence": 0.469,
+   "scenery": true,
+   "description": "Low compound wall with blue panels along the footpath.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 1 later view; disputed.",
+    "observation_ids": [
+     "e5f332ac-582b-4a9d-979c-1c49885a970b"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/56509920cedf53a7734f70fee61d28932c347ca97e9fade529945c2d810969d9.jpg",
+    "crop_px": [
+     333,
+     330,
+     307,
+     70
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-83f331edc5.png?v=1",
+   "latlon": {
+    "lat": 12.923017,
+    "lon": 77.672546
+   },
+   "tile_px": [
+    285.87,
+    565.96
+   ]
+  },
+  {
+   "id": "ent-2052db97ef",
+   "entity_id": "ent-2052db97ef",
+   "type": "tree",
+   "label": "tree",
+   "x_m": 1.517,
+   "length_m": 0.8,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 11.854,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.8,
+    "h": 5.0,
+    "d": 0.8
+   },
+   "confidence": 0.269,
+   "scenery": true,
+   "description": "Palm tree in the compound behind the wall.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 2 later views; disputed.",
+    "observation_ids": [
+     "b8950772-2fe1-4f0f-93e3-bf3494c2e3d4"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/5ff0fe8d3c15fc4bf90b886c220605d19fea9a943b96c9ad74105c611b2b076d.jpg",
+    "crop_px": [
+     0,
+     180,
+     142,
+     150
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-2052db97ef.png?v=1",
+   "latlon": {
+    "lat": 12.923019,
+    "lon": 77.672549
+   },
+   "tile_px": [
+    288.07,
+    564.58
+   ]
+  },
+  {
+   "id": "ent-618a4a4d7b",
+   "entity_id": "ent-618a4a4d7b",
+   "type": "wall",
+   "label": "wall",
+   "x_m": 5.364,
+   "length_m": 1.0,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 10.712,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 2.0,
+    "d": 1.0
+   },
+   "confidence": 0.523,
+   "scenery": true,
+   "description": "Compound wall with blue panel on the left, set behind the footpath.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 1 later view.",
+    "observation_ids": [
+     "7e0e95ad-6448-492e-b61d-b9db32a0c36a",
+     "b8950772-2fe1-4f0f-93e3-bf3494c2e3d4"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/5ff0fe8d3c15fc4bf90b886c220605d19fea9a943b96c9ad74105c611b2b076d.jpg",
+    "crop_px": [
+     0,
+     328,
+     450,
+     95
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-618a4a4d7b.png?v=1",
+   "latlon": {
+    "lat": 12.923017,
+    "lon": 77.672586
+   },
+   "tile_px": [
+    315.65,
+    565.96
+   ]
+  },
+  {
+   "id": "ent-6d956711ce",
+   "entity_id": "ent-6d956711ce",
+   "type": "pole",
+   "label": "utility (pole)",
+   "x_m": 7.029,
+   "length_m": 0.3,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 7.577,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 7.0,
+    "d": 0.3
+   },
+   "confidence": 0.613,
+   "scenery": true,
+   "description": "Utility pole with wires on the left footpath edge.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 1 later view.",
+    "observation_ids": [
+     "7e0e95ad-6448-492e-b61d-b9db32a0c36a",
+     "b8950772-2fe1-4f0f-93e3-bf3494c2e3d4"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/5ff0fe8d3c15fc4bf90b886c220605d19fea9a943b96c9ad74105c611b2b076d.jpg",
+    "crop_px": [
+     392,
+     0,
+     40,
+     515
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-6d956711ce.png?v=1",
+   "latlon": {
+    "lat": 12.922992,
+    "lon": 77.672621
+   },
+   "tile_px": [
+    341.56,
+    584.7
+   ]
+  },
+  {
+   "id": "ent-4d6dd4f668",
+   "entity_id": "ent-4d6dd4f668",
+   "type": "parked_vehicle",
+   "label": "two-wheeler (parked vehicle)",
+   "x_m": 7.293,
+   "length_m": 1.9,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -0.476,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.7,
+    "h": 1.2,
+    "d": 1.9
+   },
+   "confidence": 0.386,
+   "scenery": true,
+   "description": "Maroon scooter with rider moving on the carriageway.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 3 later views; disputed.",
+    "observation_ids": [
+     "4097568b-8f5d-4850-9a49-0b9a8bff4488"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/cf475e0cc744d966caa60238aab8da84b7744b9b58b8519449c8668390a1848c.jpg",
+    "crop_px": [
+     120,
+     408,
+     168,
+     125
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-4d6dd4f668.png?v=1",
+   "latlon": {
+    "lat": 12.92292,
+    "lon": 77.672628
+   },
+   "tile_px": [
+    346.49,
+    639.91
+   ]
+  },
+  {
+   "id": "ent-d15b8a0296",
+   "entity_id": "ent-d15b8a0296",
+   "type": "wall",
+   "label": "wall",
+   "x_m": 8.252,
+   "length_m": 1.0,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -6.332,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 2.0,
+    "d": 1.0
+   },
+   "confidence": 0.251,
+   "scenery": true,
+   "description": "Beige compound wall along the right footpath.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 3 later views; disputed.",
+    "observation_ids": [
+     "4097568b-8f5d-4850-9a49-0b9a8bff4488"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/cf475e0cc744d966caa60238aab8da84b7744b9b58b8519449c8668390a1848c.jpg",
+    "crop_px": [
+     0,
+     335,
+     498,
+     68
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-d15b8a0296.png?v=1",
+   "latlon": {
+    "lat": 12.922868,
+    "lon": 77.67264
+   },
+   "tile_px": [
+    355.34,
+    679.77
+   ]
+  },
+  {
+   "id": "ent-286fba959c",
+   "entity_id": "ent-286fba959c",
+   "type": "gate",
+   "label": "gate",
+   "x_m": 9.686,
+   "length_m": 1.886,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 11.849,
+   "yaw_deg": 90.0,
+   "size_m": {
+    "w": 0.646,
+    "h": 1.443,
+    "d": 1.886
+   },
+   "confidence": 0.358,
+   "scenery": true,
+   "description": "Security cabin at building entrance beside footpath.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 1 later view; disputed.",
+    "observation_ids": [
+     "29a9a3ec-5626-4578-93ae-b453636c20c8",
+     "b8950772-2fe1-4f0f-93e3-bf3494c2e3d4"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/5ff0fe8d3c15fc4bf90b886c220605d19fea9a943b96c9ad74105c611b2b076d.jpg",
+    "crop_px": [
+     440,
+     268,
+     100,
+     150
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-286fba959c.png?v=1",
+   "latlon": {
+    "lat": 12.923032,
+    "lon": 77.672643
+   },
+   "tile_px": [
+    358.16,
+    554.32
+   ]
+  },
+  {
+   "id": "ent-e0ca62a591",
+   "entity_id": "ent-e0ca62a591",
+   "type": "pole",
+   "label": "utility (pole)",
+   "x_m": 10.056,
+   "length_m": 0.3,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -4.555,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 7.0,
+    "d": 0.3
+   },
+   "confidence": 0.242,
+   "scenery": true,
+   "description": "Utility pole with transformer-like wiring cluster on the right footpath.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 3 later views; disputed.",
+    "observation_ids": [
+     "4097568b-8f5d-4850-9a49-0b9a8bff4488",
+     "7e0e95ad-6448-492e-b61d-b9db32a0c36a"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/4b81933732134d458d11eaa1f697e274841a1c59cc1e81a54a6b1ebda1ccadf5.jpg",
+    "crop_px": [
+     462,
+     230,
+     18,
+     150
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-e0ca62a591.png?v=1",
+   "latlon": {
+    "lat": 12.922885,
+    "lon": 77.672655
+   },
+   "tile_px": [
+    367.04,
+    666.86
+   ]
+  },
+  {
+   "id": "ent-6217ae30f1",
+   "entity_id": "ent-6217ae30f1",
+   "type": "parked_vehicle",
+   "label": "two-wheeler (parked vehicle)",
+   "x_m": 11.256,
+   "length_m": 1.9,
+   "lanes": [
+    1,
+    2
+   ],
+   "action": "dodge",
+   "lateral_m": 3.176,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.7,
+    "h": 1.2,
+    "d": 1.9
+   },
+   "confidence": 0.445,
+   "scenery": false,
+   "description": "Scooter with a rider on the carriageway.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 1 later view; disputed.",
+    "observation_ids": [
+     "7fa7288a-e3bc-4c00-9b4e-1fb7bd050678"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/38ee95715223b649853d99d008e229618619d95e554f154deaede875f5fdf18e.jpg",
+    "crop_px": [
+     300,
+     327,
+     26,
+     48
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-6217ae30f1.png?v=1",
+   "latlon": {
+    "lat": 12.922955,
+    "lon": 77.672662
+   },
+   "tile_px": [
+    372.3,
+    613.29
+   ]
+  },
+  {
+   "id": "ent-fe8f00cf01",
+   "entity_id": "ent-fe8f00cf01",
+   "type": "pole",
+   "label": "utility (pole)",
+   "x_m": 13.39,
+   "length_m": 0.3,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 6.94,
+   "yaw_deg": 90.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 7.0,
+    "d": 0.3
+   },
+   "confidence": 0.312,
+   "scenery": true,
+   "description": "Utility pole with transformer and wiring cluster beside the left building.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 2 later views; disputed.",
+    "observation_ids": [
+     "700adebf-b37a-4315-ba14-226bd60f3d43",
+     "7fa7288a-e3bc-4c00-9b4e-1fb7bd050678"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/ff83ea38bd3f749fe9a03c7095b4f9eca97e70cb0c3a5b6ba454c3f9b06c5813.jpg",
+    "crop_px": [
+     108,
+     150,
+     52,
+     125
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-fe8f00cf01.png?v=1",
+   "latlon": {
+    "lat": 12.92299,
+    "lon": 77.67268
+   },
+   "tile_px": [
+    385.5,
+    586.61
+   ]
+  },
+  {
+   "id": "ent-73b6d6f62f",
+   "entity_id": "ent-73b6d6f62f",
+   "type": "gate",
+   "label": "gate",
+   "x_m": 13.815,
+   "length_m": 1.79,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 10.804,
+   "yaw_deg": 90.0,
+   "size_m": {
+    "w": 1.41,
+    "h": 2.0,
+    "d": 1.79
+   },
+   "confidence": 0.366,
+   "scenery": true,
+   "description": "Black sliding gate to an apartment driveway across the footpath.",
+   "evidence": {
+    "observation_count": 3,
+    "sources": {
+     "street_view": 3,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 3 Street View frames; not visible in 2 later views; disputed.",
+    "observation_ids": [
+     "29a9a3ec-5626-4578-93ae-b453636c20c8",
+     "700adebf-b37a-4315-ba14-226bd60f3d43",
+     "7e0e95ad-6448-492e-b61d-b9db32a0c36a"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/cf175dfd847fa9a04c0a8d1a9c217d690cb94e74cd15ddec7ff4c2dc6c501910.jpg",
+    "crop_px": [
+     126,
+     330,
+     128,
+     100
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-73b6d6f62f.png?v=1",
+   "latlon": {
+    "lat": 12.923025,
+    "lon": 77.67269
+   },
+   "tile_px": [
+    392.8,
+    560.02
+   ]
+  },
+  {
+   "id": "ent-acb6f1eddb",
+   "entity_id": "ent-acb6f1eddb",
+   "type": "parked_vehicle",
+   "label": "auto-rickshaw (parked vehicle)",
+   "x_m": 14.915,
+   "length_m": 4.2,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 0.445,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 1.8,
+    "h": 1.5,
+    "d": 4.2
+   },
+   "confidence": 0.522,
+   "scenery": true,
+   "description": "Yellow-green auto-rickshaw on the road close to the camera.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 2 later views.",
+    "observation_ids": [
+     "6224b106-05e7-4492-b434-f51816c4d015"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/ccfb0c1bcd4dcb02ba26ac0e1ec2defc62b9569c6b896252aee1901bb34e2d12.jpg",
+    "crop_px": [
+     185,
+     372,
+     402,
+     200
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-acb6f1eddb.png?v=1",
+   "latlon": {
+    "lat": 12.922931,
+    "lon": 77.672698
+   },
+   "tile_px": [
+    398.74,
+    631.44
+   ]
+  },
+  {
+   "id": "ent-2ab696f5e8",
+   "entity_id": "ent-2ab696f5e8",
+   "type": "pole",
+   "label": "utility (pole)",
+   "x_m": 16.632,
+   "length_m": 0.3,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 6.899,
+   "yaw_deg": 90.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 7.0,
+    "d": 0.3
+   },
+   "confidence": 0.519,
+   "scenery": true,
+   "description": "Wooden/steel utility pole on the left footpath edge with signs.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 2 later views.",
+    "observation_ids": [
+     "29a9a3ec-5626-4578-93ae-b453636c20c8",
+     "700adebf-b37a-4315-ba14-226bd60f3d43"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/cf175dfd847fa9a04c0a8d1a9c217d690cb94e74cd15ddec7ff4c2dc6c501910.jpg",
+    "crop_px": [
+     400,
+     0,
+     36,
+     570
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-2ab696f5e8.png?v=1",
+   "latlon": {
+    "lat": 12.922989,
+    "lon": 77.672715
+   },
+   "tile_px": [
+    411.56,
+    587.32
+   ]
+  },
+  {
+   "id": "ent-2e94875ca6",
+   "entity_id": "ent-2e94875ca6",
+   "type": "signboard",
+   "label": "signboard",
+   "x_m": 17.531,
+   "length_m": 0.8,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 9.968,
+   "yaw_deg": 90.0,
+   "size_m": {
+    "w": 0.2,
+    "h": 2.0,
+    "d": 0.8
+   },
+   "confidence": 0.456,
+   "scenery": true,
+   "description": "Large salon menu signboards leaning against the pole at the footpath edge.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 1 later view; disputed.",
+    "observation_ids": [
+     "29a9a3ec-5626-4578-93ae-b453636c20c8",
+     "7fa7288a-e3bc-4c00-9b4e-1fb7bd050678"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/cf175dfd847fa9a04c0a8d1a9c217d690cb94e74cd15ddec7ff4c2dc6c501910.jpg",
+    "crop_px": [
+     422,
+     314,
+     118,
+     140
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-2e94875ca6.png?v=1",
+   "latlon": {
+    "lat": 12.923016,
+    "lon": 77.672724
+   },
+   "tile_px": [
+    418.23,
+    566.35
+   ]
+  },
+  {
+   "id": "ent-1bce19a51b",
+   "entity_id": "ent-1bce19a51b",
+   "type": "parked_vehicle",
+   "label": "two-wheeler (parked vehicle)",
+   "x_m": 20.182,
+   "length_m": 0.925,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 9.477,
+   "yaw_deg": 90.0,
+   "size_m": {
+    "w": 1.675,
+    "h": 1.2,
+    "d": 0.925
+   },
+   "confidence": 0.626,
+   "scenery": true,
+   "description": "White scooter parked on the brick forecourt/footpath.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 1 later view.",
+    "observation_ids": [
+     "87c9fe92-cfd9-4a0a-bbc0-c7d8cfa66bfa",
+     "cef454cf-aeb0-4aa9-bd41-69f1d046c095"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/0e9c7d74d3e639074dbe2ba5e1fbefea189f0e92469d20f14560e41365228803.jpg",
+    "crop_px": [
+     0,
+     364,
+     102,
+     100
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-1bce19a51b.png?v=1",
+   "latlon": {
+    "lat": 12.923011,
+    "lon": 77.672748
+   },
+   "tile_px": [
+    436.38,
+    570.14
+   ]
+  },
+  {
+   "id": "ent-d32c2f1473",
+   "entity_id": "ent-d32c2f1473",
+   "type": "signboard",
+   "label": "signboard",
+   "x_m": 21.102,
+   "length_m": 0.481,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 7.661,
+   "yaw_deg": 90.0,
+   "size_m": {
+    "w": 0.519,
+    "h": 2.0,
+    "d": 0.481
+   },
+   "confidence": 0.253,
+   "scenery": true,
+   "description": "Hanging salon signboard along the footpath.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 2 later views; disputed.",
+    "observation_ids": [
+     "7fa7288a-e3bc-4c00-9b4e-1fb7bd050678",
+     "cef454cf-aeb0-4aa9-bd41-69f1d046c095"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/38ee95715223b649853d99d008e229618619d95e554f154deaede875f5fdf18e.jpg",
+    "crop_px": [
+     500,
+     242,
+     32,
+     62
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-d32c2f1473.png?v=1",
+   "latlon": {
+    "lat": 12.922995,
+    "lon": 77.672756
+   },
+   "tile_px": [
+    442.43,
+    582.78
+   ]
+  },
+  {
+   "id": "ent-291872c818",
+   "entity_id": "ent-291872c818",
+   "type": "parked_vehicle",
+   "label": "two-wheeler (parked vehicle)",
+   "x_m": 22.646,
+   "length_m": 0.7,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 11.26,
+   "yaw_deg": 90.0,
+   "size_m": {
+    "w": 1.9,
+    "h": 1.2,
+    "d": 0.7
+   },
+   "confidence": 0.764,
+   "scenery": true,
+   "description": "White scooter parked on the footpath in front of the cafe.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 1 later view.",
+    "observation_ids": [
+     "87c9fe92-cfd9-4a0a-bbc0-c7d8cfa66bfa",
+     "9584adcd-90af-4f78-8570-98d767f2759a"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/0e9c7d74d3e639074dbe2ba5e1fbefea189f0e92469d20f14560e41365228803.jpg",
+    "crop_px": [
+     186,
+     342,
+     66,
+     70
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-291872c818.png?v=1",
+   "latlon": {
+    "lat": 12.923027,
+    "lon": 77.672771
+   },
+   "tile_px": [
+    453.61,
+    558.26
+   ]
+  },
+  {
+   "id": "ent-a3ff6954a4",
+   "entity_id": "ent-a3ff6954a4",
+   "type": "parked_vehicle",
+   "label": "two-wheeler (parked vehicle)",
+   "x_m": 24.763,
+   "length_m": 0.7,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 12.824,
+   "yaw_deg": 90.0,
+   "size_m": {
+    "w": 1.9,
+    "h": 1.2,
+    "d": 0.7
+   },
+   "confidence": 0.458,
+   "scenery": true,
+   "description": "Black scooter parked on the footpath beside the white one.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 2 later views; disputed.",
+    "observation_ids": [
+     "87c9fe92-cfd9-4a0a-bbc0-c7d8cfa66bfa"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/0e9c7d74d3e639074dbe2ba5e1fbefea189f0e92469d20f14560e41365228803.jpg",
+    "crop_px": [
+     281,
+     347,
+     38,
+     60
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-a3ff6954a4.png?v=1",
+   "latlon": {
+    "lat": 12.923041,
+    "lon": 77.672791
+   },
+   "tile_px": [
+    468.42,
+    547.84
+   ]
+  },
+  {
+   "id": "ent-005be4abff",
+   "entity_id": "ent-005be4abff",
+   "type": "signboard",
+   "label": "signboard",
+   "x_m": 26.624,
+   "length_m": 0.8,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 8.771,
+   "yaw_deg": 90.0,
+   "size_m": {
+    "w": 0.2,
+    "h": 2.0,
+    "d": 0.8
+   },
+   "confidence": 0.44,
+   "scenery": true,
+   "description": "Black cafe signboard standing at the footpath kerb edge.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 2 later views; disputed.",
+    "observation_ids": [
+     "87c9fe92-cfd9-4a0a-bbc0-c7d8cfa66bfa",
+     "9584adcd-90af-4f78-8570-98d767f2759a"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/0e9c7d74d3e639074dbe2ba5e1fbefea189f0e92469d20f14560e41365228803.jpg",
+    "crop_px": [
+     346,
+     322,
+     28,
+     160
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-005be4abff.png?v=1",
+   "latlon": {
+    "lat": 12.923004,
+    "lon": 77.672808
+   },
+   "tile_px": [
+    480.58,
+    576.01
+   ]
+  },
+  {
+   "id": "ent-e05d0fac1c",
+   "entity_id": "ent-e05d0fac1c",
+   "type": "wall",
+   "label": "wall",
+   "x_m": 27.108,
+   "length_m": 1.0,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -4.229,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 2.0,
+    "d": 1.0
+   },
+   "confidence": 0.205,
+   "scenery": true,
+   "description": "Decorative fence with gate posts along the opposite footpath.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 2 later views; disputed.",
+    "observation_ids": [
+     "9584adcd-90af-4f78-8570-98d767f2759a"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/7dcd3f77cdef631757f8e00ea423f31736b004ee80614279a5f5968174d2eeca.jpg",
+    "crop_px": [
+     460,
+     330,
+     175,
+     60
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-e05d0fac1c.png?v=1",
+   "latlon": {
+    "lat": 12.922887,
+    "lon": 77.672809
+   },
+   "tile_px": [
+    481.88,
+    665.5
+   ]
+  },
+  {
+   "id": "ent-5f66b14406",
+   "entity_id": "ent-5f66b14406",
+   "type": "parked_vehicle",
+   "label": "auto-rickshaw (parked vehicle)",
+   "x_m": 30.121,
+   "length_m": 4.2,
+   "lanes": [
+    2
+   ],
+   "action": "dodge",
+   "lateral_m": 1.211,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 1.8,
+    "h": 1.5,
+    "d": 4.2
+   },
+   "confidence": 0.662,
+   "scenery": false,
+   "description": "Green and yellow auto-rickshaw moving on the carriageway ahead.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 2 later views.",
+    "observation_ids": [
+     "bea2ea9e-910d-4d3f-9b9b-62f0a20c0b00",
+     "cef454cf-aeb0-4aa9-bd41-69f1d046c095"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/4747700e212607272df146f870428ee21e11dba57f7635c05e1fee596ce48bb5.jpg",
+    "crop_px": [
+     355,
+     343,
+     127,
+     130
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-5f66b14406.png?v=1",
+   "latlon": {
+    "lat": 12.922935,
+    "lon": 77.672838
+   },
+   "tile_px": [
+    503.45,
+    628.55
+   ]
+  },
+  {
+   "id": "ent-bbba6cd54b",
+   "entity_id": "ent-bbba6cd54b",
+   "type": "debris",
+   "label": "debris",
+   "x_m": 30.495,
+   "length_m": 1.0,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -5.175,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 1.0,
+    "h": 0.4,
+    "d": 1.0
+   },
+   "confidence": 0.396,
+   "scenery": true,
+   "description": "Broken concrete block on the opposite footpath.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame.",
+    "observation_ids": [
+     "f76207b2-f620-4d2f-af39-56a05f504b48"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/77cb93697f96df792914271a0cd999f867249a728b2f30df75187eb60187305f.jpg",
+    "crop_px": [
+     500,
+     396,
+     35,
+     16
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-bbba6cd54b.png?v=1",
+   "latlon": {
+    "lat": 12.922878,
+    "lon": 77.67284
+   },
+   "tile_px": [
+    505.02,
+    672.54
+   ]
+  },
+  {
+   "id": "ent-7abd041d3b",
+   "entity_id": "ent-7abd041d3b",
+   "type": "gate",
+   "label": "gate",
+   "x_m": 36.767,
+   "length_m": 0.2,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 10.067,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 3.0,
+    "h": 2.0,
+    "d": 0.2
+   },
+   "confidence": 0.57,
+   "scenery": true,
+   "description": "Black metal gate with a yellow 'To-Let' board, set behind the footpath.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 1 later view.",
+    "observation_ids": [
+     "70b805ed-cc30-46a5-bc6d-e85430be3823"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/a7b8ac0d927e0b0e5d5b9b63f5968ec3b4ccf55d51d380f27e10fd63ef96705f.jpg",
+    "crop_px": [
+     295,
+     325,
+     175,
+     120
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-7abd041d3b.png?v=1",
+   "latlon": {
+    "lat": 12.923013,
+    "lon": 77.672901
+   },
+   "tile_px": [
+    550.55,
+    568.68
+   ]
+  },
+  {
+   "id": "ent-ae5da1d98b",
+   "entity_id": "ent-ae5da1d98b",
+   "type": "debris",
+   "label": "debris",
+   "x_m": 36.815,
+   "length_m": 1.0,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 8.265,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 1.0,
+    "h": 0.4,
+    "d": 1.0
+   },
+   "confidence": 0.284,
+   "scenery": true,
+   "description": "Hose or pipe lying along the footpath edge; a minor trip hazard.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 1 later view; disputed.",
+    "observation_ids": [
+     "70b805ed-cc30-46a5-bc6d-e85430be3823"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/a7b8ac0d927e0b0e5d5b9b63f5968ec3b4ccf55d51d380f27e10fd63ef96705f.jpg",
+    "crop_px": [
+     300,
+     462,
+     215,
+     32
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-ae5da1d98b.png?v=1",
+   "latlon": {
+    "lat": 12.922997,
+    "lon": 77.672902
+   },
+   "tile_px": [
+    550.6,
+    581.08
+   ]
+  },
+  {
+   "id": "ent-c1d450ce1f",
+   "entity_id": "ent-c1d450ce1f",
+   "type": "railing",
+   "label": "railing",
+   "x_m": 37.572,
+   "length_m": 1.0,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -6.986,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.1,
+    "h": 1.0,
+    "d": 1.0
+   },
+   "confidence": 0.488,
+   "scenery": true,
+   "description": "Yellow metal fence and gate in front of the apartment on the opposite side.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame.",
+    "observation_ids": [
+     "f76207b2-f620-4d2f-af39-56a05f504b48"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/77cb93697f96df792914271a0cd999f867249a728b2f30df75187eb60187305f.jpg",
+    "crop_px": [
+     90,
+     335,
+     360,
+     60
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-c1d450ce1f.png?v=1",
+   "latlon": {
+    "lat": 12.92286,
+    "lon": 77.672905
+   },
+   "tile_px": [
+    553.42,
+    686.1
+   ]
+  },
+  {
+   "id": "ent-fa68a360d5",
+   "entity_id": "ent-fa68a360d5",
+   "type": "wall",
+   "label": "wall",
+   "x_m": 40.245,
+   "length_m": 1.0,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 8.305,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 2.0,
+    "d": 1.0
+   },
+   "confidence": 0.252,
+   "scenery": true,
+   "description": "Cream lattice-pattern boundary wall on the left, adjoining the footpath.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 2 later views; disputed.",
+    "observation_ids": [
+     "41a5f370-2637-4553-9113-d4bb3a8fd15a",
+     "acdf2481-fb90-427a-8792-3b321699fb97"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/978284cd88ce350a4e726ae55ba0377008bf2e2702bb8d388fc98ad152788a6c.jpg",
+    "crop_px": [
+     0,
+     280,
+     130,
+     180
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-fa68a360d5.png?v=1",
+   "latlon": {
+    "lat": 12.922997,
+    "lon": 77.672933
+   },
+   "tile_px": [
+    574.2,
+    581.35
+   ]
+  },
+  {
+   "id": "ent-9f46f3176e",
+   "entity_id": "ent-9f46f3176e",
+   "type": "pole",
+   "label": "utility (pole)",
+   "x_m": 40.583,
+   "length_m": 0.349,
+   "lanes": [
+    0
+   ],
+   "action": "dodge",
+   "lateral_m": 6.761,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.349,
+    "h": 7.974,
+    "d": 0.349
+   },
+   "confidence": 0.702,
+   "scenery": false,
+   "description": "Green utility pole with heavy tangled cables standing on the left footpath edge, leaving most of the walkway free.",
+   "evidence": {
+    "observation_count": 3,
+    "sources": {
+     "street_view": 3,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 3 Street View frames; not visible in 2 later views.",
+    "observation_ids": [
+     "41a5f370-2637-4553-9113-d4bb3a8fd15a",
+     "acdf2481-fb90-427a-8792-3b321699fb97",
+     "b3462992-a504-4c06-8f75-ae37e95f0f2b"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/978284cd88ce350a4e726ae55ba0377008bf2e2702bb8d388fc98ad152788a6c.jpg",
+    "crop_px": [
+     128,
+     10,
+     50,
+     445
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-9f46f3176e.png?v=1",
+   "latlon": {
+    "lat": 12.922983,
+    "lon": 77.672936
+   },
+   "tile_px": [
+    576.28,
+    592.02
+   ]
+  },
+  {
+   "id": "ent-9a1a494c61",
+   "entity_id": "ent-9a1a494c61",
+   "type": "parked_vehicle",
+   "label": "van (parked vehicle)",
+   "x_m": 41.654,
+   "length_m": 4.2,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -0.505,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 1.8,
+    "h": 1.5,
+    "d": 4.2
+   },
+   "confidence": 0.494,
+   "scenery": true,
+   "description": "Cream van on the carriageway near the camera.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 2 later views; disputed.",
+    "observation_ids": [
+     "83ea0a95-632a-4c93-b525-5bbdcec38954",
+     "acdf2481-fb90-427a-8792-3b321699fb97"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/f318fb9f679c22bb0875ab6231c010d0b36af1fe01b9a830e2c6075d02b66c37.jpg",
+    "crop_px": [
+     546,
+     320,
+     94,
+     190
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-9a1a494c61.png?v=1",
+   "latlon": {
+    "lat": 12.922917,
+    "lon": 77.672944
+   },
+   "tile_px": [
+    582.51,
+    642.17
+   ]
+  },
+  {
+   "id": "ent-8214a2615b",
+   "entity_id": "ent-8214a2615b",
+   "type": "debris",
+   "label": "debris",
+   "x_m": 44.781,
+   "length_m": 1.0,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -4.395,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 1.0,
+    "h": 0.4,
+    "d": 1.0
+   },
+   "confidence": 0.269,
+   "scenery": true,
+   "description": "Rubble and broken paving patch on the opposite footpath.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 2 later views; disputed.",
+    "observation_ids": [
+     "83ea0a95-632a-4c93-b525-5bbdcec38954"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/f318fb9f679c22bb0875ab6231c010d0b36af1fe01b9a830e2c6075d02b66c37.jpg",
+    "crop_px": [
+     285,
+     402,
+     150,
+     25
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-8214a2615b.png?v=1",
+   "latlon": {
+    "lat": 12.922882,
+    "lon": 77.672972
+   },
+   "tile_px": [
+    603.41,
+    669.41
+   ]
+  },
+  {
+   "id": "ent-1a8be5ada6",
+   "entity_id": "ent-1a8be5ada6",
+   "type": "wall",
+   "label": "wall",
+   "x_m": 45.427,
+   "length_m": 1.0,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 8.261,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 2.0,
+    "d": 1.0
+   },
+   "confidence": 0.352,
+   "scenery": true,
+   "description": "Boundary wall of cream and dark blue with a lattice section, running along the footpath edge.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 2 later views; disputed.",
+    "observation_ids": [
+     "a61e5432-fba3-441b-b502-3fe295653d4d"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/f0f07948e5d4b6b5666de04177fa885a5dd8676c2312e775e7030adf4cfd1293.jpg",
+    "crop_px": [
+     0,
+     275,
+     640,
+     200
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-1a8be5ada6.png?v=1",
+   "latlon": {
+    "lat": 12.922995,
+    "lon": 77.672981
+   },
+   "tile_px": [
+    609.84,
+    582.46
+   ]
+  },
+  {
+   "id": "ent-80d76b6590",
+   "entity_id": "ent-80d76b6590",
+   "type": "signboard",
+   "label": "signboard",
+   "x_m": 46.737,
+   "length_m": 0.2,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 8.981,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.8,
+    "h": 2.0,
+    "d": 0.2
+   },
+   "confidence": 0.57,
+   "scenery": true,
+   "description": "Large Panasonic hoarding on the compound wall, set behind the footpath.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 1 later view.",
+    "observation_ids": [
+     "a61e5432-fba3-441b-b502-3fe295653d4d"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/f0f07948e5d4b6b5666de04177fa885a5dd8676c2312e775e7030adf4cfd1293.jpg",
+    "crop_px": [
+     155,
+     275,
+     475,
+     75
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-80d76b6590.png?v=1",
+   "latlon": {
+    "lat": 12.923002,
+    "lon": 77.672993
+   },
+   "tile_px": [
+    618.96,
+    577.71
+   ]
+  },
+  {
+   "id": "ent-85f848263b",
+   "entity_id": "ent-85f848263b",
+   "type": "parked_vehicle",
+   "label": "auto-rickshaw (parked vehicle)",
+   "x_m": 49.955,
+   "length_m": 4.2,
+   "lanes": [
+    1,
+    2
+   ],
+   "action": "dodge",
+   "lateral_m": 3.519,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 1.8,
+    "h": 1.5,
+    "d": 4.2
+   },
+   "confidence": 0.228,
+   "scenery": false,
+   "description": "Green and yellow auto-rickshaw on the carriageway ahead.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 3 later views; disputed.",
+    "observation_ids": [
+     "41a5f370-2637-4553-9113-d4bb3a8fd15a"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/978284cd88ce350a4e726ae55ba0377008bf2e2702bb8d388fc98ad152788a6c.jpg",
+    "crop_px": [
+     312,
+     334,
+     36,
+     42
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-85f848263b.png?v=1",
+   "latlon": {
+    "lat": 12.922952,
+    "lon": 77.673022
+   },
+   "tile_px": [
+    640.24,
+    615.79
+   ]
+  },
+  {
+   "id": "ent-afa7046d7f",
+   "entity_id": "ent-afa7046d7f",
+   "type": "tree",
+   "label": "tree",
+   "x_m": 50.171,
+   "length_m": 0.8,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -5.204,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.8,
+    "h": 5.0,
+    "d": 0.8
+   },
+   "confidence": 0.741,
+   "scenery": true,
+   "description": "Tree trunk on the opposite footpath edge; branches overhang the street.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 1 later view.",
+    "observation_ids": [
+     "2c977fe0-2bbf-4302-97ed-998b5c5933db",
+     "83ea0a95-632a-4c93-b525-5bbdcec38954"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/f318fb9f679c22bb0875ab6231c010d0b36af1fe01b9a830e2c6075d02b66c37.jpg",
+    "crop_px": [
+     0,
+     0,
+     285,
+     425
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-afa7046d7f.png?v=1",
+   "latlon": {
+    "lat": 12.922873,
+    "lon": 77.673022
+   },
+   "tile_px": [
+    640.36,
+    675.82
+   ]
+  },
+  {
+   "id": "ent-20042c06eb",
+   "entity_id": "ent-20042c06eb",
+   "type": "gate",
+   "label": "gate",
+   "x_m": 50.481,
+   "length_m": 0.2,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 9.182,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 3.0,
+    "h": 2.0,
+    "d": 0.2
+   },
+   "confidence": 0.363,
+   "scenery": true,
+   "description": "Black ornamental metal gate on the neighbouring plot.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 1 later view; disputed.",
+    "observation_ids": [
+     "3bdc43e1-dc1b-486a-9cec-eeb264a610af",
+     "b3462992-a504-4c06-8f75-ae37e95f0f2b"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/63f971e2a18e47ec8ba85f9f881fa2810125179f6c0ff1603bb0516c2cce6606.jpg",
+    "crop_px": [
+     0,
+     305,
+     78,
+     138
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-20042c06eb.png?v=1",
+   "latlon": {
+    "lat": 12.923003,
+    "lon": 77.673028
+   },
+   "tile_px": [
+    644.74,
+    576.92
+   ]
+  },
+  {
+   "id": "ent-1b784c3238",
+   "entity_id": "ent-1b784c3238",
+   "type": "pole",
+   "label": "utility (pole)",
+   "x_m": 50.64,
+   "length_m": 0.3,
+   "lanes": [
+    0
+   ],
+   "action": "dodge",
+   "lateral_m": 5.954,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 7.0,
+    "d": 0.3
+   },
+   "confidence": 0.742,
+   "scenery": false,
+   "description": "Utility pole on the left footpath edge, with a small poster; the walkway beside it is clear.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 1 later view.",
+    "observation_ids": [
+     "3e9d570c-942d-44b9-abbb-cd373a4fef04",
+     "767f3e0b-55bc-46f6-ba91-3cb40184c484"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/3de2598db7a1844d3103109621ee08622855e000229ee47dba680cdbb5bb77da.jpg",
+    "crop_px": [
+     168,
+     0,
+     25,
+     445
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-1b784c3238.png?v=1",
+   "latlon": {
+    "lat": 12.922974,
+    "lon": 77.673029
+   },
+   "tile_px": [
+    645.33,
+    599.15
+   ]
+  },
+  {
+   "id": "ent-d56d3c14e1",
+   "entity_id": "ent-d56d3c14e1",
+   "type": "parked_vehicle",
+   "label": "two-wheeler (parked vehicle)",
+   "x_m": 50.74,
+   "length_m": 2.426,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -0.517,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.952,
+    "h": 1.269,
+    "d": 2.426
+   },
+   "confidence": 0.76,
+   "scenery": true,
+   "description": "Moving scooter with two riders on the carriageway.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames.",
+    "observation_ids": [
+     "767f3e0b-55bc-46f6-ba91-3cb40184c484",
+     "b3462992-a504-4c06-8f75-ae37e95f0f2b"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/9c5329326125acd71bf8e150b0c60ee47bf5bbaa375667818040d0ea108a7c55.jpg",
+    "crop_px": [
+     52,
+     352,
+     92,
+     126
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-d56d3c14e1.png?v=1",
+   "latlon": {
+    "lat": 12.922915,
+    "lon": 77.673028
+   },
+   "tile_px": [
+    645.01,
+    643.68
+   ]
+  },
+  {
+   "id": "ent-c7a17204af",
+   "entity_id": "ent-c7a17204af",
+   "type": "parked_vehicle",
+   "label": "two-wheeler (parked vehicle)",
+   "x_m": 52.066,
+   "length_m": 1.075,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -6.424,
+   "yaw_deg": 65.5,
+   "size_m": {
+    "w": 1.525,
+    "h": 1.2,
+    "d": 1.075
+   },
+   "confidence": 0.616,
+   "scenery": true,
+   "description": "Group of motorcycles parked on the right footpath in front of the shop.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 1 later view.",
+    "observation_ids": [
+     "2c977fe0-2bbf-4302-97ed-998b5c5933db",
+     "b3462992-a504-4c06-8f75-ae37e95f0f2b"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/e9af8343f4311205b7590aa34da57617cc2900afe1dc2d8a2a14c5608711a009.jpg",
+    "crop_px": [
+     378,
+     342,
+     105,
+     65
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-c7a17204af.png?v=1",
+   "latlon": {
+    "lat": 12.922862,
+    "lon": 77.673039
+   },
+   "tile_px": [
+    653.2,
+    684.51
+   ]
+  },
+  {
+   "id": "ent-069234d624",
+   "entity_id": "ent-069234d624",
+   "type": "gate",
+   "label": "gate",
+   "x_m": 54.429,
+   "length_m": 0.2,
+   "lanes": [
+    0
+   ],
+   "action": "dodge",
+   "lateral_m": 7.802,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 3.0,
+    "h": 2.0,
+    "d": 0.2
+   },
+   "confidence": 0.5,
+   "scenery": false,
+   "description": "Black ornate metal gate and brick pillars of a compound on the left, set behind the footpath.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 2 later views.",
+    "observation_ids": [
+     "3bdc43e1-dc1b-486a-9cec-eeb264a610af",
+     "3e9d570c-942d-44b9-abbb-cd373a4fef04"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/63f971e2a18e47ec8ba85f9f881fa2810125179f6c0ff1603bb0516c2cce6606.jpg",
+    "crop_px": [
+     86,
+     312,
+     336,
+     170
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-069234d624.png?v=1",
+   "latlon": {
+    "lat": 12.922988,
+    "lon": 77.673069
+   },
+   "tile_px": [
+    675.41,
+    587.95
+   ]
+  },
+  {
+   "id": "ent-90b2030524",
+   "entity_id": "ent-90b2030524",
+   "type": "parked_vehicle",
+   "label": "two-wheeler (parked vehicle)",
+   "x_m": 55.65,
+   "length_m": 1.9,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -2.876,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.7,
+    "h": 1.2,
+    "d": 1.9
+   },
+   "confidence": 0.565,
+   "scenery": true,
+   "description": "Parked two-wheelers beside the tree on the opposite side.",
+   "evidence": {
+    "observation_count": 3,
+    "sources": {
+     "street_view": 3,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 3 Street View frames; not visible in 1 later view.",
+    "observation_ids": [
+     "2c977fe0-2bbf-4302-97ed-998b5c5933db",
+     "3e9d570c-942d-44b9-abbb-cd373a4fef04",
+     "83ea0a95-632a-4c93-b525-5bbdcec38954"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/e9af8343f4311205b7590aa34da57617cc2900afe1dc2d8a2a14c5608711a009.jpg",
+    "crop_px": [
+     205,
+     400,
+     142,
+     92
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-90b2030524.png?v=1",
+   "latlon": {
+    "lat": 12.922892,
+    "lon": 77.673071
+   },
+   "tile_px": [
+    676.95,
+    661.88
+   ]
+  },
+  {
+   "id": "ent-375c60ed5c",
+   "entity_id": "ent-375c60ed5c",
+   "type": "signboard",
+   "label": "signboard",
+   "x_m": 56.642,
+   "length_m": 0.2,
+   "lanes": [
+    0
+   ],
+   "action": "dodge",
+   "lateral_m": 6.717,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.8,
+    "h": 2.0,
+    "d": 0.2
+   },
+   "confidence": 0.461,
+   "scenery": false,
+   "description": "Sign stand with a pink board on a pole and a base plate, standing on the footpath edge and narrowing the walkway slightly.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 1 later view; disputed.",
+    "observation_ids": [
+     "3bdc43e1-dc1b-486a-9cec-eeb264a610af"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/63f971e2a18e47ec8ba85f9f881fa2810125179f6c0ff1603bb0516c2cce6606.jpg",
+    "crop_px": [
+     382,
+     345,
+     60,
+     178
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-375c60ed5c.png?v=1",
+   "latlon": {
+    "lat": 12.922977,
+    "lon": 77.673088
+   },
+   "tile_px": [
+    689.87,
+    596.8
+   ]
+  },
+  {
+   "id": "ent-c098ccfa99",
+   "entity_id": "ent-c098ccfa99",
+   "type": "parked_vehicle",
+   "label": "two-wheeler (parked vehicle)",
+   "x_m": 57.098,
+   "length_m": 1.9,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 8.003,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.7,
+    "h": 1.2,
+    "d": 1.9
+   },
+   "confidence": 0.435,
+   "scenery": true,
+   "description": "Blue scooter parked next to the footpath.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame.",
+    "observation_ids": [
+     "737ec26c-d733-4e67-81ec-800be6b702b2"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/bc077e4e3cb06dfb914356ea99c769371da637b34bc0742319850186bc069886.jpg",
+    "crop_px": [
+     388,
+     332,
+     28,
+     30
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-c098ccfa99.png?v=1",
+   "latlon": {
+    "lat": 12.922988,
+    "lon": 77.673094
+   },
+   "tile_px": [
+    693.82,
+    588.28
+   ]
+  },
+  {
+   "id": "ent-6a41bb4e25",
+   "entity_id": "ent-6a41bb4e25",
+   "type": "pole",
+   "label": "utility (pole)",
+   "x_m": 59.83,
+   "length_m": 0.3,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 7.77,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 7.0,
+    "d": 0.3
+   },
+   "confidence": 0.479,
+   "scenery": true,
+   "description": "Utility pole at the footpath edge.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame.",
+    "observation_ids": [
+     "987a1df6-7754-45a1-8030-eda7fe533058"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/d2f21896c34743726beb01c43e6cf932663fff568881ad83a1cca85d09c39daf.jpg",
+    "crop_px": [
+     366,
+     200,
+     16,
+     150
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-6a41bb4e25.png?v=1",
+   "latlon": {
+    "lat": 12.922983,
+    "lon": 77.673118
+   },
+   "tile_px": [
+    712.39,
+    591.62
+   ]
+  },
+  {
+   "id": "ent-7a2595e35b",
+   "entity_id": "ent-7a2595e35b",
+   "type": "parked_vehicle",
+   "label": "two-wheeler (parked vehicle)",
+   "x_m": 61.839,
+   "length_m": 0.7,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -7.194,
+   "yaw_deg": 90.0,
+   "size_m": {
+    "w": 1.9,
+    "h": 1.2,
+    "d": 0.7
+   },
+   "confidence": 0.326,
+   "scenery": true,
+   "description": "Motorcycle parked on the right footpath near shop front.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 3 later views; disputed.",
+    "observation_ids": [
+     "2c977fe0-2bbf-4302-97ed-998b5c5933db"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/e9af8343f4311205b7590aa34da57617cc2900afe1dc2d8a2a14c5608711a009.jpg",
+    "crop_px": [
+     74,
+     352,
+     92,
+     48
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-7a2595e35b.png?v=1",
+   "latlon": {
+    "lat": 12.922848,
+    "lon": 77.673124
+   },
+   "tile_px": [
+    716.58,
+    695.42
+   ]
+  },
+  {
+   "id": "ent-51d381ecc5",
+   "entity_id": "ent-51d381ecc5",
+   "type": "parked_vehicle",
+   "label": "car (parked vehicle)",
+   "x_m": 62.687,
+   "length_m": 4.2,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 0.624,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 1.8,
+    "h": 1.5,
+    "d": 4.2
+   },
+   "confidence": 0.471,
+   "scenery": true,
+   "description": "White SUV parked on the carriageway away from the left footpath.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 3 later views; disputed.",
+    "observation_ids": [
+     "0748bd3a-421e-4a4a-b674-8d86f49ac775"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/4e1af2467e9b6b78b02ac28e08c9c0a8dbd25a8b95ac0fdb47326008ca9cf3bf.jpg",
+    "crop_px": [
+     358,
+     344,
+     120,
+     88
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-51d381ecc5.png?v=1",
+   "latlon": {
+    "lat": 12.922917,
+    "lon": 77.673139
+   },
+   "tile_px": [
+    727.39,
+    642.4
+   ]
+  },
+  {
+   "id": "ent-b36d869a51",
+   "entity_id": "ent-b36d869a51",
+   "type": "parked_vehicle",
+   "label": "two-wheeler (parked vehicle)",
+   "x_m": 62.969,
+   "length_m": 1.9,
+   "lanes": [
+    0
+   ],
+   "action": "dodge",
+   "lateral_m": 6.793,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.7,
+    "h": 1.2,
+    "d": 1.9
+   },
+   "confidence": 0.603,
+   "scenery": false,
+   "description": "Scooter parked on the left footpath next to the gate, leaving most of the walkway free.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 2 later views.",
+    "observation_ids": [
+     "0748bd3a-421e-4a4a-b674-8d86f49ac775",
+     "4c0923a4-f550-4746-a367-da1c712838ad"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/4e1af2467e9b6b78b02ac28e08c9c0a8dbd25a8b95ac0fdb47326008ca9cf3bf.jpg",
+    "crop_px": [
+     155,
+     360,
+     50,
+     60
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-b36d869a51.png?v=1",
+   "latlon": {
+    "lat": 12.922972,
+    "lon": 77.673146
+   },
+   "tile_px": [
+    733.27,
+    600.32
+   ]
+  },
+  {
+   "id": "ent-7fe8bf5348",
+   "entity_id": "ent-7fe8bf5348",
+   "type": "gate",
+   "label": "gate",
+   "x_m": 63.02,
+   "length_m": 0.2,
+   "lanes": [
+    0
+   ],
+   "action": "dodge",
+   "lateral_m": 7.471,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 3.0,
+    "h": 2.0,
+    "d": 0.2
+   },
+   "confidence": 0.648,
+   "scenery": false,
+   "description": "Dark metal gate with wooden slats at an apartment entrance, adjacent to the footpath.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 2 later views.",
+    "observation_ids": [
+     "0748bd3a-421e-4a4a-b674-8d86f49ac775",
+     "4c0923a4-f550-4746-a367-da1c712838ad"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/4e1af2467e9b6b78b02ac28e08c9c0a8dbd25a8b95ac0fdb47326008ca9cf3bf.jpg",
+    "crop_px": [
+     103,
+     325,
+     88,
+     105
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-7fe8bf5348.png?v=1",
+   "latlon": {
+    "lat": 12.922978,
+    "lon": 77.673148
+   },
+   "tile_px": [
+    734.05,
+    595.71
+   ]
+  },
+  {
+   "id": "ent-faabedd195",
+   "entity_id": "ent-faabedd195",
+   "type": "parked_vehicle",
+   "label": "truck (parked vehicle)",
+   "x_m": 65.447,
+   "length_m": 4.2,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -1.891,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 1.8,
+    "h": 1.5,
+    "d": 4.2
+   },
+   "confidence": 0.839,
+   "scenery": true,
+   "description": "Blue small truck parked on the right side of the road next to the shops.",
+   "evidence": {
+    "observation_count": 3,
+    "sources": {
+     "street_view": 3,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 3 Street View frames; not visible in 1 later view.",
+    "observation_ids": [
+     "0748bd3a-421e-4a4a-b674-8d86f49ac775",
+     "737ec26c-d733-4e67-81ec-800be6b702b2",
+     "7b0a1d35-8c80-44f2-836e-1cbfb382fc1b"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/e2834a87e397a318946c6ca47901747cd2a0e88eba53a9817591d20dbf040c7f.jpg",
+    "crop_px": [
+     128,
+     272,
+     395,
+     222
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-faabedd195.png?v=1",
+   "latlon": {
+    "lat": 12.922892,
+    "lon": 77.673162
+   },
+   "tile_px": [
+    744.69,
+    661.39
+   ]
+  },
+  {
+   "id": "ent-50a87c7be5",
+   "entity_id": "ent-50a87c7be5",
+   "type": "wall",
+   "label": "wall",
+   "x_m": 67.17,
+   "length_m": 1.0,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 8.49,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 2.0,
+    "d": 1.0
+   },
+   "confidence": 0.57,
+   "scenery": true,
+   "description": "Low cream compound wall with blue stripes beside the footpath.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 1 later view.",
+    "observation_ids": [
+     "4c0923a4-f550-4746-a367-da1c712838ad"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/c4fab84715b73c5d455f29a545bc0eb19222af1236858879a2fb05606f6760dd.jpg",
+    "crop_px": [
+     268,
+     358,
+     240,
+     108
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-50a87c7be5.png?v=1",
+   "latlon": {
+    "lat": 12.922984,
+    "lon": 77.673187
+   },
+   "tile_px": [
+    763.13,
+    591.39
+   ]
+  },
+  {
+   "id": "ent-aebd6444f3",
+   "entity_id": "ent-aebd6444f3",
+   "type": "gate",
+   "label": "gate",
+   "x_m": 70.032,
+   "length_m": 0.2,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 9.83,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 3.0,
+    "h": 2.0,
+    "d": 0.2
+   },
+   "confidence": 0.567,
+   "scenery": true,
+   "description": "Black wrought-iron gate in front of an apartment building next to the footpath.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames.",
+    "observation_ids": [
+     "737ec26c-d733-4e67-81ec-800be6b702b2",
+     "f14e92b5-63ab-43f1-a926-4110a346dd7a"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/bc077e4e3cb06dfb914356ea99c769371da637b34bc0742319850186bc069886.jpg",
+    "crop_px": [
+     580,
+     230,
+     60,
+     200
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-aebd6444f3.png?v=1",
+   "latlon": {
+    "lat": 12.922993,
+    "lon": 77.673214
+   },
+   "tile_px": [
+    783.59,
+    584.03
+   ]
+  },
+  {
+   "id": "ent-f25e4290ce",
+   "entity_id": "ent-f25e4290ce",
+   "type": "pole",
+   "label": "utility (pole)",
+   "x_m": 70.275,
+   "length_m": 0.3,
+   "lanes": [
+    0
+   ],
+   "action": "dodge",
+   "lateral_m": 5.842,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 7.0,
+    "d": 0.3
+   },
+   "confidence": 0.662,
+   "scenery": false,
+   "description": "Utility pole with lamp arm and boxes standing on the left footpath edge, leaving walkway beside it.",
+   "evidence": {
+    "observation_count": 3,
+    "sources": {
+     "street_view": 3,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 3 Street View frames; not visible in 2 later views.",
+    "observation_ids": [
+     "0748bd3a-421e-4a4a-b674-8d86f49ac775",
+     "25af53ce-04a5-4e22-a49d-f7e3dfff7c81",
+     "737ec26c-d733-4e67-81ec-800be6b702b2"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/460b066ba051862411ab7e57ea33900897debdaa6e608a0a2b85c470d9ea45ff.jpg",
+    "crop_px": [
+     112,
+     0,
+     115,
+     485
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-f25e4290ce.png?v=1",
+   "latlon": {
+    "lat": 12.922957,
+    "lon": 77.673213
+   },
+   "tile_px": [
+    782.71,
+    611.51
+   ]
+  },
+  {
+   "id": "ent-8df10d5a93",
+   "entity_id": "ent-8df10d5a93",
+   "type": "gate",
+   "label": "gate",
+   "x_m": 72.674,
+   "length_m": 0.2,
+   "lanes": [
+    0
+   ],
+   "action": "dodge",
+   "lateral_m": 8.251,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 3.0,
+    "h": 2.0,
+    "d": 0.2
+   },
+   "confidence": 0.339,
+   "scenery": false,
+   "description": "Black ornamental iron gate in the compound wall at the left footpath.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 3 later views; disputed.",
+    "observation_ids": [
+     "25af53ce-04a5-4e22-a49d-f7e3dfff7c81"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/460b066ba051862411ab7e57ea33900897debdaa6e608a0a2b85c470d9ea45ff.jpg",
+    "crop_px": [
+     25,
+     230,
+     90,
+     210
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-8df10d5a93.png?v=1",
+   "latlon": {
+    "lat": 12.922977,
+    "lon": 77.673237
+   },
+   "tile_px": [
+    800.68,
+    596.54
+   ]
+  },
+  {
+   "id": "ent-0c96f5c39f",
+   "entity_id": "ent-0c96f5c39f",
+   "type": "parked_vehicle",
+   "label": "two-wheeler (parked vehicle)",
+   "x_m": 72.797,
+   "length_m": 0.7,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -5.378,
+   "yaw_deg": 90.0,
+   "size_m": {
+    "w": 1.9,
+    "h": 1.2,
+    "d": 0.7
+   },
+   "confidence": 0.333,
+   "scenery": true,
+   "description": "Motorcycles parked on the right footpath at the shopfront.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 3 later views; disputed.",
+    "observation_ids": [
+     "7b0a1d35-8c80-44f2-836e-1cbfb382fc1b"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/e2834a87e397a318946c6ca47901747cd2a0e88eba53a9817591d20dbf040c7f.jpg",
+    "crop_px": [
+     0,
+     355,
+     130,
+     60
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-0c96f5c39f.png?v=1",
+   "latlon": {
+    "lat": 12.922855,
+    "lon": 77.673226
+   },
+   "tile_px": [
+    792.81,
+    689.98
+   ]
+  },
+  {
+   "id": "ent-ffd6a5d22d",
+   "entity_id": "ent-ffd6a5d22d",
+   "type": "parked_vehicle",
+   "label": "two-wheeler (parked vehicle)",
+   "x_m": 74.0,
+   "length_m": 1.9,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -1.994,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.7,
+    "h": 1.2,
+    "d": 1.9
+   },
+   "confidence": 0.522,
+   "scenery": true,
+   "description": "Scooters parked along the right footpath in front of the pink shop.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 2 later views.",
+    "observation_ids": [
+     "25a072c4-0db2-4bc8-835e-c41ff124ca88",
+     "25af53ce-04a5-4e22-a49d-f7e3dfff7c81"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/460b066ba051862411ab7e57ea33900897debdaa6e608a0a2b85c470d9ea45ff.jpg",
+    "crop_px": [
+     458,
+     360,
+     85,
+     60
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-ffd6a5d22d.png?v=1",
+   "latlon": {
+    "lat": 12.922884,
+    "lon": 77.67324
+   },
+   "tile_px": [
+    803.21,
+    667.57
+   ]
+  },
+  {
+   "id": "ent-297ca2c885",
+   "entity_id": "ent-297ca2c885",
+   "type": "tree",
+   "label": "tree",
+   "x_m": 74.825,
+   "length_m": 0.8,
+   "lanes": [
+    0
+   ],
+   "action": "dodge",
+   "lateral_m": 6.999,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.8,
+    "h": 5.0,
+    "d": 0.8
+   },
+   "confidence": 0.585,
+   "scenery": false,
+   "description": "Large tree with a low canopy over the footpath and wall.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame.",
+    "observation_ids": [
+     "f14e92b5-63ab-43f1-a926-4110a346dd7a"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/063cc49da34e2a9469d097957eb636d95579090e93c5bcc9710a73db5baf18de.jpg",
+    "crop_px": [
+     0,
+     0,
+     415,
+     300
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-297ca2c885.png?v=1",
+   "latlon": {
+    "lat": 12.922964,
+    "lon": 77.673256
+   },
+   "tile_px": [
+    814.61,
+    606.49
+   ]
+  },
+  {
+   "id": "lb-ent-297ca2c885",
+   "entity_id": "ent-297ca2c885",
+   "type": "low_branch",
+   "label": "low branch",
+   "x_m": 74.825,
+   "length_m": 1.0,
+   "lanes": [
+    0,
+    1
+   ],
+   "action": "slide",
+   "lateral_m": 6.025,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 1.8,
+    "h": 0.6,
+    "d": 1.0
+   },
+   "confidence": 0.585,
+   "scenery": false,
+   "description": "Low branch hanging over the path from the tree about 75 m from the start.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame.",
+    "observation_ids": [
+     "f14e92b5-63ab-43f1-a926-4110a346dd7a"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/063cc49da34e2a9469d097957eb636d95579090e93c5bcc9710a73db5baf18de.jpg",
+    "crop_px": [
+     0,
+     0,
+     415,
+     300
+    ]
+   },
+   "billboard_url": null,
+   "latlon": {
+    "lat": 12.922955,
+    "lon": 77.673255
+   },
+   "tile_px": [
+    813.99,
+    613.17
+   ]
+  },
+  {
+   "id": "ent-1980825a0b",
+   "entity_id": "ent-1980825a0b",
+   "type": "parked_vehicle",
+   "label": "two-wheeler (parked vehicle)",
+   "x_m": 76.163,
+   "length_m": 1.9,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -2.1,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.7,
+    "h": 1.2,
+    "d": 1.9
+   },
+   "confidence": 0.352,
+   "scenery": true,
+   "description": "White scooter parked on the right footpath edge.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 2 later views; disputed.",
+    "observation_ids": [
+     "25a072c4-0db2-4bc8-835e-c41ff124ca88"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/4cb9ae73b52dbba91f52cd68ff5f4d401fa32fd08dc3ea59b285168ad487b480.jpg",
+    "crop_px": [
+     260,
+     385,
+     125,
+     85
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-1980825a0b.png?v=1",
+   "latlon": {
+    "lat": 12.922881,
+    "lon": 77.67326
+   },
+   "tile_px": [
+    817.96,
+    669.68
+   ]
+  },
+  {
+   "id": "ent-8461689dc1",
+   "entity_id": "ent-8461689dc1",
+   "type": "parked_vehicle",
+   "label": "two-wheeler (parked vehicle)",
+   "x_m": 78.763,
+   "length_m": 1.9,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -6.728,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.7,
+    "h": 1.2,
+    "d": 1.9
+   },
+   "confidence": 0.496,
+   "scenery": true,
+   "description": "Two-wheelers parked at the steps of the shops on the left of the back view.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame.",
+    "observation_ids": [
+     "4c45fc37-5f8f-4811-870d-7e7aa8001afd"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/7d02141c77bda08a11803cdeedc19d41987d9d6fc2224b09ce7b841cd9d6746b.jpg",
+    "crop_px": [
+     76,
+     330,
+     50,
+     38
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-8461689dc1.png?v=1",
+   "latlon": {
+    "lat": 12.922838,
+    "lon": 77.67328
+   },
+   "tile_px": [
+    832.81,
+    703.04
+   ]
+  },
+  {
+   "id": "ent-c51704e8cb",
+   "entity_id": "ent-c51704e8cb",
+   "type": "parked_vehicle",
+   "label": "car (parked vehicle)",
+   "x_m": 79.519,
+   "length_m": 4.2,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 0.983,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 1.8,
+    "h": 1.5,
+    "d": 4.2
+   },
+   "confidence": 0.341,
+   "scenery": true,
+   "description": "White hatchback car on the carriageway, moving or parked, close to the camera.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 2 later views; disputed.",
+    "observation_ids": [
+     "987a1df6-7754-45a1-8030-eda7fe533058"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/d2f21896c34743726beb01c43e6cf932663fff568881ad83a1cca85d09c39daf.jpg",
+    "crop_px": [
+     143,
+     342,
+     135,
+     92
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-c51704e8cb.png?v=1",
+   "latlon": {
+    "lat": 12.922906,
+    "lon": 77.673294
+   },
+   "tile_px": [
+    842.92,
+    650.71
+   ]
+  },
+  {
+   "id": "ent-4992f78151",
+   "entity_id": "ent-4992f78151",
+   "type": "wall",
+   "label": "wall",
+   "x_m": 80.573,
+   "length_m": 1.0,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 8.791,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 2.0,
+    "d": 1.0
+   },
+   "confidence": 0.437,
+   "scenery": true,
+   "description": "Cream compound wall with blue stripes along the right footpath.",
+   "evidence": {
+    "observation_count": 4,
+    "sources": {
+     "street_view": 4,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 4 Street View frames; not visible in 1 later view; disputed.",
+    "observation_ids": [
+     "25af53ce-04a5-4e22-a49d-f7e3dfff7c81",
+     "987a1df6-7754-45a1-8030-eda7fe533058",
+     "ce40ce34-a19c-4151-9c53-5e19cdb070da",
+     "f14e92b5-63ab-43f1-a926-4110a346dd7a"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/d2f21896c34743726beb01c43e6cf932663fff568881ad83a1cca85d09c39daf.jpg",
+    "crop_px": [
+     455,
+     320,
+     185,
+     110
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-4992f78151.png?v=1",
+   "latlon": {
+    "lat": 12.922975,
+    "lon": 77.67331
+   },
+   "tile_px": [
+    855.14,
+    597.89
+   ]
+  },
+  {
+   "id": "ent-255a5e3aa9",
+   "entity_id": "ent-255a5e3aa9",
+   "type": "parked_vehicle",
+   "label": "two-wheeler (parked vehicle)",
+   "x_m": 81.02,
+   "length_m": 1.9,
+   "lanes": [
+    0,
+    1
+   ],
+   "action": "dodge",
+   "lateral_m": 5.159,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.7,
+    "h": 1.2,
+    "d": 1.9
+   },
+   "confidence": 0.49,
+   "scenery": false,
+   "description": "Moving scooter on the road near the footpath edge.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame.",
+    "observation_ids": [
+     "4c45fc37-5f8f-4811-870d-7e7aa8001afd"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/7d02141c77bda08a11803cdeedc19d41987d9d6fc2224b09ce7b841cd9d6746b.jpg",
+    "crop_px": [
+     320,
+     322,
+     26,
+     50
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-255a5e3aa9.png?v=1",
+   "latlon": {
+    "lat": 12.922942,
+    "lon": 77.673311
+   },
+   "tile_px": [
+    855.88,
+    623.06
+   ]
+  },
+  {
+   "id": "ent-539f0659fa",
+   "entity_id": "ent-539f0659fa",
+   "type": "pole",
+   "label": "utility (pole)",
+   "x_m": 84.077,
+   "length_m": 0.3,
+   "lanes": [
+    0
+   ],
+   "action": "dodge",
+   "lateral_m": 7.493,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 7.0,
+    "d": 0.3
+   },
+   "confidence": 0.708,
+   "scenery": false,
+   "description": "Green utility pole with posters and cable wraps on the footpath, narrowing the walkway.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames.",
+    "observation_ids": [
+     "4c45fc37-5f8f-4811-870d-7e7aa8001afd",
+     "e181c114-45b8-472d-8bd6-1c97c92005a3"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/3eab0d4676533c96e1ecc36e379aabec83934847ec2ad76b46832a389bfefb4c.jpg",
+    "crop_px": [
+     133,
+     0,
+     55,
+     518
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-539f0659fa.png?v=1",
+   "latlon": {
+    "lat": 12.922961,
+    "lon": 77.673341
+   },
+   "tile_px": [
+    878.31,
+    609.03
+   ]
+  },
+  {
+   "id": "ent-2a09ef5ffa",
+   "entity_id": "ent-2a09ef5ffa",
+   "type": "wall",
+   "label": "wall",
+   "x_m": 84.454,
+   "length_m": 1.0,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 11.032,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 2.0,
+    "d": 1.0
+   },
+   "confidence": 0.473,
+   "scenery": true,
+   "description": "Cream compound wall with blue stripes behind the footpath.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 1 later view; disputed.",
+    "observation_ids": [
+     "e181c114-45b8-472d-8bd6-1c97c92005a3"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/3eab0d4676533c96e1ecc36e379aabec83934847ec2ad76b46832a389bfefb4c.jpg",
+    "crop_px": [
+     0,
+     325,
+     470,
+     100
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-2a09ef5ffa.png?v=1",
+   "latlon": {
+    "lat": 12.922992,
+    "lon": 77.673347
+   },
+   "tile_px": [
+    883.15,
+    585.02
+   ]
+  },
+  {
+   "id": "ent-cb75d0351e",
+   "entity_id": "ent-cb75d0351e",
+   "type": "signboard",
+   "label": "signboard",
+   "x_m": 85.854,
+   "length_m": 0.8,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 7.588,
+   "yaw_deg": 90.0,
+   "size_m": {
+    "w": 0.2,
+    "h": 2.0,
+    "d": 0.8
+   },
+   "confidence": 0.378,
+   "scenery": true,
+   "description": "Yellow round signs on a post by the footpath.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 1 later view; disputed.",
+    "observation_ids": [
+     "e181c114-45b8-472d-8bd6-1c97c92005a3"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/3eab0d4676533c96e1ecc36e379aabec83934847ec2ad76b46832a389bfefb4c.jpg",
+    "crop_px": [
+     248,
+     322,
+     45,
+     190
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-cb75d0351e.png?v=1",
+   "latlon": {
+    "lat": 12.92296,
+    "lon": 77.673357
+   },
+   "tile_px": [
+    890.54,
+    609.51
+   ]
+  },
+  {
+   "id": "ent-872da4343d",
+   "entity_id": "ent-872da4343d",
+   "type": "parked_vehicle",
+   "label": "two-wheeler (parked vehicle)",
+   "x_m": 85.997,
+   "length_m": 1.9,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -4.772,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.7,
+    "h": 1.2,
+    "d": 1.9
+   },
+   "confidence": 0.345,
+   "scenery": true,
+   "description": "Scooter parked on the right footpath in front of a gate.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 2 later views; disputed.",
+    "observation_ids": [
+     "6d702704-2d47-48fa-bee9-525d80b4431e",
+     "ce40ce34-a19c-4151-9c53-5e19cdb070da"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/fe0072c6d6dae29eb15723e51ac4530c2d4de32484d37f8f0daf2378a1441e5b.jpg",
+    "crop_px": [
+     320,
+     345,
+     95,
+     72
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-872da4343d.png?v=1",
+   "latlon": {
+    "lat": 12.922849,
+    "lon": 77.673348
+   },
+   "tile_px": [
+    883.62,
+    694.27
+   ]
+  },
+  {
+   "id": "ent-1481038984",
+   "entity_id": "ent-1481038984",
+   "type": "tree",
+   "label": "tree",
+   "x_m": 86.889,
+   "length_m": 0.8,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 10.872,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.8,
+    "h": 5.0,
+    "d": 0.8
+   },
+   "confidence": 0.539,
+   "scenery": true,
+   "description": "Tree trunk standing on the footpath edge at the right in the back view.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame.",
+    "observation_ids": [
+     "4c45fc37-5f8f-4811-870d-7e7aa8001afd"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/7d02141c77bda08a11803cdeedc19d41987d9d6fc2224b09ce7b841cd9d6746b.jpg",
+    "crop_px": [
+     495,
+     0,
+     85,
+     400
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-1481038984.png?v=1",
+   "latlon": {
+    "lat": 12.922989,
+    "lon": 77.67337
+   },
+   "tile_px": [
+    899.73,
+    587.67
+   ]
+  },
+  {
+   "id": "ent-b6c4befa3c",
+   "entity_id": "ent-b6c4befa3c",
+   "type": "pole",
+   "label": "utility (pole)",
+   "x_m": 86.992,
+   "length_m": 0.3,
+   "lanes": [
+    0
+   ],
+   "action": "dodge",
+   "lateral_m": 6.789,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 7.0,
+    "d": 0.3
+   },
+   "confidence": 0.624,
+   "scenery": false,
+   "description": "Utility pole with cables and a transformer frame at the left footpath edge; it leaves the rest of the footpath passable.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 1 later view.",
+    "observation_ids": [
+     "ce40ce34-a19c-4151-9c53-5e19cdb070da",
+     "e181c114-45b8-472d-8bd6-1c97c92005a3"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/3eab0d4676533c96e1ecc36e379aabec83934847ec2ad76b46832a389bfefb4c.jpg",
+    "crop_px": [
+     343,
+     0,
+     50,
+     545
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-b6c4befa3c.png?v=1",
+   "latlon": {
+    "lat": 12.922952,
+    "lon": 77.673367
+   },
+   "tile_px": [
+    897.83,
+    615.71
+   ]
+  },
+  {
+   "id": "ent-d2b65535dd",
+   "entity_id": "ent-d2b65535dd",
+   "type": "gate",
+   "label": "gate",
+   "x_m": 87.501,
+   "length_m": 0.2,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -7.631,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 3.0,
+    "h": 2.0,
+    "d": 0.2
+   },
+   "confidence": 0.311,
+   "scenery": true,
+   "description": "Black wrought-iron gate to a compound on the right.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 2 later views; disputed.",
+    "observation_ids": [
+     "2e0a5ea7-daa3-4891-af76-f9f9f3b0ca00",
+     "6d702704-2d47-48fa-bee9-525d80b4431e"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/fe0072c6d6dae29eb15723e51ac4530c2d4de32484d37f8f0daf2378a1441e5b.jpg",
+    "crop_px": [
+     210,
+     278,
+     95,
+     115
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-d2b65535dd.png?v=1",
+   "latlon": {
+    "lat": 12.922822,
+    "lon": 77.673359
+   },
+   "tile_px": [
+    892.09,
+    714.82
+   ]
+  },
+  {
+   "id": "ent-1c26d8a082",
+   "entity_id": "ent-1c26d8a082",
+   "type": "debris",
+   "label": "debris",
+   "x_m": 87.687,
+   "length_m": 1.0,
+   "lanes": [
+    0
+   ],
+   "action": "jump",
+   "lateral_m": 6.509,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 1.0,
+    "h": 0.4,
+    "d": 1.0
+   },
+   "confidence": 0.213,
+   "scenery": false,
+   "description": "Round object or debris on the broken ground at the footpath edge.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 1 later view; disputed.",
+    "observation_ids": [
+     "e181c114-45b8-472d-8bd6-1c97c92005a3"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/3eab0d4676533c96e1ecc36e379aabec83934847ec2ad76b46832a389bfefb4c.jpg",
+    "crop_px": [
+     418,
+     532,
+     50,
+     48
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-1c26d8a082.png?v=1",
+   "latlon": {
+    "lat": 12.922949,
+    "lon": 77.673373
+   },
+   "tile_px": [
+    902.41,
+    618.08
+   ]
+  },
+  {
+   "id": "ent-4f36a18642",
+   "entity_id": "ent-4f36a18642",
+   "type": "parked_vehicle",
+   "label": "car (parked vehicle)",
+   "x_m": 91.005,
+   "length_m": 4.2,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 0.379,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 1.8,
+    "h": 1.5,
+    "d": 4.2
+   },
+   "confidence": 0.227,
+   "scenery": true,
+   "description": "White car moving or parked on the carriageway ahead.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 3 later views; disputed.",
+    "observation_ids": [
+     "ce40ce34-a19c-4151-9c53-5e19cdb070da"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/56c41b15e5c99043368dd801d7cef3e78d946c7317f0235b63ca32da24110853.jpg",
+    "crop_px": [
+     361,
+     338,
+     45,
+     36
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-4f36a18642.png?v=1",
+   "latlon": {
+    "lat": 12.922891,
+    "lon": 77.673399
+   },
+   "tile_px": [
+    921.22,
+    662.19
+   ]
+  },
+  {
+   "id": "ent-2757dbcbab",
+   "entity_id": "ent-2757dbcbab",
+   "type": "tree",
+   "label": "tree",
+   "x_m": 91.834,
+   "length_m": 0.8,
+   "lanes": [
+    0
+   ],
+   "action": "dodge",
+   "lateral_m": 7.123,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.8,
+    "h": 5.0,
+    "d": 0.8
+   },
+   "confidence": 0.239,
+   "scenery": false,
+   "description": "Casuarina tree trunk at the left footpath edge with hanging foliage.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 3 later views; disputed.",
+    "observation_ids": [
+     "30e2f89b-4bc0-47f3-8c4a-1d0a79aaeabb"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/37ad7efee03595868fa7d6123a389b3e79618fc746d32cb93519e3af8990cce2.jpg",
+    "crop_px": [
+     0,
+     0,
+     200,
+     470
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-2757dbcbab.png?v=1",
+   "latlon": {
+    "lat": 12.922951,
+    "lon": 77.673412
+   },
+   "tile_px": [
+    931.21,
+    616.52
+   ]
+  },
+  {
+   "id": "ent-d8e44ef3de",
+   "entity_id": "ent-d8e44ef3de",
+   "type": "gate",
+   "label": "gate",
+   "x_m": 92.905,
+   "length_m": 0.2,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -7.868,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 3.0,
+    "h": 2.0,
+    "d": 0.2
+   },
+   "confidence": 0.222,
+   "scenery": true,
+   "description": "Green metal gate on the right side.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 2 later views; disputed.",
+    "observation_ids": [
+     "ce40ce34-a19c-4151-9c53-5e19cdb070da"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/56c41b15e5c99043368dd801d7cef3e78d946c7317f0235b63ca32da24110853.jpg",
+    "crop_px": [
+     490,
+     308,
+     90,
+     60
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-d8e44ef3de.png?v=1",
+   "latlon": {
+    "lat": 12.922816,
+    "lon": 77.673409
+   },
+   "tile_px": [
+    928.96,
+    719.9
+   ]
+  },
+  {
+   "id": "ent-80fc430ff9",
+   "entity_id": "ent-80fc430ff9",
+   "type": "bin",
+   "label": "bin",
+   "x_m": 92.959,
+   "length_m": 0.6,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 8.067,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.6,
+    "h": 1.0,
+    "d": 0.6
+   },
+   "confidence": 0.585,
+   "scenery": true,
+   "description": "Dark blue plastic bin standing on the footpath at the kiosk.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame.",
+    "observation_ids": [
+     "67f1a319-f9e1-4f07-b312-b20c93448b25"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/59ba433f7aac97b426b101c0a4b08c2fd8cd9cd876af9c9bbadc55f97d1217f3.jpg",
+    "crop_px": [
+     30,
+     430,
+     50,
+     68
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-80fc430ff9.png?v=1",
+   "latlon": {
+    "lat": 12.922958,
+    "lon": 77.673423
+   },
+   "tile_px": [
+    939.52,
+    610.77
+   ]
+  },
+  {
+   "id": "ent-c5424f6b99",
+   "entity_id": "ent-c5424f6b99",
+   "type": "tree",
+   "label": "tree",
+   "x_m": 93.498,
+   "length_m": 11.502,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -7.45,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 10.576,
+    "h": 5.0,
+    "d": 11.502
+   },
+   "confidence": 0.201,
+   "scenery": true,
+   "description": "Palm trees growing behind the compound wall, overhanging the street.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 1,
+     "satellite": 1,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame, 1 satellite image; not visible in 2 later views; disputed.",
+    "observation_ids": [
+     "2e0a5ea7-daa3-4891-af76-f9f9f3b0ca00",
+     "ce72c869-08ea-4c1e-be53-1aecb6cdd62a"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/75031d77985f21c82e9884c1eaf9037993d011b6030b3f86a8338bc79dd95d39.jpg",
+    "crop_px": [
+     235,
+     0,
+     305,
+     330
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-c5424f6b99.png?v=1",
+   "latlon": {
+    "lat": 12.922819,
+    "lon": 77.673415
+   },
+   "tile_px": [
+    933.29,
+    717.41
+   ]
+  },
+  {
+   "id": "lb-ent-c5424f6b99",
+   "entity_id": "ent-c5424f6b99",
+   "type": "low_branch",
+   "label": "low branch",
+   "x_m": 93.498,
+   "length_m": 1.0,
+   "lanes": [
+    0,
+    1
+   ],
+   "action": "slide",
+   "lateral_m": 6.234,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 1.8,
+    "h": 0.6,
+    "d": 1.0
+   },
+   "confidence": 0.201,
+   "scenery": false,
+   "description": "Low branch hanging over the path from the tree about 93 m from the start.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 1,
+     "satellite": 1,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame, 1 satellite image; not visible in 2 later views; disputed.",
+    "observation_ids": [
+     "2e0a5ea7-daa3-4891-af76-f9f9f3b0ca00",
+     "ce72c869-08ea-4c1e-be53-1aecb6cdd62a"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/75031d77985f21c82e9884c1eaf9037993d011b6030b3f86a8338bc79dd95d39.jpg",
+    "crop_px": [
+     235,
+     0,
+     305,
+     330
+    ]
+   },
+   "billboard_url": null,
+   "latlon": {
+    "lat": 12.922941,
+    "lon": 77.673426
+   },
+   "tile_px": [
+    942.04,
+    623.67
+   ]
+  },
+  {
+   "id": "ent-0a683e4a62",
+   "entity_id": "ent-0a683e4a62",
+   "type": "wall",
+   "label": "wall",
+   "x_m": 93.749,
+   "length_m": 1.0,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -5.95,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 2.0,
+    "d": 1.0
+   },
+   "confidence": 0.366,
+   "scenery": true,
+   "description": "Stone-clad compound wall with palm trees behind it.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 1 later view; disputed.",
+    "observation_ids": [
+     "2e0a5ea7-daa3-4891-af76-f9f9f3b0ca00"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/75031d77985f21c82e9884c1eaf9037993d011b6030b3f86a8338bc79dd95d39.jpg",
+    "crop_px": [
+     296,
+     305,
+     170,
+     100
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-0a683e4a62.png?v=1",
+   "latlon": {
+    "lat": 12.922832,
+    "lon": 77.673418
+   },
+   "tile_px": [
+    935.97,
+    707.3
+   ]
+  },
+  {
+   "id": "ent-eb6cfb8b90",
+   "entity_id": "ent-eb6cfb8b90",
+   "type": "vendor_stall",
+   "label": "vendor stall",
+   "x_m": 94.751,
+   "length_m": 1.5,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 8.772,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 1.5,
+    "h": 2.0,
+    "d": 1.5
+   },
+   "confidence": 0.751,
+   "scenery": true,
+   "description": "Blue kiosk or stall on the left footpath, taking up part of the walkway.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames.",
+    "observation_ids": [
+     "30e2f89b-4bc0-47f3-8c4a-1d0a79aaeabb",
+     "67f1a319-f9e1-4f07-b312-b20c93448b25"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/59ba433f7aac97b426b101c0a4b08c2fd8cd9cd876af9c9bbadc55f97d1217f3.jpg",
+    "crop_px": [
+     68,
+     278,
+     180,
+     185
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-eb6cfb8b90.png?v=1",
+   "latlon": {
+    "lat": 12.922963,
+    "lon": 77.67344
+   },
+   "tile_px": [
+    952.25,
+    607.09
+   ]
+  },
+  {
+   "id": "ent-09eef06b36",
+   "entity_id": "ent-09eef06b36",
+   "type": "bin",
+   "label": "bin",
+   "x_m": 95.22,
+   "length_m": 0.6,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 8.094,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.6,
+    "h": 1.0,
+    "d": 0.6
+   },
+   "confidence": 0.395,
+   "scenery": true,
+   "description": "Pink plastic tub on the footpath next to the kiosk.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame.",
+    "observation_ids": [
+     "67f1a319-f9e1-4f07-b312-b20c93448b25"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/59ba433f7aac97b426b101c0a4b08c2fd8cd9cd876af9c9bbadc55f97d1217f3.jpg",
+    "crop_px": [
+     200,
+     446,
+     40,
+     44
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-09eef06b36.png?v=1",
+   "latlon": {
+    "lat": 12.922957,
+    "lon": 77.673444
+   },
+   "tile_px": [
+    955.03,
+    612.03
+   ]
+  },
+  {
+   "id": "ent-ebb2b58e26",
+   "entity_id": "ent-ebb2b58e26",
+   "type": "parked_vehicle",
+   "label": "bicycle (parked vehicle)",
+   "x_m": 97.443,
+   "length_m": 4.2,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 8.542,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 1.8,
+    "h": 1.5,
+    "d": 4.2
+   },
+   "confidence": 0.461,
+   "scenery": true,
+   "description": "Bicycle leaning against the shop plinth beside the footpath.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 1 later view; disputed.",
+    "observation_ids": [
+     "67f1a319-f9e1-4f07-b312-b20c93448b25"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/59ba433f7aac97b426b101c0a4b08c2fd8cd9cd876af9c9bbadc55f97d1217f3.jpg",
+    "crop_px": [
+     295,
+     388,
+     135,
+     82
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-ebb2b58e26.png?v=1",
+   "latlon": {
+    "lat": 12.922959,
+    "lon": 77.673465
+   },
+   "tile_px": [
+    970.54,
+    610.38
+   ]
+  },
+  {
+   "id": "ent-dba02b76f9",
+   "entity_id": "ent-dba02b76f9",
+   "type": "parked_vehicle",
+   "label": "car (parked vehicle)",
+   "x_m": 97.762,
+   "length_m": 4.2,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 0.477,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 1.8,
+    "h": 1.5,
+    "d": 4.2
+   },
+   "confidence": 0.731,
+   "scenery": true,
+   "description": "White car close to the camera on the carriageway.",
+   "evidence": {
+    "observation_count": 3,
+    "sources": {
+     "street_view": 3,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 3 Street View frames.",
+    "observation_ids": [
+     "2e0a5ea7-daa3-4891-af76-f9f9f3b0ca00",
+     "30e2f89b-4bc0-47f3-8c4a-1d0a79aaeabb",
+     "b8209640-a9f6-4d69-8f5e-bf82c54afeb8"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/75031d77985f21c82e9884c1eaf9037993d011b6030b3f86a8338bc79dd95d39.jpg",
+    "crop_px": [
+     0,
+     390,
+     535,
+     170
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-dba02b76f9.png?v=1",
+   "latlon": {
+    "lat": 12.922886,
+    "lon": 77.673461
+   },
+   "tile_px": [
+    967.57,
+    665.84
+   ]
+  },
+  {
+   "id": "ent-04721f2418",
+   "entity_id": "ent-04721f2418",
+   "type": "signboard",
+   "label": "signboard",
+   "x_m": 98.872,
+   "length_m": 0.2,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 9.796,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.8,
+    "h": 2.0,
+    "d": 0.2
+   },
+   "confidence": 0.461,
+   "scenery": true,
+   "description": "Blue homeopathy clinic signboard above the shopfront.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame; not visible in 1 later view; disputed.",
+    "observation_ids": [
+     "67f1a319-f9e1-4f07-b312-b20c93448b25"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/59ba433f7aac97b426b101c0a4b08c2fd8cd9cd876af9c9bbadc55f97d1217f3.jpg",
+    "crop_px": [
+     328,
+     116,
+     178,
+     94
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-04721f2418.png?v=1",
+   "latlon": {
+    "lat": 12.922969,
+    "lon": 77.673479
+   },
+   "tile_px": [
+    981.13,
+    602.71
+   ]
+  },
+  {
+   "id": "ent-95443e2cea",
+   "entity_id": "ent-95443e2cea",
+   "type": "parked_vehicle",
+   "label": "two-wheeler (parked vehicle)",
+   "x_m": 98.937,
+   "length_m": 1.9,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -4.122,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.7,
+    "h": 1.2,
+    "d": 1.9
+   },
+   "confidence": 0.361,
+   "scenery": true,
+   "description": "Scooters parked on the right side.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames; not visible in 1 later view; disputed.",
+    "observation_ids": [
+     "30e2f89b-4bc0-47f3-8c4a-1d0a79aaeabb",
+     "b8209640-a9f6-4d69-8f5e-bf82c54afeb8"
+    ],
+    "state": "disputed"
+   },
+   "source": {
+    "image_url": "/media/imagery/37ad7efee03595868fa7d6123a389b3e79618fc746d32cb93519e3af8990cce2.jpg",
+    "crop_px": [
+     526,
+     346,
+     48,
+     44
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-95443e2cea.png?v=1",
+   "latlon": {
+    "lat": 12.922844,
+    "lon": 77.673468
+   },
+   "tile_px": [
+    972.68,
+    698.09
+   ]
+  },
+  {
+   "id": "ent-7597e2e002",
+   "entity_id": "ent-7597e2e002",
+   "type": "parked_vehicle",
+   "label": "two-wheeler (parked vehicle)",
+   "x_m": 99.999,
+   "length_m": 1.9,
+   "lanes": [
+    0
+   ],
+   "action": "dodge",
+   "lateral_m": 5.052,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.7,
+    "h": 1.2,
+    "d": 1.9
+   },
+   "confidence": 0.583,
+   "scenery": false,
+   "description": "Scooter parked at the kerb on the left footpath edge near the shops, leaving some walkway.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame.",
+    "observation_ids": [
+     "b8209640-a9f6-4d69-8f5e-bf82c54afeb8"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/c0e3ec5c6406c42a6c21957d8c924a7c8cd1790a9bb186c614f18fc42c74674e.jpg",
+    "crop_px": [
+     243,
+     350,
+     28,
+     48
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-7597e2e002.png?v=1",
+   "latlon": {
+    "lat": 12.922924,
+    "lon": 77.673489
+   },
+   "tile_px": [
+    988.46,
+    636.8
+   ]
+  },
+  {
+   "id": "ent-d9aaef5802",
+   "entity_id": "ent-d9aaef5802",
+   "type": "tree",
+   "label": "tree",
+   "x_m": 99.999,
+   "length_m": 0.8,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -1.649,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.8,
+    "h": 5.0,
+    "d": 0.8
+   },
+   "confidence": 0.67,
+   "scenery": true,
+   "description": "Large tree with its trunk on the right footpath beside the wall, branches overhanging the street.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame.",
+    "observation_ids": [
+     "b8209640-a9f6-4d69-8f5e-bf82c54afeb8"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/c0e3ec5c6406c42a6c21957d8c924a7c8cd1790a9bb186c614f18fc42c74674e.jpg",
+    "crop_px": [
+     262,
+     0,
+     378,
+     390
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-d9aaef5802.png?v=1",
+   "latlon": {
+    "lat": 12.922865,
+    "lon": 77.673478
+   },
+   "tile_px": [
+    980.58,
+    682.23
+   ]
+  },
+  {
+   "id": "ent-ef069848d3",
+   "entity_id": "ent-ef069848d3",
+   "type": "wall",
+   "label": "wall",
+   "x_m": 99.999,
+   "length_m": 1.0,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": -2.103,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.3,
+    "h": 2.0,
+    "d": 1.0
+   },
+   "confidence": 0.494,
+   "scenery": true,
+   "description": "Stone base wall with a corrugated metal sheet fence on the right side of the street.",
+   "evidence": {
+    "observation_count": 1,
+    "sources": {
+     "street_view": 1,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 1 Street View frame.",
+    "observation_ids": [
+     "b8209640-a9f6-4d69-8f5e-bf82c54afeb8"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/c0e3ec5c6406c42a6c21957d8c924a7c8cd1790a9bb186c614f18fc42c74674e.jpg",
+    "crop_px": [
+     370,
+     165,
+     270,
+     245
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-ef069848d3.png?v=1",
+   "latlon": {
+    "lat": 12.922861,
+    "lon": 77.673477
+   },
+   "tile_px": [
+    980.05,
+    685.3
+   ]
+  },
+  {
+   "id": "ent-fe8326f2fb",
+   "entity_id": "ent-fe8326f2fb",
+   "type": "signboard",
+   "label": "signboard",
+   "x_m": 99.999,
+   "length_m": 0.809,
+   "lanes": [],
+   "action": "none",
+   "lateral_m": 10.039,
+   "yaw_deg": 0.0,
+   "size_m": {
+    "w": 0.952,
+    "h": 1.239,
+    "d": 0.809
+   },
+   "confidence": 0.478,
+   "scenery": true,
+   "description": "Mannequins displayed outside a clothing shop at the edge of the footpath.",
+   "evidence": {
+    "observation_count": 2,
+    "sources": {
+     "street_view": 2,
+     "satellite": 0,
+     "upload": 0
+    },
+    "summary": "Seen in 2 Street View frames.",
+    "observation_ids": [
+     "67f1a319-f9e1-4f07-b312-b20c93448b25",
+     "b8209640-a9f6-4d69-8f5e-bf82c54afeb8"
+    ],
+    "state": "present"
+   },
+   "source": {
+    "image_url": "/media/imagery/59ba433f7aac97b426b101c0a4b08c2fd8cd9cd876af9c9bbadc55f97d1217f3.jpg",
+    "crop_px": [
+     535,
+     310,
+     100,
+     120
+    ]
+   },
+   "billboard_url": "/media/crops/bellandur-main-road-n-2/ent-fe8326f2fb.png?v=1",
+   "latlon": {
+    "lat": 12.922968,
+    "lon": 77.673497
+   },
+   "tile_px": [
+    994.32,
+    602.99
+   ]
+  }
+ ],
+ "tokens": [
+  {
+   "id": "t1",
+   "x_m": 5.0,
+   "lane": 0,
+   "reason": "intact_footpath",
+   "latlon": {
+    "lat": 12.92297,
+    "lon": 77.672595
+   },
+   "tile_px": [
+    321.76,
+    601.65
+   ]
+  },
+  {
+   "id": "t2",
+   "x_m": 35.0,
+   "lane": 0,
+   "reason": "intact_footpath",
+   "latlon": {
+    "lat": 12.922976,
+    "lon": 77.672884
+   },
+   "tile_px": [
+    537.75,
+    596.94
+   ]
+  },
+  {
+   "id": "t3",
+   "x_m": 45.0,
+   "lane": 0,
+   "reason": "intact_footpath",
+   "latlon": {
+    "lat": 12.922976,
+    "lon": 77.672977
+   },
+   "tile_px": [
+    606.56,
+    597.46
+   ]
+  },
+  {
+   "id": "t4",
+   "x_m": 56.0,
+   "lane": 0,
+   "reason": "intact_footpath",
+   "latlon": {
+    "lat": 12.922968,
+    "lon": 77.673082
+   },
+   "tile_px": [
+    684.86,
+    603.01
+   ]
+  },
+  {
+   "id": "t5",
+   "x_m": 66.0,
+   "lane": 0,
+   "reason": "intact_footpath",
+   "latlon": {
+    "lat": 12.922961,
+    "lon": 77.673174
+   },
+   "tile_px": [
+    753.45,
+    608.4
+   ]
+  },
+  {
+   "id": "t6",
+   "x_m": 77.0,
+   "lane": 0,
+   "reason": "intact_footpath",
+   "latlon": {
+    "lat": 12.922954,
+    "lon": 77.673275
+   },
+   "tile_px": [
+    828.91,
+    614.34
+   ]
+  }
+ ],
+ "walkability": {
+  "footpath_coverage_pct": 72.5,
+  "hazard_count": 23,
+  "crossing_present": false,
+  "score": 44
+ },
+ "about": {
+  "model_version": 1,
+  "fidelity": {
+   "level": "L2",
+   "score": 2.0,
+   "label": "Multi-view: every part seen from at least two places, both sides",
+   "histogram_m": {
+    "L0": 0.0,
+    "L1": 0.0,
+    "L2": 100.0,
+    "L3": 0.0
+   }
+  },
+  "photos": {
+   "total": 48,
+   "street_view": 44,
+   "satellite": 4,
+   "user": 0
+  },
+  "last_updated": "2026-10-30",
+  "capture_dates": {
+   "oldest": "2026-04",
+   "newest": "2026-04"
+  },
+  "low_confidence_parts": [
+   {
+    "s_from": 0.0,
+    "s_to": 100.0,
+    "reason": "80 objects below 60 % confidence; 63 unresolved conflicts"
+   }
+  ],
+  "summary": "This street is modelled at fidelity L2 (Multi-view: every part seen from at least two places, both sides) from 48 photos (model v1). It covers 100 m of Bellandur Main Road. Least certain: 0-100 m. Previously seen but no longer supported: 12 objects.",
+  "improve_hint": "A close-up photo around 0-100 m would raise it to L3.",
+  "legacy": false,
+  "placement_verified": true,
+  "degraded": false
+ },
+ "generation": {
+  "run_id": "9d70ba9f-b2fa-467c-8301-abaf951313dc",
+  "quality": "full",
+  "confidence_overall": 0.47,
+  "review_iterations": 1,
+  "models": {
+   "vision": "claude-sonnet-5-5",
+   "review": "claude-sonnet-5-5"
+  },
+  "warnings": [
+   "22 detection(s) had a ground-plane range that disagrees with the model's estimate.",
+   "consistency: strips overlap in 0-15 m",
+   "consistency: strips overlap in 15-30 m",
+   "consistency: strips overlap in 30-50 m",
+   "consistency: strips overlap in 50-52.5 m",
+   "consistency: strips overlap in 52.5-82.5 m",
+   "consistency: strips overlap in 82.5-87.5 m",
+   "consistency: strips overlap in 87.5-97.5 m",
+   "consistency: strips overlap in 97.5-100 m",
+   "consistency: parked_vehicle ent-255a5e3aa9 sits on the footpath at 81 m but the footpath is 'intact'",
+   "consistency: parked_vehicle ent-b36d869a51 sits on the footpath at 63 m but the footpath is 'intact'"
+  ]
+ },
+ "model": {
+  "version": 1,
+  "model_hash": "eaba1794d2a49675df934d6d45e0e8e96f0e52b7a8cd59deb90dad8ef55281dc",
+  "compiled_by": "hero.model.compile/1"
+ }
+}

@@ -1,0 +1,320 @@
+{
+  "windows": [
+    {
+      "image_index": 1,
+      "strips": [
+        {
+          "kind": "footpath",
+          "side": "left",
+          "material": "paver",
+          "condition": "fair",
+          "edge_a_px": [
+            [
+              75,
+              0
+            ],
+            [
+              75,
+              250
+            ],
+            [
+              75,
+              500
+            ]
+          ],
+          "edge_b_px": [
+            [
+              90,
+              0
+            ],
+            [
+              90,
+              250
+            ],
+            [
+              90,
+              500
+            ]
+          ],
+          "confidence": 0.8,
+          "description": "Red paver footpath about 1.5 m wide, slabs slightly uneven but continuous where present."
+        },
+        {
+          "kind": "carriageway",
+          "side": "centre",
+          "material": "asphalt",
+          "condition": "fair",
+          "edge_a_px": [
+            [
+              98,
+              0
+            ],
+            [
+              98,
+              250
+            ],
+            [
+              98,
+              500
+            ]
+          ],
+          "edge_b_px": [
+            [
+              182,
+              0
+            ],
+            [
+              182,
+              250
+            ],
+            [
+              182,
+              500
+            ]
+          ],
+          "confidence": 0.85,
+          "description": "Two-way asphalt carriageway about 8.5 m wide with faded lane markings."
+        },
+        {
+          "kind": "verge",
+          "side": "right",
+          "material": "earth",
+          "condition": "poor",
+          "edge_a_px": [
+            [
+              190,
+              0
+            ],
+            [
+              190,
+              250
+            ],
+            [
+              190,
+              500
+            ]
+          ],
+          "edge_b_px": [
+            [
+              215,
+              0
+            ],
+            [
+              215,
+              250
+            ],
+            [
+              215,
+              500
+            ]
+          ],
+          "confidence": 0.5,
+          "description": "Packed-earth verge on the far side, no paved footpath."
+        }
+      ],
+      "footpath_runs": [
+        {
+          "side": "left",
+          "y_from_px": 0,
+          "y_to_px": 320,
+          "state": "intact",
+          "confidence": 0.8,
+          "note": "continuous pavers"
+        },
+        {
+          "side": "left",
+          "y_from_px": 320,
+          "y_to_px": 500,
+          "state": "broken",
+          "confidence": 0.7,
+          "note": "slabs uplifted by roots"
+        }
+      ],
+      "objects": [
+        {
+          "type": "tree",
+          "box_px": [
+            55,
+            120,
+            40,
+            40
+          ],
+          "attributes": {
+            "canopy_low": false
+          },
+          "description": "Mature rain tree on the footpath edge; trunk position uncertain under canopy.",
+          "confidence": 0.7
+        },
+        {
+          "type": "pole",
+          "box_px": [
+            92,
+            330,
+            8,
+            8
+          ],
+          "attributes": {},
+          "description": "Utility pole at the back of the footpath.",
+          "confidence": 0.6
+        }
+      ],
+      "notes": "Clear imagery, light canopy shadow near the top."
+    },
+    {
+      "image_index": 2,
+      "strips": [
+        {
+          "kind": "footpath",
+          "side": "left",
+          "material": "paver",
+          "condition": "fair",
+          "edge_a_px": [
+            [
+              75,
+              0
+            ],
+            [
+              75,
+              250
+            ],
+            [
+              75,
+              500
+            ]
+          ],
+          "edge_b_px": [
+            [
+              90,
+              0
+            ],
+            [
+              90,
+              250
+            ],
+            [
+              90,
+              500
+            ]
+          ],
+          "confidence": 0.8,
+          "description": "Red paver footpath about 1.5 m wide, slabs slightly uneven but continuous where present."
+        },
+        {
+          "kind": "carriageway",
+          "side": "centre",
+          "material": "asphalt",
+          "condition": "fair",
+          "edge_a_px": [
+            [
+              98,
+              0
+            ],
+            [
+              98,
+              250
+            ],
+            [
+              98,
+              500
+            ]
+          ],
+          "edge_b_px": [
+            [
+              182,
+              0
+            ],
+            [
+              182,
+              250
+            ],
+            [
+              182,
+              500
+            ]
+          ],
+          "confidence": 0.85,
+          "description": "Two-way asphalt carriageway about 8.5 m wide with faded lane markings."
+        },
+        {
+          "kind": "verge",
+          "side": "right",
+          "material": "earth",
+          "condition": "poor",
+          "edge_a_px": [
+            [
+              190,
+              0
+            ],
+            [
+              190,
+              250
+            ],
+            [
+              190,
+              500
+            ]
+          ],
+          "edge_b_px": [
+            [
+              215,
+              0
+            ],
+            [
+              215,
+              250
+            ],
+            [
+              215,
+              500
+            ]
+          ],
+          "confidence": 0.5,
+          "description": "Packed-earth verge on the far side, no paved footpath."
+        }
+      ],
+      "footpath_runs": [
+        {
+          "side": "left",
+          "y_from_px": 0,
+          "y_to_px": 140,
+          "state": "intact",
+          "confidence": 0.8,
+          "note": "continuous pavers"
+        },
+        {
+          "side": "left",
+          "y_from_px": 140,
+          "y_to_px": 260,
+          "state": "missing",
+          "confidence": 0.7,
+          "note": "dirt gap, construction"
+        },
+        {
+          "side": "left",
+          "y_from_px": 260,
+          "y_to_px": 500,
+          "state": "intact",
+          "confidence": 0.7,
+          "note": "pavers resume"
+        }
+      ],
+      "objects": [
+        {
+          "type": "parked_vehicle",
+          "box_px": [
+            100,
+            300,
+            28,
+            55
+          ],
+          "attributes": {
+            "colour": "yellow"
+          },
+          "description": "Parked auto-rickshaw half on the footpath edge.",
+          "confidence": 0.65
+        }
+      ],
+      "notes": "Construction gap visible."
+    }
+  ]
+}

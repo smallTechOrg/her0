@@ -1,0 +1,296 @@
+{
+ "bin_m": 5.0,
+ "bins": [
+  {
+   "hint": "Add a close-up photo of this stretch to reach L3.",
+   "index": 0,
+   "level": 2,
+   "overhead_hires": true,
+   "s_from": 0.0,
+   "s_to": 5.0,
+   "sides": {
+    "left": 1,
+    "right": 1
+   },
+   "stations": 3,
+   "views": 5
+  },
+  {
+   "hint": "Add a close-up photo of this stretch to reach L3.",
+   "index": 1,
+   "level": 2,
+   "overhead_hires": true,
+   "s_from": 5.0,
+   "s_to": 10.0,
+   "sides": {
+    "left": 1,
+    "right": 1
+   },
+   "stations": 3,
+   "views": 5
+  },
+  {
+   "hint": "Add a close-up photo of this stretch to reach L3.",
+   "index": 2,
+   "level": 2,
+   "overhead_hires": true,
+   "s_from": 10.0,
+   "s_to": 15.0,
+   "sides": {
+    "left": 1,
+    "right": 1
+   },
+   "stations": 3,
+   "views": 5
+  },
+  {
+   "hint": "Add a close-up photo of this stretch to reach L3.",
+   "index": 3,
+   "level": 2,
+   "overhead_hires": true,
+   "s_from": 15.0,
+   "s_to": 20.0,
+   "sides": {
+    "left": 1,
+    "right": 1
+   },
+   "stations": 3,
+   "views": 5
+  },
+  {
+   "hint": "Add a close-up photo of this stretch to reach L3.",
+   "index": 4,
+   "level": 2,
+   "overhead_hires": true,
+   "s_from": 20.0,
+   "s_to": 25.0,
+   "sides": {
+    "left": 1,
+    "right": 1
+   },
+   "stations": 3,
+   "views": 5
+  },
+  {
+   "hint": "Add a close-up photo of this stretch to reach L3.",
+   "index": 5,
+   "level": 2,
+   "overhead_hires": true,
+   "s_from": 25.0,
+   "s_to": 30.0,
+   "sides": {
+    "left": 1,
+    "right": 1
+   },
+   "stations": 3,
+   "views": 5
+  },
+  {
+   "hint": "Add a close-up photo of this stretch to reach L3.",
+   "index": 6,
+   "level": 2,
+   "overhead_hires": true,
+   "s_from": 30.0,
+   "s_to": 35.0,
+   "sides": {
+    "left": 1,
+    "right": 1
+   },
+   "stations": 3,
+   "views": 5
+  },
+  {
+   "hint": "Add a close-up photo of this stretch to reach L3.",
+   "index": 7,
+   "level": 2,
+   "overhead_hires": true,
+   "s_from": 35.0,
+   "s_to": 40.0,
+   "sides": {
+    "left": 1,
+    "right": 1
+   },
+   "stations": 3,
+   "views": 5
+  },
+  {
+   "hint": "Add a close-up photo of this stretch to reach L3.",
+   "index": 8,
+   "level": 2,
+   "overhead_hires": true,
+   "s_from": 40.0,
+   "s_to": 45.0,
+   "sides": {
+    "left": 1,
+    "right": 1
+   },
+   "stations": 3,
+   "views": 5
+  },
+  {
+   "hint": "Add a close-up photo of this stretch to reach L3.",
+   "index": 9,
+   "level": 2,
+   "overhead_hires": true,
+   "s_from": 45.0,
+   "s_to": 50.0,
+   "sides": {
+    "left": 1,
+    "right": 1
+   },
+   "stations": 3,
+   "views": 5
+  },
+  {
+   "hint": "Add a close-up photo of this stretch to reach L3.",
+   "index": 10,
+   "level": 2,
+   "overhead_hires": true,
+   "s_from": 50.0,
+   "s_to": 55.0,
+   "sides": {
+    "left": 1,
+    "right": 1
+   },
+   "stations": 3,
+   "views": 5
+  },
+  {
+   "hint": "Add a close-up photo of this stretch to reach L3.",
+   "index": 11,
+   "level": 2,
+   "overhead_hires": true,
+   "s_from": 55.0,
+   "s_to": 60.0,
+   "sides": {
+    "left": 1,
+    "right": 1
+   },
+   "stations": 3,
+   "views": 5
+  },
+  {
+   "hint": "Add a close-up photo of this stretch to reach L3.",
+   "index": 12,
+   "level": 2,
+   "overhead_hires": true,
+   "s_from": 60.0,
+   "s_to": 65.0,
+   "sides": {
+    "left": 1,
+    "right": 1
+   },
+   "stations": 3,
+   "views": 5
+  },
+  {
+   "hint": "Add a close-up photo of this stretch to reach L3.",
+   "index": 13,
+   "level": 2,
+   "overhead_hires": true,
+   "s_from": 65.0,
+   "s_to": 70.0,
+   "sides": {
+    "left": 1,
+    "right": 1
+   },
+   "stations": 3,
+   "views": 5
+  },
+  {
+   "hint": "Add a close-up photo of this stretch to reach L3.",
+   "index": 14,
+   "level": 2,
+   "overhead_hires": true,
+   "s_from": 70.0,
+   "s_to": 75.0,
+   "sides": {
+    "left": 1,
+    "right": 1
+   },
+   "stations": 3,
+   "views": 5
+  },
+  {
+   "hint": "Add a close-up photo of this stretch to reach L3.",
+   "index": 15,
+   "level": 2,
+   "overhead_hires": true,
+   "s_from": 75.0,
+   "s_to": 80.0,
+   "sides": {
+    "left": 1,
+    "right": 1
+   },
+   "stations": 3,
+   "views": 5
+  },
+  {
+   "hint": "Add a close-up photo of this stretch to reach L3.",
+   "index": 16,
+   "level": 2,
+   "overhead_hires": true,
+   "s_from": 80.0,
+   "s_to": 85.0,
+   "sides": {
+    "left": 1,
+    "right": 1
+   },
+   "stations": 3,
+   "views": 5
+  },
+  {
+   "hint": "Add a close-up photo of this stretch to reach L3.",
+   "index": 17,
+   "level": 2,
+   "overhead_hires": true,
+   "s_from": 85.0,
+   "s_to": 90.0,
+   "sides": {
+    "left": 1,
+    "right": 1
+   },
+   "stations": 3,
+   "views": 5
+  },
+  {
+   "hint": "Add a close-up photo of this stretch to reach L3.",
+   "index": 18,
+   "level": 2,
+   "overhead_hires": true,
+   "s_from": 90.0,
+   "s_to": 95.0,
+   "sides": {
+    "left": 2,
+    "right": 2
+   },
+   "stations": 2,
+   "views": 6
+  },
+  {
+   "hint": "Add a close-up photo of this stretch to reach L3.",
+   "index": 19,
+   "level": 2,
+   "overhead_hires": true,
+   "s_from": 95.0,
+   "s_to": 100.0,
+   "sides": {
+    "left": 1,
+    "right": 1
+   },
+   "stations": 2,
+   "views": 4
+  }
+ ],
+ "length_s": 100.0,
+ "overall": {
+  "histogram_m": {
+   "L0": 0.0,
+   "L1": 0.0,
+   "L2": 100.0,
+   "L3": 0.0
+  },
+  "level": 2,
+  "score": 2.0
+ }
+}

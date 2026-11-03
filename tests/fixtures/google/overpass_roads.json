@@ -1,0 +1,45 @@
+{
+ "elements": [
+  {
+   "geometry": [
+    {
+     "lat": 12.9741,
+     "lon": 77.64085
+    },
+    {
+     "lat": 12.9747,
+     "lon": 77.64085
+    }
+   ],
+   "id": 7001,
+   "tags": {
+    "highway": "service",
+    "name": "Back Lane"
+   },
+   "type": "way"
+  },
+  {
+   "geometry": [
+    {
+     "lat": 12.973,
+     "lon": 77.6405
+    },
+    {
+     "lat": 12.974,
+     "lon": 77.6405
+    },
+    {
+     "lat": 12.975,
+     "lon": 77.6406
+    }
+   ],
+   "id": 7002,
+   "tags": {
+    "highway": "primary",
+    "name": "100 Feet Road"
+   },
+   "type": "way"
+  }
+ ],
+ "version": 0.6
+}

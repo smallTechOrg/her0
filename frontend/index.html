@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>#hero</title>
+  <link rel="stylesheet" href="/css/base.css?v=3">
+  <link rel="stylesheet" href="/css/game.css?v=4">
+</head>
+<body>
+  <main id="app" data-hero-page="gallery" class="page gallery">
+    <header class="page-header">
+      <h1>#hero</h1>
+      <p class="tagline">Run a real street. See how walkable it is.</p>
+    </header>
+
+    <div class="action-row">
+      <button type="button" id="use-location" disabled data-stub="true"
+              title="Coming in Phase 3: picks the street you're standing on"
+              aria-describedby="use-location-caption">Use my location</button>
+      <span class="stub-caption" id="use-location-caption">Coming in Phase 3: picks the street you're standing on.</span>
+    </div>
+
+    <section aria-labelledby="streets-heading">
+      <h2 id="streets-heading" class="sr-only">Streets</h2>
+      <div id="gallery-loading" aria-busy="true">
+        <div class="street-list"><div class="skeleton"></div><div class="skeleton"></div></div>
+      </div>
+      <div id="gallery-empty" class="state-box" hidden>
+        <p>No streets yet — an admin generates them at <a href="/admin/">/admin/</a>.</p>
+      </div>
+      <div id="gallery-error" class="state-box" hidden>
+        <p class="error">Couldn't load streets — <span id="gallery-error-reason"></span></p>
+        <button type="button" id="gallery-retry">Retry</button>
+      </div>
+      <ul id="street-list" class="street-list" hidden></ul>
+    </section>
+
+    <footer class="page-footer"><a href="/admin/">Admin</a></footer>
+  </main>
+  <script type="module" src="/js/gallery.js?v=4"></script>
+</body>
+</html>

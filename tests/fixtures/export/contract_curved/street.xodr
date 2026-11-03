@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenDRIVE>
+  <header revMajor="1" revMinor="7" name="contract-curved-street" version="1" date="2026-01-01T00:00:00" north="0" south="0" east="0" west="0" vendor="hero">
+    <geoReference><![CDATA[+proj=tmerc +lat_0=12.9706 +lon_0=77.6413 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs]]></geoReference>
+  </header>
+  <road name="Contract Curved Road, Indiranagar (stand-in export)" length="60" id="1" junction="-1">
+    <planView>
+      <geometry s="0" x="0.0000" y="-0.0000" hdg="1.555171" length="2.5"><line/></geometry>
+      <geometry s="2.5" x="0.0391" y="2.4997" hdg="1.523921" length="2.5"><line/></geometry>
+      <geometry s="5" x="0.1562" y="4.9969" hdg="1.492671" length="2.5"><line/></geometry>
+      <geometry s="7.5" x="0.3513" y="7.4893" hdg="1.461421" length="2.5"><line/></geometry>
+      <geometry s="10" x="0.6242" y="9.9744" hdg="1.430171" length="2.5"><line/></geometry>
+      <geometry s="12.5" x="0.9746" y="12.4497" hdg="1.398921" length="2.5"><line/></geometry>
+      <geometry s="15" x="1.4022" y="14.9129" hdg="1.367671" length="2.5"><line/></geometry>
+      <geometry s="17.5" x="1.9065" y="17.3615" hdg="1.336421" length="2.5"><line/></geometry>
+      <geometry s="20" x="2.4871" y="19.7931" hdg="1.305171" length="2.5"><line/></geometry>
+      <geometry s="22.5" x="3.1434" y="22.2054" hdg="1.273921" length="2.5"><line/></geometry>
+      <geometry s="25" x="3.8747" y="24.5961" hdg="1.242671" length="2.5"><line/></geometry>
+      <geometry s="27.5" x="4.6804" y="26.9627" hdg="1.211421" length="2.5"><line/></geometry>
+      <geometry s="30" x="5.5596" y="29.3030" hdg="1.180171" length="2.5"><line/></geometry>
+      <geometry s="32.5" x="6.5115" y="31.6147" hdg="1.148921" length="2.5"><line/></geometry>
+      <geometry s="35" x="7.5352" y="33.8955" hdg="1.117671" length="2.5"><line/></geometry>
+      <geometry s="37.5" x="8.6297" y="36.1432" hdg="1.086421" length="2.5"><line/></geometry>
+      <geometry s="40" x="9.7938" y="38.3556" hdg="1.055171" length="2.5"><line/></geometry>
+      <geometry s="42.5" x="11.0265" y="40.5306" hdg="1.023921" length="2.5"><line/></geometry>
+      <geometry s="45" x="12.3265" y="42.6659" hdg="0.992671" length="2.5"><line/></geometry>
+      <geometry s="47.5" x="13.6927" y="44.7597" hdg="0.961421" length="2.5"><line/></geometry>
+      <geometry s="50" x="15.1236" y="46.8097" hdg="0.930171" length="2.5"><line/></geometry>
+      <geometry s="52.5" x="16.6178" y="48.8140" hdg="0.898921" length="2.5"><line/></geometry>
+      <geometry s="55" x="18.1739" y="50.7706" hdg="0.867671" length="2.5"><line/></geometry>
+      <geometry s="57.5" x="19.7905" y="52.6777" hdg="0.836421" length="2.5"><line/></geometry>
+    </planView>
+    <elevationProfile><elevation s="0" a="0" b="0" c="0" d="0"/></elevationProfile>
+    <lanes>
+      <laneSection s="0">
+        <left>
+          <lane id="1" type="driving" level="false">
+            <width sOffset="0" a="4.7000" b="0.062120" c="0" d="0"/>
+            <width sOffset="2.5" a="4.8553" b="0.057880" c="0" d="0"/>
+            <width sOffset="5" a="5.0000" b="0.049720" c="0" d="0"/>
+            <width sOffset="7.5" a="5.1243" b="0.038120" c="0" d="0"/>
+            <width sOffset="10" a="5.2196" b="0.024000" c="0" d="0"/>
+            <width sOffset="12.5" a="5.2796" b="0.008160" c="0" d="0"/>
+            <width sOffset="15" a="5.3000" b="-0.008160" c="0" d="0"/>
+            <width sOffset="17.5" a="5.2796" b="-0.024000" c="0" d="0"/>
+            <width sOffset="20" a="5.2196" b="-0.038120" c="0" d="0"/>
+            <width sOffset="22.5" a="5.1243" b="-0.049720" c="0" d="0"/>
+            <width sOffset="25" a="5.0000" b="-0.057880" c="0" d="0"/>
+            <width sOffset="27.5" a="4.8553" b="-0.062120" c="0" d="0"/>
+          </lane>
+          <lane id="2" type="curb" level="false">
+            <width sOffset="0" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="2.5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="7.5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="10" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="12.5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="15" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="17.5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="20" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="22.5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="25" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="27.5" a="0.2000" b="0.000000" c="0" d="0"/>
+          </lane>
+          <lane id="3" type="sidewalk" level="false">
+            <width sOffset="0" a="1.8000" b="0.000000" c="0" d="0"/>
+            <width sOffset="2.5" a="1.8000" b="0.000000" c="0" d="0"/>
+            <width sOffset="5" a="1.8000" b="0.000000" c="0" d="0"/>
+            <width sOffset="7.5" a="1.8000" b="0.000000" c="0" d="0"/>
+            <width sOffset="10" a="1.8000" b="0.000000" c="0" d="0"/>
+            <width sOffset="12.5" a="1.8000" b="-0.000000" c="0" d="0"/>
+            <width sOffset="15" a="1.8000" b="0.000000" c="0" d="0"/>
+            <width sOffset="17.5" a="1.8000" b="-0.000000" c="0" d="0"/>
+            <width sOffset="20" a="1.8000" b="0.000000" c="0" d="0"/>
+            <width sOffset="22.5" a="1.8000" b="0.000000" c="0" d="0"/>
+            <width sOffset="25" a="1.8000" b="0.000000" c="0" d="0"/>
+            <width sOffset="27.5" a="1.8000" b="0.000000" c="0" d="0"/>
+          </lane>
+        </left>
+        <center><lane id="0" type="none" level="false"/></center>
+        <right>
+          <lane id="-1" type="driving" level="false">
+            <width sOffset="0" a="4.3000" b="-0.062120" c="0" d="0"/>
+            <width sOffset="2.5" a="4.1447" b="-0.057880" c="0" d="0"/>
+            <width sOffset="5" a="4.0000" b="-0.049720" c="0" d="0"/>
+            <width sOffset="7.5" a="3.8757" b="-0.038120" c="0" d="0"/>
+            <width sOffset="10" a="3.7804" b="-0.024000" c="0" d="0"/>
+            <width sOffset="12.5" a="3.7204" b="-0.008160" c="0" d="0"/>
+            <width sOffset="15" a="3.7000" b="0.008160" c="0" d="0"/>
+            <width sOffset="17.5" a="3.7204" b="0.024000" c="0" d="0"/>
+            <width sOffset="20" a="3.7804" b="0.038120" c="0" d="0"/>
+            <width sOffset="22.5" a="3.8757" b="0.049720" c="0" d="0"/>
+            <width sOffset="25" a="4.0000" b="0.057880" c="0" d="0"/>
+            <width sOffset="27.5" a="4.1447" b="0.062120" c="0" d="0"/>
+          </lane>
+          <lane id="-2" type="curb" level="false">
+            <width sOffset="0" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="2.5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="7.5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="10" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="12.5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="15" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="17.5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="20" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="22.5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="25" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="27.5" a="0.2000" b="0.000000" c="0" d="0"/>
+          </lane>
+          <lane id="-3" type="sidewalk" level="false">
+            <width sOffset="0" a="1.6000" b="0.000000" c="0" d="0"/>
+            <width sOffset="2.5" a="1.6000" b="0.000000" c="0" d="0"/>
+            <width sOffset="5" a="1.6000" b="0.000000" c="0" d="0"/>
+            <width sOffset="7.5" a="1.6000" b="0.000000" c="0" d="0"/>
+            <width sOffset="10" a="1.6000" b="0.000000" c="0" d="0"/>
+            <width sOffset="12.5" a="1.6000" b="0.000000" c="0" d="0"/>
+            <width sOffset="15" a="1.6000" b="0.000000" c="0" d="0"/>
+            <width sOffset="17.5" a="1.6000" b="0.000000" c="0" d="0"/>
+            <width sOffset="20" a="1.6000" b="0.000000" c="0" d="0"/>
+            <width sOffset="22.5" a="1.6000" b="0.000000" c="0" d="0"/>
+            <width sOffset="25" a="1.6000" b="0.000000" c="0" d="0"/>
+            <width sOffset="27.5" a="1.6000" b="0.000000" c="0" d="0"/>
+          </lane>
+        </right>
+      </laneSection>
+      <laneSection s="30">
+        <left>
+          <lane id="1" type="driving" level="false">
+            <width sOffset="0" a="4.7000" b="-0.062120" c="0" d="0"/>
+            <width sOffset="2.5" a="4.5447" b="-0.057880" c="0" d="0"/>
+            <width sOffset="5" a="4.4000" b="-0.049720" c="0" d="0"/>
+          </lane>
+        </left>
+        <center><lane id="0" type="none" level="false"/></center>
+        <right>
+          <lane id="-1" type="driving" level="false">
+            <width sOffset="0" a="4.3000" b="0.062120" c="0" d="0"/>
+            <width sOffset="2.5" a="4.4553" b="0.057880" c="0" d="0"/>
+            <width sOffset="5" a="4.6000" b="0.049720" c="0" d="0"/>
+          </lane>
+          <lane id="-2" type="curb" level="false">
+            <width sOffset="0" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="2.5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="5" a="0.2000" b="0.000000" c="0" d="0"/>
+          </lane>
+          <lane id="-3" type="sidewalk" level="false">
+            <width sOffset="0" a="1.6000" b="0.000000" c="0" d="0"/>
+            <width sOffset="2.5" a="1.6000" b="0.000000" c="0" d="0"/>
+            <width sOffset="5" a="1.6000" b="0.000000" c="0" d="0"/>
+          </lane>
+        </right>
+      </laneSection>
+      <laneSection s="37.5">
+        <left>
+          <lane id="1" type="driving" level="false">
+            <width sOffset="0" a="4.2757" b="-0.038120" c="0" d="0"/>
+            <width sOffset="2.5" a="4.1804" b="-0.024000" c="0" d="0"/>
+            <width sOffset="5" a="4.1204" b="-0.008160" c="0" d="0"/>
+            <width sOffset="7.5" a="4.1000" b="0.008160" c="0" d="0"/>
+            <width sOffset="10" a="4.1204" b="0.024000" c="0" d="0"/>
+            <width sOffset="12.5" a="4.1804" b="0.038120" c="0" d="0"/>
+            <width sOffset="15" a="4.2757" b="0.049720" c="0" d="0"/>
+            <width sOffset="17.5" a="4.4000" b="0.057880" c="0" d="0"/>
+            <width sOffset="20" a="4.5447" b="0.062120" c="0" d="0"/>
+          </lane>
+          <lane id="2" type="curb" level="false">
+            <width sOffset="0" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="2.5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="7.5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="10" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="12.5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="15" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="17.5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="20" a="0.2000" b="0.000000" c="0" d="0"/>
+          </lane>
+          <lane id="3" type="sidewalk" level="false">
+            <width sOffset="0" a="1.8000" b="0.000000" c="0" d="0"/>
+            <width sOffset="2.5" a="1.8000" b="0.000000" c="0" d="0"/>
+            <width sOffset="5" a="1.8000" b="0.000000" c="0" d="0"/>
+            <width sOffset="7.5" a="1.8000" b="0.000000" c="0" d="0"/>
+            <width sOffset="10" a="1.8000" b="0.000000" c="0" d="0"/>
+            <width sOffset="12.5" a="1.8000" b="0.000000" c="0" d="0"/>
+            <width sOffset="15" a="1.8000" b="0.000000" c="0" d="0"/>
+            <width sOffset="17.5" a="1.8000" b="-0.000000" c="0" d="0"/>
+            <width sOffset="20" a="1.8000" b="0.000000" c="0" d="0"/>
+          </lane>
+        </left>
+        <center><lane id="0" type="none" level="false"/></center>
+        <right>
+          <lane id="-1" type="driving" level="false">
+            <width sOffset="0" a="4.7243" b="0.038120" c="0" d="0"/>
+            <width sOffset="2.5" a="4.8196" b="0.024000" c="0" d="0"/>
+            <width sOffset="5" a="4.8796" b="0.008160" c="0" d="0"/>
+            <width sOffset="7.5" a="4.9000" b="-0.008160" c="0" d="0"/>
+            <width sOffset="10" a="4.8796" b="-0.024000" c="0" d="0"/>
+            <width sOffset="12.5" a="4.8196" b="-0.038120" c="0" d="0"/>
+            <width sOffset="15" a="4.7243" b="-0.049720" c="0" d="0"/>
+            <width sOffset="17.5" a="4.6000" b="-0.057880" c="0" d="0"/>
+            <width sOffset="20" a="4.4553" b="-0.062120" c="0" d="0"/>
+          </lane>
+          <lane id="-2" type="curb" level="false">
+            <width sOffset="0" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="2.5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="7.5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="10" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="12.5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="15" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="17.5" a="0.2000" b="0.000000" c="0" d="0"/>
+            <width sOffset="20" a="0.2000" b="0.000000" c="0" d="0"/>
+          </lane>
+          <lane id="-3" type="sidewalk" level="false">
+            <width sOffset="0" a="1.6000" b="0.000000" c="0" d="0"/>
+            <width sOffset="2.5" a="1.6000" b="0.000000" c="0" d="0"/>
+            <width sOffset="5" a="1.6000" b="0.000000" c="0" d="0"/>
+            <width sOffset="7.5" a="1.6000" b="0.000000" c="0" d="0"/>
+            <width sOffset="10" a="1.6000" b="0.000000" c="0" d="0"/>
+            <width sOffset="12.5" a="1.6000" b="0.000000" c="0" d="0"/>
+            <width sOffset="15" a="1.6000" b="0.000000" c="0" d="0"/>
+            <width sOffset="17.5" a="1.6000" b="0.000000" c="0" d="0"/>
+            <width sOffset="20" a="1.6000" b="0.000000" c="0" d="0"/>
+          </lane>
+        </right>
+      </laneSection>
+    </lanes>
+    <objects>
+      <object id="ent-0000000013" name="pole" type="pole" s="5" t="6.900" zOffset="0" hdg="0.0000" height="7.0" width="0.3" length="0.3" orientation="none">
+        <userData code="hero:entity_id" value="ent-0000000013"/>
+      </object>
+      <object id="ent-0000000007" name="bin" type="obstacle" s="10" t="6.400" zOffset="0" hdg="0.0000" height="0.9" width="0.6" length="0.6" orientation="none">
+        <userData code="hero:entity_id" value="ent-0000000007"/>
+      </object>
+      <object id="ent-0000000015" name="manhole" type="obstacle" s="10" t="1.000" zOffset="0" hdg="0.0000" height="0.01" width="0.7" length="0.7" orientation="none">
+        <userData code="hero:entity_id" value="ent-0000000015"/>
+      </object>
+      <object id="ent-0000000006" name="tree" type="tree" s="12" t="8.400" zOffset="0" hdg="0.0000" height="8.0" width="3.0" length="3.0" orientation="none">
+        <userData code="hero:entity_id" value="ent-0000000006"/>
+      </object>
+      <object id="ent-0000000002" name="pole" type="pole" s="22.2" t="6.240" zOffset="0" hdg="0.0000" height="6.0" width="0.4" length="0.4" orientation="none">
+        <userData code="hero:entity_id" value="ent-0000000002"/>
+      </object>
+      <object id="ent-0000000008" name="bollard" type="bollard" s="26" t="4.950" zOffset="0" hdg="0.0000" height="0.9" width="0.25" length="0.25" orientation="none">
+        <userData code="hero:entity_id" value="ent-0000000008"/>
+      </object>
+      <object id="ent-0000000014" name="drain" type="obstacle" s="26" t="4.300" zOffset="0" hdg="0.0000" height="0.01" width="0.5" length="1.2" orientation="none">
+        <userData code="hero:entity_id" value="ent-0000000014"/>
+      </object>
+      <object id="ent-0000000003" name="signboard" type="obstacle" s="40.3" t="5.270" zOffset="0" hdg="0.0000" height="1.1" width="1.2" length="0.4" orientation="none">
+        <userData code="hero:entity_id" value="ent-0000000003"/>
+      </object>
+      <object id="ent-0000000009" name="railing" type="barrier" s="44" t="6.550" zOffset="0" hdg="0.0000" height="1.0" width="0.1" length="6.0" orientation="none">
+        <userData code="hero:entity_id" value="ent-0000000009"/>
+      </object>
+      <object id="ent-0000000010" name="crossing" type="obstacle" s="56" t="0.200" zOffset="0" hdg="0.0000" height="0.01" width="9.0" length="2.0" orientation="none">
+        <userData code="hero:entity_id" value="ent-0000000010"/>
+      </object>
+    </objects>
+  </road>
+</OpenDRIVE>

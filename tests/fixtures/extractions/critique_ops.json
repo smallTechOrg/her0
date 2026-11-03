@@ -1,0 +1,21 @@
+{
+  "accepted": false,
+  "critique": "The footpath near 60 m looks missing in the crop but is marked intact; one entity is slightly off.",
+  "ops": [
+    {
+      "op": "set_footpath_state",
+      "side": "left",
+      "s_from": 60.0,
+      "s_to": 72.0,
+      "state": "missing",
+      "reason": "dirt gap visible in the crop"
+    },
+    {
+      "op": "nudge_entity",
+      "entity_id": "ent-0000000001",
+      "ds_m": 1.0,
+      "dt_m": -0.5,
+      "reason": "marker sits off the footpath edge"
+    }
+  ]
+}

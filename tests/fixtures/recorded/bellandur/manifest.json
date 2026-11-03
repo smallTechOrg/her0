@@ -1,0 +1,22 @@
+{
+ "city": "Bengaluru",
+ "end": {
+  "lat": 12.923069943143544,
+  "lon": 77.6734654735362
+ },
+ "footpath_side": "left",
+ "heading_deg": 73.99990082193528,
+ "image_budget_bytes": 4000000,
+ "image_bytes": 3881158,
+ "image_jpeg_quality": 60,
+ "length_m": 100.00000000046207,
+ "model_hash": "eaba1794d2a49675df934d6d45e0e8e96f0e52b7a8cd59deb90dad8ef55281dc",
+ "model_version": 1,
+ "name": "Bellandur Main Road",
+ "observations": 48,
+ "slug": "bellandur-main-road-n-2",
+ "start": {
+  "lat": 12.922822056856456,
+  "lon": 77.67257852646381
+ }
+}
